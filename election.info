@@ -1,0 +1,10 @@
+name = Election 
+description = Provides UI for gathering election results, creates necessary CCK types, and provide javascript callbacks for getting election results.
+package = Election
+dependencies[] = content
+dependencies[] = content_copy
+dependencies[] = nodereference
+dependencies[] = text
+dependencies[] = number
+dependencies[] = taxonomy
+core = 6.x

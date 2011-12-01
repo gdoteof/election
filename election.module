@@ -1,0 +1,119 @@
+<?php
+
+
+/*
+ * implementation of hook_menu
+*/
+function election_menu(){
+  //We do our own argument parsing
+  $items['e'] = array(
+    'title' => 'Election Call Back',
+    'page callback' => '_elec_arg_parse',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'election.api.inc',
+  );
+  //Tab on ballot items for entering results
+  $items['node/%node/elec_results'] = array(
+    'title' => 'Election Results',
+    'page callback' => '_elec_edit_results',
+    'page arguments' => array(1),
+    'access callback' => '_elec_ballot_item_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/*
+ * implementation of hook_perm
+*/
+function election_perm(){
+  return array('change election results');
+}
+
+function _elec_edit_results($node){
+  $output = drupal_get_form('election_result_form', $node);
+  return $output . 'hi';
+}
+
+function election_result_form($form_state, $node){
+  $form = array();
+  // Loop through each ballot item in the district
+  foreach($node->field_elec_ballot_items as $ballot_item_nid){
+    $ballot_node = node_load( array('nid'=>$ballot_item_nid['nid']));
+
+    $query = 'SELECT results from {election_results} where district_nid=%d AND ballot_item_nid=%d';
+    $results = unserialize(db_result(db_query($query, $node->nid, $ballot_node->nid)));
+
+    $ballot_item_form = array();
+    $ballot_item_form['title'] = array(
+      '#type' => 'item',
+      '#value' => "<h2>$ballot_node->title</h2>",
+    );
+    //Pull up each option for the ballot item
+    foreach($ballot_node->field_elec_ballot_item_options as $key => $ballot_item_option){
+      $key = str_replace(' ','_',$ballot_item_option['value']);
+      $default = ($results[$key]) ? $results[$key] : 0;
+      $ballot_item_form[$key] = array(
+        '#type' => 'textfield',
+        '#title' => $ballot_item_option['value'],
+        '#default_value' => $default,
+        '#size' => 5,
+      );
+    }//end foreach field_elec_ballot_item_options
+    $ballot_item_form['updated'] = array(
+      '#type' => 'value',
+      '#default_value' => ($results) ? TRUE : FALSE,  
+      '#size' => 5,
+    );
+    $ballot_item_form['nid'] = array(
+      '#type' => 'value',
+      '#value' => $ballot_node->nid,
+    );
+    $form['ballot_item_' . $ballot_node->nid] = $ballot_item_form;
+    $form['ballot_item_' . $ballot_node->nid]['#tree'] = TRUE;
+  } //end foreach field_elec_ballot_items
+
+  $form['district_nid'] = array('#type'=>'value', '#value'=>$node->nid);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Save Results',
+  );
+  return $form;
+}
+
+function election_result_form_submit($form, &$form_state){
+  foreach($form_state['values'] as $key => $ballot_item){
+    if(! is_array($ballot_item) ) continue; //stuff in here we don't want
+
+    $ballot_item_nid = $ballot_item['nid'];
+    unset($ballot_item['nid']);
+
+    $updated = $ballot_item['updated'];
+    unset($ballot_item['updated']);
+
+    //if this value is already in the DB we need to update, rather than insert
+    //we do this by passing the primary key to drupal_write_record
+    $u_i = ($updated) ? array('district_nid', 'ballot_item_nid') : NULL;
+
+    //The rest are results
+    $results = $ballot_item;
+
+    $data = array(
+      'district_nid' => $form_state['values']['district_nid'],
+      'ballot_item_nid' => $ballot_item_nid,
+      'results' => $results,
+    );
+    $success = drupal_write_record('election_results', $data, $u_i);
+  }
+}
+
+function _elec_ballot_item_access($node){
+  if(user_access('change election results') && $node->type=='elec_district'){
+    return TRUE;
+  }
+  return FALSE;
+}
+
+

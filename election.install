@@ -1,0 +1,203 @@
+<?php
+
+/*
+ * implementation of hook_schema
+*/
+
+function election_schema(){
+  $schema['election_cache'] = array(
+    'description' => 'Table for storing serialized data for specific URIs',
+    'fields' => array(
+      'uri' => array(
+        'description'=> 'The URI for this cached data',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => true,
+      ),
+      'last_update' => array(
+        'description' => 'The unix time stamp for the creation/last update of this item',
+        'type' => 'int',
+        'not null' => true,
+        'default' => 0,
+      ),
+      'expires' => array(
+        'description' => 'The unix time stamp for when this cache item expires.',
+        'type' => 'int',
+        'not null' => true,
+        'default' => 0,
+      ),
+      'data' => array(
+        'description' => 'The serialized data for this URI',
+        'type' => 'text',
+        'size' => 'medium', //16kb might be too small if we want to get the results for a large tree
+        'serialize' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('uri'),
+  );
+
+  $schema['election_results'] = array(
+    'description' => 'Table for holding the election results for a given district/ballot item',
+    'fields' => array(
+      'district_nid' => array(
+        'description' => 'The unique id for the district',
+        'type' => 'varchar',
+        'length' => 63,
+        'not null' => TRUE,
+      ),
+      'ballot_item_nid' => array(
+        'description' => 'The unique id for the ballot item',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'results' => array(
+        'description' => 'The serialized results for the ballot item',
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'normal',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array( 'district_nid', 'ballot_item_nid'),
+  );
+  return $schema;
+}
+
+/*
+ * Implementation of hook_install
+ */
+
+function election_install(){
+  drupal_install_schema('election');
+  _create_elec_ballot_item();
+  _add_ballot_item_taxo();
+
+  _create_elec_district();
+  _add_district_taxo();
+
+  _create_elec_election_event();
+  _create_elec_election_season();
+
+  node_types_rebuild();
+}
+
+function _create_elec_ballot_item(){
+  $content = array();
+  $type_name = "<create>";
+  include "includes/elec_ballot_item.crud.inc";
+  $form_state = array();
+  $form = content_copy_import_form($form_state, $type_name);
+  $form_state['values']['type_name'] = $type_name ? $type_name : '';
+  $form_state['values']['macro'] = '$content = '. var_export($content, 1) .';';
+  $form_state['values']['op'] = t('Import');
+  content_copy_import_form_submit($form, $form_state);  
+}
+
+
+function _add_ballot_item_taxo(){
+ $name = t('Ballot Item Type');
+ $vocabulary = array(
+    'name' => $name,
+    'help' => t('What type of Ballot item?'),
+    'multiple' => 0,
+    'required' => 1,
+    'hierarchy' => 0,
+    'relations' => 0,
+    'module' => 'election',
+    'tags' => 0,
+    'weight' => -10,
+    'nodes' => array('elec_ballot_item' => 1),
+  );
+  taxonomy_save_vocabulary($vocabulary); 
+  $vid = db_result(db_query('SELECT vid FROM {vocabulary} where name="%s"', $name));
+  $t1 = array(
+    'vid' => $vid,
+    'name' => t('Referendum'),
+  );
+  taxonomy_save_term($t1);
+  $t2 = array(
+    'vid' => $vid,
+    'name' => t('Election'),
+  );
+  taxonomy_save_term($t2);
+}
+
+function _add_district_taxo(){
+ $name = t('District Type');
+ $vocabulary = array(
+    'name' => $name,
+    'multiple' => 1,
+    'required' => 0,
+    'hierarchy' => 0,
+    'relations' => 0,
+    'module' => 'election',
+    'tags' => 0,
+    'weight' => -10,
+    'nodes' => array('elec_district' => 1),
+  );
+  taxonomy_save_vocabulary($vocabulary); 
+  $vid = db_result(db_query('SELECT vid FROM {vocabulary} where name="%s"', $name));
+  $t1 = array(
+    'vid' => $vid,
+    'name' => t('Ward'),
+  );
+  taxonomy_save_term($t1);
+  $t2 = array(
+    'vid' => $vid,
+    'name' => t('Polling Place'),
+  );
+  taxonomy_save_term($t2);
+  $t3 = array(
+    'vid' => $vid,
+    'name' => t('Municipality'),
+  );
+  taxonomy_save_term($t3);
+}
+
+function _create_elec_district(){
+  $content = array();
+  $type_name = "<create>";
+  include "includes/elec_district.crud.inc";
+  $form_state = array();
+  $form = content_copy_import_form($form_state, $type_name);
+  $form_state['values']['type_name'] = $type_name ? $type_name : '';
+  $form_state['values']['macro'] = '$content = '. var_export($content, 1) .';';
+  $form_state['values']['op'] = t('Import');
+  content_copy_import_form_submit($form, $form_state);  
+}
+
+function _create_elec_election_event(){
+  $content = array();
+  $type_name = "<create>";
+  include "includes/elec_election_event.crud.inc";
+  $form_state = array();
+  $form = content_copy_import_form($form_state, $type_name);
+  $form_state['values']['type_name'] = $type_name ? $type_name : '';
+  $form_state['values']['macro'] = '$content = '. var_export($content, 1) .';';
+  $form_state['values']['op'] = t('Import');
+  content_copy_import_form_submit($form, $form_state);  
+}
+
+function _create_elec_election_season(){
+  $content = array();
+  $type_name = "<create>";
+  include "includes/elec_election_season.crud.inc";
+  $form_state = array();
+  $form = content_copy_import_form($form_state, $type_name);
+  $form_state['values']['type_name'] = $type_name ? $type_name : '';
+  $form_state['values']['macro'] = '$content = '. var_export($content, 1) .';';
+  $form_state['values']['op'] = t('Import');
+  content_copy_import_form_submit($form, $form_state);  
+}
+
+function election_uninstall(){
+  drupal_uninstall_schema('election');
+  node_type_delete('elec_ballot_item');
+  node_type_delete('elec_district');
+  node_type_delete('elec_election_event');
+  node_type_delete('elec_election_season');
+  node_types_rebuild();
+  cache_clear_all();
+}
