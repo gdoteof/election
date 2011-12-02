@@ -116,4 +116,9 @@ function _elec_ballot_item_access($node){
   return FALSE;
 }
 
-
+function _elec_set_taxo_vars(){
+  $ballot_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="Ballot Item Type"'));
+  variable_set('elec_ballot_vid', $ballot_type_vid);
+  $district_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="District Type"'));
+  variable_set('elec_district_vid', $district_type_vid);
+}
