@@ -117,8 +117,41 @@ function _elec_ballot_item_access($node){
 }
 
 function _elec_set_taxo_vars(){
+  print "they should be sex...";
   $ballot_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="Ballot Item Type"'));
   variable_set('elec_ballot_vid', $ballot_type_vid);
   $district_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="District Type"'));
   variable_set('elec_district_vid', $district_type_vid);
 }
+
+
+/*
+ * implementation of hook_node_api
+ */
+function election_nodeapi(&$node, $op, $a3=NULL, $a4=NULL){
+  if ( ! substr($node->type,0,5) == 'elec_' ) { return; }
+  if($op=='insert' || $op == 'update'){
+    $slug = _elec_title_to_slug($node->title);
+    db_query('INSERT INTO {election_slug} (nid, slug, type) VALUES (%d,"%s", "%s") ON DUPLICATE KEY UPDATE slug="%s", type="%s"', $node->nid, $slug, $node->type, $slug, $node->type);
+  }
+}
+
+function _elec_slug_to_title($slug){
+  return str_replace('-',' ', $slug);
+}
+
+function _elec_title_to_slug($title){
+  $slug = preg_replace("/[^a-zA-Z0-9\s\-]/", "", $title);
+  $slug = strtolower(str_replace(' ', '-', $slug));
+  return $slug;
+}
+/*
+
+INSERT INTO election_slug nid, slug VALUES (0,"should-the-police-be-able-to-beat-protesters") 
+ON DUPLICATE KEY UPDATE slug="should-the-police-be-able-to-beat-protesters" 
+
+
+INSERT INTO table (a,b,c) VALUES (1,2,3)
+ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), c=3;
+
+*/

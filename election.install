@@ -62,6 +62,30 @@ function election_schema(){
     ),
     'primary key' => array( 'district_nid', 'ballot_item_nid'),
   );
+  $schema['election_slug'] = array(
+    'description' => 'Table for holding the compiled slugs (for the URL) of election items',
+    'fields' => array(
+      'nid' => array(
+        'description' => 'The unique id for the item',
+        'type' => 'int',
+        'unsigned' => true,
+        'not null' => TRUE,
+      ),
+      'slug' => array(
+        'description' => 'The generated-at-save slug based on the title of the node',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The node type',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array( 'nid'),
+  );
   return $schema;
 }
 
@@ -81,6 +105,10 @@ function election_install(){
   _create_elec_election_season();
 
   node_types_rebuild();
+  $ballot_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="Ballot Item Type"'));
+  variable_set('elec_ballot_vid', $ballot_type_vid);
+  $district_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="District Type"'));
+  variable_set('elec_district_vid', $district_type_vid);
 }
 
 function _create_elec_ballot_item(){

@@ -20,7 +20,13 @@ else
   usage
 fi
 
+
+if [ "$1" = "json" ]
+then
+curl -H "$ACCEPT" -X GET "http://local.cctv.dev/$2" | json_formatter
+else
 curl -H "$ACCEPT" -X GET "http://local.cctv.dev/$2"
+fi
 
 echo -e "\n==========="
 echo -e "used:  curl -H \"$ACCEPT\" -X GET \"http://local.cctv.dev/$2\""

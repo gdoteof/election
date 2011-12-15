@@ -56,6 +56,18 @@ function _elec_arg_parse(){
     _elec_send_modify_expire_headers();
     return  _elec_return_as(_elec_get_event($season, $event_slug), $format, $type);
   }
+  $district_slug = array_shift($args);
+  if ( empty($args) ){
+    $type = 'district';
+    _elec_send_modify_expire_headers();
+    return  _elec_return_as(_elec_get_district($season, $event_slug, $district_slug), $format, $type);
+  }
+  $ballot_item_slug = array_shift($args);
+  if (empty($args)){
+    $type = 'ballot_item';
+    _elec_send_modify_expire_headers();
+    return _elec_return_as(_elec_get_ballot_item($season, $event_slug, $district_slug, $ballot_item_slug), $format, $type);
+  }
   else{
     dpm($args);
   }
@@ -83,7 +95,7 @@ function _elec_html_season($data){
   foreach($data->election_events as $election_event){
     $election_event = (object)$election_event;
     $election_events .= "\t<li>\n";
-    $election_events .= "\t\t<a href=\"" . $election_event->link . "\" class=\"election-event\">$election_event->title</a>\n";
+    $election_events .= "\t\t<a href=\"/" . $election_event->link . "\" class=\"election-event\">$election_event->title</a>\n";
     $election_events .= "\t</li>\n";
   }
   $election_events .= "</ul>";
@@ -103,20 +115,69 @@ SEASON;
 }
 
 function _elec_html_district($data){
-  print_r($data);
+  $data = (object)$data;
+  $election_season_href = $data->election_season['link'];
+  $election_season_title = $data->election_season['title'];
+  $election_event_href = $data->election_event['link'];
+  $election_event_title = $data->election_event['title'];
+
+  $tags = "<ul>\n";
+  foreach ($data->tags as $tag){ $tags .= '    <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
+  $tags .="  </ul>\n";
+
+  $ballot_items = '';
+  foreach ($data->ballot_items as $ballot_item_type => $ballot_item_list){
+  $ballot_items .= "    <h3>" . ucfirst($ballot_item_type) .  "</h3>\n<ul>\n";
+    foreach($ballot_item_list as $ballot_item){
+      $ballot_items .= '      <li><a href="' . $ballot_item['link'] .  '" class="ballot-item ' . _elec_title_to_slug(_elec_swap_plurality($ballot_item_type)) . '">' . $ballot_item['title'] . '</a></li>' . "\n"; 
+    }
+    $ballot_items .= "    </ul>\n";
+  }
+
+  $districts = '';
+  foreach ($data->districts as $district_type => $district_list){
+  $district_type = ucwords(str_replace('-', ' ',$district_type));
+  $districts .= "<h2>" . $district_type . "</h2>\n<ul>\n";
+    foreach ($district_list as $district){
+      $districts .= '      <li><a href="' . $district['link'] .  '" class="district ' . str_replace(' ','-',_elec_swap_plurality($district_type)) . '">' . $district['title'] . '</a></li>' . "\n"; 
+    }
+    $districts .= "</ul>\n";
+  }
+  print <<<DISTRICT
+<!DOCTYPE html>
+<head>
+  <title>$data->title</title>
+  <link href="$data->link" type="canonical" />
+</head>
+<body class="election-season">
+  <h1 class="title">$data->title</h1>
+  <dl>
+    <dt>Election Season</dt>
+    <dd><a href="$election_season_href" class="election-season">$election_season_title</a></dd>
+    <dt>Election Event</dt>
+    <dd><a href="$election_event_href" class="election-event">$election_event_title</a></dd>
+  </dl>
+  <h2>Tags</h2>
+  $tags
+  <h2>Ballot Items</h2>
+$ballot_items
+  <h2>Districts</h2>
+$districts
+</body>
+DISTRICT;
   exit;
 }
 
 function _elec_html_event($data){
   $data = (object)$data;
-  $election_season_link = '<a href="' . $data->election_season['link'] . '">'. $data->election_season['title'] . '</a>';
+  $election_season_link = '<a href="/' . $data->election_season['link'] . '">'. $data->election_season['title'] . '</a>';
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season
   $election_events = '';
   foreach($district_type_containers as $key => $container){
     $election_events .= '<h2>' . ucfirst($key) . '</h2>' . "\n"; 
     $election_events .= '    <ul>' . "\n";
     foreach($container as $e_event){
-      $election_events .= '      <li><a href="' . $e_event['link'] . '" class="district">' . $e_event['title'] . '</a></li>' . "\n";
+      $election_events .= '      <li><a href="/' . $e_event['link'] . '" class="district '. _elec_swap_plurality($key) . '">' . $e_event['title'] . '</a></li>' . "\n";
     }
     $election_events .= "    </ul>";
   }
@@ -132,7 +193,6 @@ function _elec_html_event($data){
     <dt>Election Season</dt>
     <dd>$election_season_link</dd>
   </dl>
-  <h2>Election Events</h2>
   $election_events
 </body>
 EVENT;
@@ -146,10 +206,11 @@ function _elec_as_csv($data){
 
 function _elec_get_event($season_slug, $event_slug){
   $season_node = node_load(array('title'=> _elec_slug_to_title($season_slug), 'type'=>'elec_election_season'), NULL, TRUE); 
-  if (!$season_node){
+  $season_nid = _elec_nid_from_season_slug($season_slug);
+  if (!$season_nid){
     _elec_404("Season not found");
   }
-  $event_nid = db_result(db_query("SELECT ee.field_elec_election_events_nid FROM node n JOIN content_field_elec_election_events ee ON n.nid = ee.field_elec_election_events_nid WHERE n.title = \"%s\" AND ee.nid=%d", _elec_slug_to_title($event_slug), $season_node->nid));
+  $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
   if (!$event_nid){
     _elec_404("Event $event_slug not found for season $season_slug");
   }
@@ -198,7 +259,8 @@ function _elec_fix_district_keys($district_data){
 }
 
 function _elec_get_season($season_slug){
-  $season_node = node_load(array('title'=> _elec_slug_to_title($season_slug), 'type'=>'elec_election_season'), NULL, TRUE); 
+  $season_nid = _elec_nid_from_season_slug($season_slug);
+  $season_node = node_load(array('nid'=>$season_nid));
   if (!$season_node){
     _elec_404("Season not found");
   }
@@ -216,13 +278,165 @@ function _elec_get_season($season_slug){
   }
   $data = array(
     'title' => $season_node->title, 
-    'link' => $season_link,
+    'link' => '/' . $season_link,
     'election_events' => $election_events,
   );
   _elec_write_cache($_GET['q'], $data);
   return $data;
 }
 
+function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballot_item_slug){
+  $season_nid = _elec_nid_from_season_slug($season_slug);
+  if (!$season_nid){
+    _elec_404("Season not found");
+  }
+  $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
+  if (!$event_nid){
+    _elec_404("Event $event_slug not found for season $season_slug");
+  }
+  $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
+  if (!$district_nid){
+    _elec_404("District $district_slug not found for $event_slug");
+  }
+  $ballot_item_nid = _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid);
+  print "id for ballot item is $ballot_item_nid\n";   
+  $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
+  $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
+  print_r($ballot_item_node);
+  print_r($ballot_item_results);
+  
+}
+
+function _elec_get_district($season_slug, $event_slug, $district_slug){
+  $season_nid = _elec_nid_from_season_slug($season_slug);
+  if (!$season_nid){
+    _elec_404("Season not found");
+  }
+  $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
+  if (!$event_nid){
+    _elec_404("Event $event_slug not found for season $season_slug");
+  }
+  $event_node = node_load(array('nid'=>$event_nid));
+  $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
+  if ($district_nid){
+    $district_node = node_load(array('nid'=> $district_nid));
+  }
+
+  if(! $district_node){
+    _elec_404("Event $district_slug not found for season $season_slug and event $event_slug");
+  }
+  
+  $ballot_item_results = _elec_get_ballot_item_results_by_district($district_nid);
+  $summed_results = array();
+  foreach($ballot_item_results as $ballot_item){
+    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
+    $summed_results[$ballot_item_key]['text'] =  _elec_get_ballot_item_text($ballot_item_key);
+    foreach($item as $choice_key => $choice){
+     $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
+    }
+  }
+  $tags = array();
+  foreach($district_node->taxonomy as $tag){ $tags[] = $tag->name; }
+
+  $ballot_item_array = array();
+
+  foreach($district_node->field_elec_ballot_items as $ballot_item_nid){
+    if (!$ballot_item_nid['nid']) { continue; }
+    $ballot_item_node = node_load(array('nid'=>$ballot_item_nid['nid']));
+    $ballot_item_row = array();
+    $ballot_item_row['title'] = $ballot_item_node->title;
+    $ballot_item_row['link'] = '/' . $_GET['q'] . '/' . _elec_title_to_slug($ballot_item_node->title);
+    foreach($ballot_item_node->taxonomy as $ballot_type_term){
+      if ($ballot_type_term->vid == variable_get('elec_ballot_vid', NULL)){
+        $ballot_item_row['type'] = _elec_swap_plurality(str_replace(' ', '_', $ballot_type_term->name));
+        break;
+      }
+    }
+    $ballot_item_array[] = $ballot_item_row;
+  }
+  $ballot_item_data = array();
+  foreach($ballot_item_array as $ballot_item_row){
+    $row = array(
+      'title' => $ballot_item_row['title'],
+      'link' => $ballot_item_row['link'],
+    );
+    /*$ballot_item_data[$ballot_item_row['type']]['title'] = $ballot_item_row['title']; 
+    $ballot_item_data[$ballot_item_row['type']]['link'] = $ballot_item_row['link']; */
+    $ballot_item_data[$ballot_item_row['type']][] = $row;
+  }
+
+  $districts = array();
+  $district_types = array();
+  foreach($district_node->field_elec_sub_districts as $sub_district_nid){
+    $district_row = array();
+    $sub_district_node = node_load(array('nid'=>$sub_district_nid['nid']));
+    foreach($sub_district_node->taxonomy as $sd_term){
+      if($sd_term->vid == variable_get('elec_district_vid', NULL)){
+        $mr_type = str_replace(' ', '-',_elec_swap_plurality($sd_term->name));
+        if(! array_key_exists($mr_type, $district_types) ){
+          $district_types[$mr_type] = array();
+        }
+        $district_row['title'] = $sub_district_node->title;
+        $district_row['link'] = '/e/' . $season_slug . '/' . $event_slug . '/' . _elec_title_to_slug($sub_district_node->title);
+        $districts[$mr_type][] = $district_row;
+        //$districts[str_replace(' ', '-',_elec_swap_plurality($sd_term->name))][_elec_title_to_slug($sub_district_node->title)] = $district_row;
+      }
+    }
+  }
+
+  $data = array(
+    'title' => $district_node->title,
+    'link' => '/' . $_GET['q'],
+    'election_event' => array(
+      'title' => $event_node->title,
+      'link' => '/e/' . $season_slug . '/' . $event_slug,
+    ),
+    'election_season' => array(
+      'title' => _elec_get_title_from_nid($season_nid),
+      'link' => '/e/' . $season_slug,
+    ),
+    'ballot_items' => $ballot_item_data,
+    'ballot_item_results' => $summed_results,
+    'tags' => $tags,
+    'districts' => $districts,
+  );
+  _elec_write_cache($_GET['q'], $data);
+  return $data;
+}
+
+function _elec_get_ballot_item_result($ballot_item_nid, $district_nid){
+  print "entered get ballot_item result with $ballot_item_nid, $district_nid\n";
+  $query = 'SELECT results from {election_results} where district_nid = %d AND ballot_item_nid=%d';
+  $results = db_result(db_query($query, $district_nid, $ballot_item_nid));
+  if($results){
+    return unserialize($results);
+  }
+  return FALSE;
+}
+
+/*
+ * Recursive function that gets ballot items for the district, and all sub districts
+ */
+
+function _elec_get_ballot_item_results_by_district($district_nid){
+  if(! $district_nid ) return NULL;
+  $district_node = node_load(array('nid'=> $district_nid));
+  $data = array();
+  $query = 'SELECT ballot_item_nid, results from {election_results} where district_nid = %d';
+  $query_result = db_query($query, $district_nid);
+  while($ballot_item_result = db_fetch_object($query_result)){
+    if ($ballot_item_result){
+      $data[] = array($ballot_item_result->ballot_item_nid => unserialize($ballot_item_result->results));
+    }
+  }
+  foreach($district_node->field_elec_sub_districts as $sub_district){
+    $children = _elec_get_ballot_item_results_by_district($sub_district['nid']);
+    if( ! empty($children) ){
+      $data = array_merge($data, $children);
+    }
+  }
+  return $data;
+}
 
 function _elec_404($message){
   header('HTTP/1.0 404 Not Found');
@@ -230,14 +444,8 @@ function _elec_404($message){
   exit;
 }
 
-function _elec_slug_to_title($slug){
-  return str_replace('-',' ', $slug);
-}
 
 
-function _elec_title_to_slug($title){
-  return strtolower(str_replace(' ', '-', $title));
-}
 
 
 function _elec_write_cache($uri, $data){
@@ -258,4 +466,144 @@ function _elec_send_modify_expire_headers($expires = null, $last_modified = null
   $expires = ($expires) ? $expires : time() + variable_get('elec_expire_time', 60);
   header('Expires: ' . date("D, d M Y H:i:s e", $expires));
   header('Last-Modified: ' . date("D, d M Y H:i:s e", $last_modified));
+}
+
+function _elec_swap_plurality($string){
+  switch(strtolower($string)){
+    case 'municipality':
+      return 'municipalities';
+    case 'municipalities':
+      return 'municipality';
+    case 'ballot item':
+      return 'ballot items';
+    case 'ballot items':
+      return 'ballot item';
+    case 'referendum':
+      return 'referendums';
+    case 'referendums':
+      return 'referendum';
+    case 'elections':
+      return 'election';
+    case 'election':
+      return 'elections';
+    case 'ward':
+      return 'wards';
+    case 'polling place':
+      return 'polling places';
+    case 'polling places':
+      return 'polling place';
+
+    default:
+      return $string;
+  }
+}
+
+function _elec_get_title($nid){
+  return node_load(array('nid' => $nid))->title;
+}
+
+function _elec_get_ballot_item_text($nid){
+  $ballot_item_node = node_load(array('nid' => $nid));
+  return $ballot_item_node->body;
+}
+
+
+function _elec_find_sub_district($event_nid, $district_slug, $district_nid = NULL){
+  if (! $district_nid ){
+    $event_node = node_load(array('nid'=>$event_nid)); 
+    foreach($event_node->field_elec_participating_distric as $sub_district){
+      $district_node = node_load(array('nid' => $sub_district['nid']));
+      if ($district_node && $district_node->title == _elec_slug_to_title($district_slug)){
+        return $district_node;
+      } else{
+        $sub_node = _elec_find_sub_district($event_nid, $district_slug, $district_node->nid);
+        if($sub_node) { return $sub_node; }
+      }
+    }
+  } 
+  else {
+    $district_parent = node_load(array('nid'=>$district_nid));
+    foreach($district_parent->field_elec_sub_districts as $sub_district){
+      if(! $sub_district['nid'] ) { continue; }
+      $district_node = node_load(array('nid' => $sub_district['nid']));
+      if ($district_node && strtolower($district_node->title) == _elec_slug_to_title($district_slug)){
+        return $district_node;
+      } elseif($district_node->nid){
+        $sub_node =  _elec_find_sub_district($event_nid, $district_slug, $district_node->nid);
+        if($sub_node) { return $sub_node; }
+      }
+    }
+  }
+  return FALSE;
+}
+
+
+function _elec_nid_from_season_slug($slug){
+  return db_result(db_query('SELECT nid FROM {election_slug} WHERE slug="%s" AND type="elec_election_season"', $slug)); 
+}
+
+function _elec_nid_from_event_slug($slug, $season_nid){
+  $query = "SELECT es.nid FROM election_slug es " .
+           "JOIN content_field_elec_election_events ee ON " .
+           "ee.field_elec_election_events_nid = es.nid " .
+           "WHERE ee.nid=%d AND es.slug='%s' AND es.type='elec_event'";
+  return db_result(db_query($query, $season_nid, $slug));
+}
+
+function _elec_nid_from_district_slug($slug, $event_nid){
+  $query = "SELECT es.nid FROM election_slug es " .
+           "JOIN content_field_elec_participating_distric pd ON " .
+           "pd.field_elec_participating_distric_nid = es.nid " .
+           "WHERE pd.nid=%d AND es.slug='%s' AND es.type='elec_district'";
+  $district_nid = db_result(db_query($query,$event_nid, $slug));
+  if ($district_nid){
+    return $district_nid;
+  }
+  else{
+    $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $event_nid)); 
+    $participating_district_query = 'SELECT field_elec_participating_distric_nid FROM {content_field_elec_participating_distric} WHERE vid=%d AND nid=%d';
+    $results = db_query($participating_district_query, $version_id, $event_nid);
+    while($participating_district_row = db_fetch_object($results)){
+      $district_nid = _elec_find_sub_district_recur($slug, $participating_district_row->field_elec_participating_distric_nid);
+      if($district_nid){
+        return $district_nid;
+      }
+    }
+  }
+}
+
+function _elec_find_sub_district_recur($district_slug, $district_nid){
+  $query = "SELECT es.nid FROM election_slug es " .
+           "JOIN {content_field_elec_sub_districts} sd ON " .
+           "sd.field_elec_sub_districts_nid = es.nid " .
+           "WHERE sd.nid=%d AND es.slug='%s' AND es.type='elec_district'";
+  $sub_district_nid = db_result(db_query($query, $district_nid, $district_slug));
+  if($sub_district_nid){
+    return $sub_district_nid;
+  }
+  else{ //try again, lower
+    $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $district_nid)); 
+    $sub_district_query = 'SELECT field_elec_sub_districts_nid FROM {content_field_elec_sub_districts} WHERE vid=%d AND nid=%d';
+    $results = db_query($sub_district_query, $version_id, $district_nid);
+    while($sub_district_row = db_fetch_object($results)){
+      $sub_district_nid = _elec_find_sub_district_recur($district_slug, $sub_district_row->field_elec_sub_districts_nid);
+      if($sub_district_nid){
+        return $sub_district_nid;
+      }
+    }
+  }
+  return FALSE;
+}
+function _elec_get_title_from_nid($nid){
+  $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $nid)); 
+  return db_result(db_query('SELECT title from {node} where nid=%d AND vid=%d', $nid, $version_id));
+}
+
+function _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid){
+  $query = "SELECT es.nid FROM election_slug es " .
+           "JOIN {content_field_elec_ballot_items} bi ON " .
+           "bi.field_elec_ballot_items_nid = es.nid " .
+           "WHERE bi.nid=%d AND es.slug='%s' AND es.type='elec_ballot_item'";
+  $ballot_item_nid = db_result(db_query($query, $district_nid, $ballot_item_slug));
+  return $ballot_item_nid;
 }
