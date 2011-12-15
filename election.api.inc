@@ -299,12 +299,48 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     _elec_404("District $district_slug not found for $event_slug");
   }
   $ballot_item_nid = _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid);
-  print "id for ballot item is $ballot_item_nid\n";   
+
   $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
   $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
-  print_r($ballot_item_node);
-  print_r($ballot_item_results);
-  
+  $tags = array();
+  foreach($ballot_item_node->taxonomy as $term){
+    if($term->vid == variable_get('elec_ballot_vid', NULL)){
+      $tags[] = $term->name;
+    }
+  }
+
+  $results = array();
+  foreach($ballot_item_results as $key => $option){
+    $results[str_replace('_',' ', $key)] = $option;
+  }
+
+  $district_node = node_load(array('nid'=>$district_nid));
+  $district_tags = array();
+  foreach($district_node->taxonomy as $term){
+    if($term->vid == variable_get('elec_district_vid', NULL)){
+      $district_tags[] = $term->name;
+    }
+  }
+  $data = array(
+    'title' => $ballot_item_node->title,
+    'link' => '/' . $_GET['q'],
+    'election_event' => array(
+      'title' => _elec_get_title_from_nid($event_nid),
+      'link' => '/e/' . $season_slug . '/' . $event_slug,
+    ),
+    'election_season' => array(
+      'title' => _elec_get_title_from_nid($season_nid),
+      'link' => '/e/' . $season_slug,
+    ),
+    'district' => array(
+      'title' => _elec_get_title_from_nid($season_nid),  
+      'link' => '/e/' . $season_slug . '/' . $event_slug . '/' . $district_slug,
+      'tags' => $district_tags,
+    ),
+    'tags' => $tags,
+    'results' => $results,
+  ); 
+  return $data;
 }
 
 function _elec_get_district($season_slug, $event_slug, $district_slug){
@@ -405,7 +441,6 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
 }
 
 function _elec_get_ballot_item_result($ballot_item_nid, $district_nid){
-  print "entered get ballot_item result with $ballot_item_nid, $district_nid\n";
   $query = 'SELECT results from {election_results} where district_nid = %d AND ballot_item_nid=%d';
   $results = db_result(db_query($query, $district_nid, $ballot_item_nid));
   if($results){
