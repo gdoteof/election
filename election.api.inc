@@ -84,6 +84,8 @@ function _elec_as_html($data,$type){
       break;
     case 'district':
       _elec_html_district($data);
+    case 'ballot_item':
+      _elec_html_ballot_item($data);
       break;
   }
   exit;
@@ -112,6 +114,55 @@ function _elec_html_season($data){
 </body>
 SEASON;
   exit;
+}
+
+function _elec_html_ballot_item($data){
+  $data = (object)$data;
+  $election_season_href = $data->election_season['link'];
+  $election_season_title = $data->election_season['title'];
+  $election_event_href = $data->election_event['link'];
+  $election_event_title = $data->election_event['title'];
+  $district_href = $data->district['link'];
+  $district_title = $data->district['title'];
+
+  $tags = "<ul>\n";
+  foreach ($data->tags as $tag){ $type = strtolower($tag); $tags .= '    <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
+  $tags .="  </ul>\n";
+
+  $total_votes = 0;
+  foreach ($data->results as $result){ $total_votes += $result; }
+
+  $results = "<ul>\n";
+  foreach ($data->results as $option => $result){
+    $percent = number_format($result / $total_votes * 100, 1);
+    $opt_type = ($type=='election') ? 'candidate' : 'boolean';
+    $results .= '  <li class="result">' . "\n";
+    $results .= '    <span class="option ' . $opt_type . '">' . $option . "</span>\n";
+    $results .= '    <span class="votes" title="' . $result . '">' . "$result ($percent%)". "</span>\n";
+    $results .= '  </li>'. "\n";
+  }
+  print <<<BALLOT
+<!DOCTYPE html>
+<head>
+  <title>$data->title</title>
+  <link href="$data->link" type="canonical" />
+</head>
+<body class="ballot-item $type">
+  <h1 class="title">$data->title</h1>
+  <dl>
+    <dt>Election Season</dt>
+    <dd><a href="$election_season_href" class="election-season">$election_season_title</a></dd>
+    <dt>Election Event</dt>
+    <dd><a href="$election_event_href" class="election-event">$election_event_title</a></dd>
+    <dt>District</dt>
+    <dd><a href="$district_href" class="election-event">$district_title</a></dd>
+  </dl>
+  <h2>Tags</h2>
+  $tags
+  <h2>Results</h2>
+  $results
+</body>
+BALLOT;
 }
 
 function _elec_html_district($data){
@@ -310,8 +361,10 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   }
 
   $results = array();
-  foreach($ballot_item_results as $key => $option){
-    $results[str_replace('_',' ', $key)] = $option;
+  if(is_array($ballot_item_results)){
+    foreach($ballot_item_results as $key => $option){
+      $results[str_replace('_',' ', $key)] = $option;
+    }
   }
 
   $district_node = node_load(array('nid'=>$district_nid));
@@ -333,7 +386,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
       'link' => '/e/' . $season_slug,
     ),
     'district' => array(
-      'title' => _elec_get_title_from_nid($season_nid),  
+      'title' => _elec_get_title_from_nid($district_nid),  
       'link' => '/e/' . $season_slug . '/' . $event_slug . '/' . $district_slug,
       'tags' => $district_tags,
     ),
@@ -406,6 +459,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
   foreach($district_node->field_elec_sub_districts as $sub_district_nid){
     $district_row = array();
     $sub_district_node = node_load(array('nid'=>$sub_district_nid['nid']));
+    if(!isset($sub_district_node->taxonomy)) continue;
     foreach($sub_district_node->taxonomy as $sd_term){
       if($sd_term->vid == variable_get('elec_district_vid', NULL)){
         $mr_type = str_replace(' ', '-',_elec_swap_plurality($sd_term->name));
