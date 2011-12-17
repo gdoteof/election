@@ -24,7 +24,7 @@ function _elec_return_as($data, $format, $type){
       return _elec_as_html($data, $type);
       break;
     case 'csv':
-      return _elec_as_csv($data);
+      return _elec_as_csv($data, $type);
       break;
     default:
       return _elec_404();
@@ -36,6 +36,12 @@ function _elec_arg_parse(){
   $accept = $_SERVER['HTTP_ACCEPT'];
   $format = _elec_get_format_from_accept_header($accept);
   $type = 'season';
+  switch(count(func_get_args())){
+    case 1: $type = 'season'; break;
+    case 2: $type = 'event'; break;
+    case 3: $type = 'district'; break;
+    case 4: $type = 'ballot_item'; break;
+  }
   if ($cache) {
     $data = unserialize($cache->data);
     if( isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ){
@@ -256,8 +262,16 @@ EVENT;
   exit;
 }
 
-function _elec_as_csv($data){
+function _elec_as_csv($data,$type){
+  print "well here ware...$type";
+  $filename = str_replace('/','_', $_GET['q']);
+  if($type != 'ballot_item' && $type != 'district'){
+    _elec_406();
+  }
+  header('Content-Disposition: attachment; filename="'. $filename  . '"');
+  $outstream = fopen("php://output",'w'); 
   print_r($data);
+  fclose($outstream);
   exit;
 }
 
@@ -545,6 +559,10 @@ function _elec_304(){
   exit;
 }
 
+function _elec_406(){
+  header('HTTP/1.0 406 Not Acceptable');
+  exit;
+}
 
 
 
