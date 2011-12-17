@@ -1,0 +1,21 @@
+This module creates four content types:
+
+Election Season
+Election Event
+District
+Ballot Items
+
+Election seasons can contain one or more election events
+
+Election Events can contain one or more Districts
+
+Districts can contain one or more sub-districts and/or one or more Ballot Items
+
+Ballot Items have an arbitrary number of 'choices'.
+
+
+Content entry is done at at the District Level.
+
+All available Ballot Items can have their results entered by users with the 'change election results' permission at each district.
+
+The javascript api returns metadata as described in the requirements; with the addition that at the district level all results for ballot items (summed up recursively) are also returned.
