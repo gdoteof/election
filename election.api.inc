@@ -32,7 +32,6 @@ function _elec_return_as($data, $format, $type){
 }
 
 function _elec_arg_parse(){
-  variable_set('elec_expire_time', 30);
   $cache = _elec_check_cache();
   $accept = $_SERVER['HTTP_ACCEPT'];
   $format = _elec_get_format_from_accept_header($accept);

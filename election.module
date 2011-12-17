@@ -22,14 +22,42 @@ function election_menu(){
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
+  $items['admin/settings/election'] = array(
+    'title' => 'Election Module Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_elec_admin_settings'),
+    'access arguments' => array('administer election module'),
+    'type' => MENU_NORMAL_ITEM,
+  );
   return $items;
+}
+
+
+function _elec_admin_settings(){
+  $form['elec_expire_time'] = array(
+    '#weight' => -10,
+    '#type' => 'select',
+    '#default_value' => variable_get('elec_expire_time', 30),
+    '#description' => t('Controls how long the data is valid before needing to be recalculated'),
+    '#options' => array(
+      '0' => t("Don't Cache Results"),
+      '5' => t("5 seconds"),
+      '30' => t("30 seconds"),
+      '120' => t("2 minutes"),
+      '300' => t("5 minutes"),
+      '600' => t("10 minutes"),
+      '3600' => t("1 hour"),
+    ),
+    '#title' => t('Time to expire results'),
+  );
+  return system_settings_form($form);
 }
 
 /*
  * implementation of hook_perm
 */
 function election_perm(){
-  return array('change election results');
+  return array('change election results', 'administer election module');
 }
 
 function _elec_edit_results($node){
