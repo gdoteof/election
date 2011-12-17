@@ -32,13 +32,20 @@ function _elec_return_as($data, $format, $type){
 }
 
 function _elec_arg_parse(){
-  variable_set('elec_expire_time', 1);
+  variable_set('elec_expire_time', 30);
   $cache = _elec_check_cache();
   $accept = $_SERVER['HTTP_ACCEPT'];
   $format = _elec_get_format_from_accept_header($accept);
   $type = 'season';
   if ($cache) {
     $data = unserialize($cache->data);
+    if( isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ){
+      $if_since = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+      if($if_since > $cache->last_update){ //The content has not been modified since the specified time
+        _elec_304(); 
+        return; //never called, just for readability.
+      }
+    }
     _elec_send_modify_expire_headers($cache->expires, $cache->last_update);
     _elec_return_as($data, $format, $type);
     return;
@@ -393,6 +400,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     'tags' => $tags,
     'results' => $results,
   ); 
+  _elec_write_cache($_GET['q'], $data);
   return $data;
 }
 
@@ -530,6 +538,11 @@ function _elec_get_ballot_item_results_by_district($district_nid){
 function _elec_404($message){
   header('HTTP/1.0 404 Not Found');
   print $message . "\n";
+  exit;
+}
+
+function _elec_304(){
+  header('HTTP/1.0 304 Not Modified');
   exit;
 }
 
