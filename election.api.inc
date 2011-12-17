@@ -1,6 +1,7 @@
 <?php
 
-function _elec_get_format_from_accept_header($accept){
+function _elec_get_format_from_accept_header(){
+  $accept = $_SERVER['HTTP_ACCEPT'];
   if(strpos($accept, 'application/json') !==FALSE)
     return 'json';
   elseif(strpos($accept, 'text/html') !==FALSE)
@@ -32,9 +33,15 @@ function _elec_return_as($data, $format, $type){
 }
 
 function _elec_arg_parse(){
-  $cache = _elec_check_cache();
-  $accept = $_SERVER['HTTP_ACCEPT'];
-  $format = _elec_get_format_from_accept_header($accept);
+  $format = _elec_get_format_from_accept_header();
+  if(substr($_GET['q'], -4) == '.csv'){
+    $format = "csv";
+    $uri = substr($_GET['q'], 0, -4);
+  }
+  else{
+    $uri = $_GET['q'];
+  }
+  $cache = _elec_check_cache($uri);
   $type = 'season';
   switch(count(func_get_args())){
     case 1: $type = 'season'; break;
@@ -59,23 +66,27 @@ function _elec_arg_parse(){
   $season = array_shift($args);
   if ( empty($args) ){
     $type = 'season';
+    $season = _elec_remove_csv_extension($season);
     _elec_send_modify_expire_headers();
     return  _elec_return_as(_elec_get_season($season), $format, $type);
   }
   $event_slug = array_shift($args);
   if ( empty($args) ){
+    $event_slug = _elec_remove_csv_extension($event_slug);
     $type = 'event';
     _elec_send_modify_expire_headers();
     return  _elec_return_as(_elec_get_event($season, $event_slug), $format, $type);
   }
   $district_slug = array_shift($args);
   if ( empty($args) ){
+    $district_slug = _elec_remove_csv_extension($district_slug);
     $type = 'district';
     _elec_send_modify_expire_headers();
     return  _elec_return_as(_elec_get_district($season, $event_slug, $district_slug), $format, $type);
   }
   $ballot_item_slug = array_shift($args);
   if (empty($args)){
+    $ballot_item_slug = _elec_remove_csv_extension($ballot_item_slug);
     $type = 'ballot_item';
     _elec_send_modify_expire_headers();
     return _elec_return_as(_elec_get_ballot_item($season, $event_slug, $district_slug, $ballot_item_slug), $format, $type);
@@ -263,14 +274,29 @@ EVENT;
 }
 
 function _elec_as_csv($data,$type){
-  print "well here ware...$type";
   $filename = str_replace('/','_', $_GET['q']);
   if($type != 'ballot_item' && $type != 'district'){
     _elec_406();
   }
+  if($type == 'district'){
+    $output = array();
+    foreach($data['ballot_item_results'] as $key => $ballot_item){
+      $output[] = array($ballot_item['text']);
+      unset($ballot_item['text']);
+      $options = array(''); $results = array('');
+      foreach($ballot_item['results'] as $option => $result){
+        $options[] = str_replace('_',' ', $option); 
+        $results[] = $result;
+      }
+      $output[] = $options;
+      $output[] = $results;
+    }
+  }
   header('Content-Disposition: attachment; filename="'. $filename  . '"');
   $outstream = fopen("php://output",'w'); 
-  print_r($data);
+  foreach($output as $row){
+    fputcsv($outstream, $row, ',', '"');
+  }
   fclose($outstream);
   exit;
 }
@@ -725,4 +751,12 @@ function _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid){
            "WHERE bi.nid=%d AND es.slug='%s' AND es.type='elec_ballot_item'";
   $ballot_item_nid = db_result(db_query($query, $district_nid, $ballot_item_slug));
   return $ballot_item_nid;
+}
+
+function _elec_remove_csv_extension($s){
+  if(substr($s,-4) == '.csv'){
+    return substr($s,0,-4);
+  } else {
+    return $s;
+  }
 }
