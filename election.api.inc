@@ -19,6 +19,7 @@ function _elec_get_format_from_accept_header(){
 function _elec_return_as($data, $format, $type){
   switch($format){
     case 'json': 
+      header('Content-type: text/json');
       print str_replace("\/", "/", json_encode($data));
       exit;
     case 'html':
