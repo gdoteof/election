@@ -1,0 +1,26 @@
+{
+   "title":"Burlington Mayor",
+   "link":"/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/",
+   "election_season":{
+      "title":"Town Meeting Season 2011",
+      "link":"/town-meeting-season-2011/"
+   },
+   "election_event":{
+      "title":"Town Meeting Day 2011",
+      "link":"/town-meeting-season-2011/town-meeting-day-2011/"
+   },
+   "district":{
+      "title":"Ward 1",
+      "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/",
+      "tags":[
+         "Ward"
+      ]
+   },
+   "tags":[
+      "Election"
+   ],
+   "results":{
+      "Kurt Wright":"50",
+      "Miro Weinberger":"50"
+   }
+}
