@@ -5,16 +5,13 @@
       "title":"Town Meeting Season 2011",
       "link":"/town-meeting-season-2011/"
    },
-   "municipalities":[
-      {
-         "title":"City of Burlington",
-         "link":"/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/"
-      }
-   ],
    "districts":[
       {
-         "title":"Ward 1",
-         "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/"
+         "title":"City of Burlington",
+         "link":"/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/",
+         "tags":[
+            "Municipality"
+         ],
       }
    ]
 }
