@@ -12,18 +12,16 @@
    "tags":[
       "Ward"
    ],
-   "ballot_items":{
-      "elections":[
-         {
-            "title":"Burlington Mayor",
-            "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-mayor/"
-         }
-      ],
-      "referendums":[
-         {
-            "title":"Burlington School Budget",
-            "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-school-budget/"
-         }
-      ]
-   }
+   "elections":[
+      {
+         "title":"Burlington Mayor",
+         "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-mayor/"
+      }
+   ],
+   "referendums":[
+      {
+         "title":"Burlington School Budget",
+         "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-school-budget/"
+      }
+   ]
 }
