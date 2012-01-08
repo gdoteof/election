@@ -26,12 +26,13 @@
          }
       ]
    ],
-   "districts":{
-      "wards":[
-         {
-            "title":"Ward 1",
-            "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/"
-         }
-      ]
-   }
+   "districts":[
+      {
+         "title":"Ward 1",
+         "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/",
+         "tags":[
+            "Ward"
+         ]
+      }
+   ]
 }
