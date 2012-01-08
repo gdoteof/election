@@ -610,8 +610,8 @@ function _elec_check_cache($uri = NULL){
 function _elec_send_modify_expire_headers($expires = null, $last_modified = null){
   $last_modified = ($last_modified) ? $last_modified : time();
   $expires = ($expires) ? $expires : time() + variable_get('elec_expire_time', 60);
-  header('Expires: ' . date("D, d M Y H:i:s e", $expires));
-  header('Last-Modified: ' . date("D, d M Y H:i:s e", $last_modified));
+  header('Expires: ' . date(Datetime::RFC2822, $expires));
+  header('Last-Modified: ' . date(Datetime::RFC2822, $last_modified));
 }
 
 function _elec_swap_plurality($string){
