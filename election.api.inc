@@ -692,7 +692,7 @@ function _elec_nid_from_event_slug($slug, $season_nid){
   $query = "SELECT es.nid FROM election_slug es " .
            "JOIN content_field_elec_election_events ee ON " .
            "ee.field_elec_election_events_nid = es.nid " .
-           "WHERE ee.nid=%d AND es.slug='%s' AND es.type='elec_event'";
+           "WHERE ee.nid=%d AND es.slug='%s' AND es.type='elec_election_event'";
   return db_result(db_query($query, $season_nid, $slug));
 }
 

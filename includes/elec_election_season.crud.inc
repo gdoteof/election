@@ -49,10 +49,10 @@ $content['fields']  = array (
     'multiple' => '1',
     'referenceable_types' => 
     array (
-      'elec_event' => 'elec_event',
+      'elec_election_event' => 'elec_election_event',
       'elec_ballot_item' => 0,
       'elec_district' => 0,
-      'elec_season' => 0,
+      'elec_election_season' => 0,
     ),
     'op' => 'Save field settings',
     'module' => 'nodereference',
