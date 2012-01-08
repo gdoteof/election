@@ -2,7 +2,7 @@
 
 $content['type']  = array (
   'name' => 'Election Event',
-  'type' => 'elec_event',
+  'type' => 'elec_election_event',
   'description' => '',
   'title_label' => 'Title',
   'body_label' => 'Body',

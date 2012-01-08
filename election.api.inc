@@ -610,8 +610,8 @@ function _elec_check_cache($uri = NULL){
 function _elec_send_modify_expire_headers($expires = null, $last_modified = null){
   $last_modified = ($last_modified) ? $last_modified : time();
   $expires = ($expires) ? $expires : time() + variable_get('elec_expire_time', 60);
-  header('Expires: ' . date("D, d M Y H:i:s e", $expires));
-  header('Last-Modified: ' . date("D, d M Y H:i:s e", $last_modified));
+  header('Expires: ' . date(Datetime::RFC2822, $expires));
+  header('Last-Modified: ' . date(Datetime::RFC2822, $last_modified));
 }
 
 function _elec_swap_plurality($string){
@@ -692,7 +692,7 @@ function _elec_nid_from_event_slug($slug, $season_nid){
   $query = "SELECT es.nid FROM election_slug es " .
            "JOIN content_field_elec_election_events ee ON " .
            "ee.field_elec_election_events_nid = es.nid " .
-           "WHERE ee.nid=%d AND es.slug='%s' AND es.type='elec_event'";
+           "WHERE ee.nid=%d AND es.slug='%s' AND es.type='elec_election_event'";
   return db_result(db_query($query, $season_nid, $slug));
 }
 
