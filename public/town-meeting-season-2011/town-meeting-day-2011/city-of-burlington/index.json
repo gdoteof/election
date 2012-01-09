@@ -16,6 +16,10 @@
       {
          "title":"Burlington Mayor",
          "link":"/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/"
+      },
+      {
+         "title":"Ward 3 City Councilor",
+         "link":"/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/ward-3-city-councilor/"
       }
    ],
    "referendums":[
@@ -28,6 +32,13 @@
       {
          "title":"Ward 1",
          "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-1/",
+         "tags":[
+            "Ward"
+         ]
+      },
+      {
+         "title":"Ward 3",
+         "link":"/town-meeting-season-2011/town-meeting-day-2011/ward-3/",
          "tags":[
             "Ward"
          ]
