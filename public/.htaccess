@@ -1,3 +1,4 @@
+Options +All +MultiViews
 DirectoryIndex index
 AddType text/html .html
 AddType application/json .json
