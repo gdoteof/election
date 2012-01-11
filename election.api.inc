@@ -245,7 +245,7 @@ DISTRICT;
 
 function _elec_html_event($data){
   $data = (object)$data;
-  $election_season_link = '<a href="/' . $data->election_season['link'] . '">'. $data->election_season['title'] . '</a>';
+  $election_season_link = '<a href="' . $data->election_season['link'] . '">'. $data->election_season['title'] . '</a>';
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season
   $election_events = '';
   foreach($district_type_containers as $key => $container){
@@ -319,12 +319,13 @@ function _elec_get_event($season_slug, $event_slug){
     'link' => $event_link,
     'election_season' => array(
       'title' => $season_node->title,
-      'link' => 'e/' . $season_slug,
+      'link' => base_path() . 'e/' . $season_slug,
     ),
   );  
   $districts_data = array();
   foreach($event_node->field_elec_participating_distric as $district){
     $district_node = node_load(array('nid' => $district['nid']));
+    if(!$district_node) { continue; }
     $district_taxo_vid = variable_get('elec_district_vid', NULL);
     $district_types = array();
     foreach($district_node->taxonomy as $term){
@@ -426,15 +427,15 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     'link' => '/' . $_GET['q'],
     'election_event' => array(
       'title' => _elec_get_title_from_nid($event_nid),
-      'link' => '/e/' . $season_slug . '/' . $event_slug,
+      'link' => base_path() . 'e/' . $season_slug . '/' . $event_slug,
     ),
     'election_season' => array(
       'title' => _elec_get_title_from_nid($season_nid),
-      'link' => '/e/' . $season_slug,
+      'link' => base_path() . 'e/' . $season_slug,
     ),
     'district' => array(
       'title' => _elec_get_title_from_nid($district_nid),  
-      'link' => '/e/' . $season_slug . '/' . $event_slug . '/' . $district_slug,
+      'link' => base_path() . 'e/' . $season_slug . '/' . $event_slug . '/' . $district_slug,
       'tags' => $district_tags,
     ),
     'tags' => $tags,
@@ -515,7 +516,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
           $district_types[$mr_type] = array();
         }
         $district_row['title'] = $sub_district_node->title;
-        $district_row['link'] = '/e/' . $season_slug . '/' . $event_slug . '/' . _elec_title_to_slug($sub_district_node->title);
+        $district_row['link'] = base_path() . 'e/' . $season_slug . '/' . $event_slug . '/' . _elec_title_to_slug($sub_district_node->title);
         $districts[$mr_type][] = $district_row;
         //$districts[str_replace(' ', '-',_elec_swap_plurality($sd_term->name))][_elec_title_to_slug($sub_district_node->title)] = $district_row;
       }
@@ -527,11 +528,11 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
     'link' => '/' . $_GET['q'],
     'election_event' => array(
       'title' => $event_node->title,
-      'link' => '/e/' . $season_slug . '/' . $event_slug,
+      'link' => base_path() . 'e/' . $season_slug . '/' . $event_slug,
     ),
     'election_season' => array(
       'title' => _elec_get_title_from_nid($season_nid),
-      'link' => '/e/' . $season_slug,
+      'link' => base_path() . 'e/' . $season_slug,
     ),
     'ballot_items' => $ballot_item_data,
     'ballot_item_results' => $summed_results,
