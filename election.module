@@ -62,7 +62,7 @@ function election_perm(){
 
 function _elec_edit_results($node){
   $output = drupal_get_form('election_result_form', $node);
-  return $output . 'hi';
+  return $output;
 }
 
 function election_result_form($form_state, $node){
@@ -145,7 +145,6 @@ function _elec_ballot_item_access($node){
 }
 
 function _elec_set_taxo_vars(){
-  print "they should be sex...";
   $ballot_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="Ballot Item Type"'));
   variable_set('elec_ballot_vid', $ballot_type_vid);
   $district_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="District Type"'));
