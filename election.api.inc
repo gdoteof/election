@@ -16,6 +16,7 @@ function _elec_get_format_from_accept_header(){
   }
 }
 
+
 function _elec_return_as($data, $format, $type){
   switch($format){
     case 'json': 
@@ -762,3 +763,4 @@ function _elec_remove_csv_extension($s){
     return $s;
   }
 }
+

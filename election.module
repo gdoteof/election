@@ -161,6 +161,14 @@ function election_nodeapi(&$node, $op, $a3=NULL, $a4=NULL){
     $slug = _elec_title_to_slug($node->title);
     db_query('INSERT INTO {election_slug} (nid, slug, type) VALUES (%d,"%s", "%s") ON DUPLICATE KEY UPDATE slug="%s", type="%s"', $node->nid, $slug, $node->type, $slug, $node->type);
   }
+  elseif($op=='delete'){
+    switch($node->type){
+      case 'elec_ballot_item': _elec_remove_results_for_ballot_item($node->nid);
+                               break;
+      case 'elec_district':    _elec_remove_results_for_district($node->nid);
+                               break;
+    }
+  }
 }
 
 function _elec_slug_to_title($slug){
@@ -172,13 +180,11 @@ function _elec_title_to_slug($title){
   $slug = strtolower(str_replace(' ', '-', $slug));
   return $slug;
 }
-/*
 
-INSERT INTO election_slug nid, slug VALUES (0,"should-the-police-be-able-to-beat-protesters") 
-ON DUPLICATE KEY UPDATE slug="should-the-police-be-able-to-beat-protesters" 
+function _elec_remove_results_for_district($district_nid){
+  db_query('DELETE FROM {election_results} WHERE district_nid=%d', $district_nid);  
+}
 
-
-INSERT INTO table (a,b,c) VALUES (1,2,3)
-ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), c=3;
-
-*/
+function _elec_remove_results_for_ballot_item($ballot_item_nid){
+  db_query('DELETE FROM {election_results} WHERE ballot_item_nid=%d', $ballot_item_nid);  
+}
