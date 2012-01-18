@@ -117,7 +117,6 @@ function _elec_as_html($data,$type){
 }
 
 function _elec_html_season($data){
-//print "<pre>"; print_r($data); print "</pre>";
   $data = (object)$data;
   $election_events="<ul>\n";
   foreach($data->election_events as $election_event){
@@ -315,13 +314,13 @@ function _elec_get_event($season_slug, $event_slug){
     _elec_404("Event $event_slug not found for season $season_slug");
   }
   $event_node = node_load(array('nid'=>$event_nid));
-  $event_link = $_GET['q'];
+  $event_link = _elec_bp() . $_GET['q'];
   $data = array(
     'title' => $event_node->title,
     'link' => $event_link,
     'election_season' => array(
       'title' => $season_node->title,
-      'link' => _elec_bp() . 'e/' . $season_slug,
+      'link' => base_path() .  'e/' . $season_slug,
     ),
   );  
   $districts_data = array();
@@ -372,6 +371,7 @@ function _elec_get_season($season_slug){
   $election_events = array();
   foreach($season_node->field_elec_election_events as $key => $election_event){
     $e_node = node_load(array('nid'=>$election_event['nid']));
+    if(!$e_node) continue; //skip deleted nodes
     $e_event = array(
       'title' => $e_node->title,
       'link'  => $season_link . '/' . _elec_title_to_slug($e_node->title),
@@ -427,18 +427,18 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   }
   $data = array(
     'title' => $ballot_item_node->title,
-    'link' => '/' . $_GET['q'],
+    'link' => base_path() . $_GET['q'],
     'election_event' => array(
       'title' => _elec_get_title_from_nid($event_nid),
-      'link' => _elec_bp() . 'e/' . $season_slug . '/' . $event_slug,
+      'link' => base_path() . 'e/' . $season_slug . '/' . $event_slug,
     ),
     'election_season' => array(
       'title' => _elec_get_title_from_nid($season_nid),
-      'link' => _elec_bp() . 'e/' . $season_slug,
+      'link' => base_path() . 'e/' . $season_slug,
     ),
     'district' => array(
       'title' => _elec_get_title_from_nid($district_nid),  
-      'link' => _elec_bp() . 'e/' . $season_slug . '/' . $event_slug . '/' . $district_slug,
+      'link' => base_path() . 'e/' . $season_slug . '/' . $event_slug . '/' . $district_slug,
       'tags' => $district_tags,
     ),
     'tags' => $tags,
@@ -486,7 +486,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
     $ballot_item_node = node_load(array('nid'=>$ballot_item_nid['nid']));
     $ballot_item_row = array();
     $ballot_item_row['title'] = $ballot_item_node->title;
-    $ballot_item_row['link'] = '/' . $_GET['q'] . '/' . _elec_title_to_slug($ballot_item_node->title);
+    $ballot_item_row['link'] = base_path() . $_GET['q'] . '/' . _elec_title_to_slug($ballot_item_node->title);
     foreach($ballot_item_node->taxonomy as $ballot_type_term){
       if ($ballot_type_term->vid == variable_get('elec_ballot_vid', NULL)){
         $ballot_item_row['type'] = _elec_swap_plurality(str_replace(' ', '_', $ballot_type_term->name));
@@ -519,7 +519,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
           $district_types[$mr_type] = array();
         }
         $district_row['title'] = $sub_district_node->title;
-        $district_row['link'] = _elec_bp() . 'e/' . $season_slug . '/' . $event_slug . '/' . _elec_title_to_slug($sub_district_node->title);
+        $district_row['link'] = base_path() . 'e/' . $season_slug . '/' . $event_slug . '/' . _elec_title_to_slug($sub_district_node->title);
         $districts[$mr_type][] = $district_row;
         //$districts[str_replace(' ', '-',_elec_swap_plurality($sd_term->name))][_elec_title_to_slug($sub_district_node->title)] = $district_row;
       }
@@ -531,11 +531,11 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
     'link' => '/' . $_GET['q'],
     'election_event' => array(
       'title' => $event_node->title,
-      'link' => _elec_bp() . 'e/' . $season_slug . '/' . $event_slug,
+      'link' => base_path() . 'e/' . $season_slug . '/' . $event_slug,
     ),
     'election_season' => array(
       'title' => _elec_get_title_from_nid($season_nid),
-      'link' => _elec_bp() . 'e/' . $season_slug,
+      'link' => base_path() . 'e/' . $season_slug,
     ),
     'ballot_items' => $ballot_item_data,
     'ballot_item_results' => $summed_results,
@@ -766,6 +766,7 @@ function _elec_remove_csv_extension($s){
   }
 }
 
+// Simply strips the leading forward slash form basepath() 
 function _elec_bp(){
  return substr(base_path(),1);
 }
