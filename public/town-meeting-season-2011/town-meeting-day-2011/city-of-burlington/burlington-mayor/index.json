@@ -20,7 +20,13 @@
       "Election"
    ],
    "results":{
-      "Kurt Wright":"201",
-      "Miro Weinberger":"200"
+      "Kurt Wright":{
+         "votes":201,
+         "percent":50.1
+      },
+      "Miro Weinberger":{
+         "votes":200,
+         "percent":49.9
+      }
    }
 }

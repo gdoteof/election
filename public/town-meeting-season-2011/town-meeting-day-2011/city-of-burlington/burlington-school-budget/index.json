@@ -20,7 +20,13 @@
       "Referendum"
    ],
    "results":{
-      "Yes":"300",
-      "No":"500"
+      "Yes":{
+         "votes":300,
+         "percent":37.5
+      },
+      "No":{
+         "votes":500,
+         "percent":62.5
+      }
    }
 }

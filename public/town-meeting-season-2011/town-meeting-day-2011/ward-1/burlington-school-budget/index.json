@@ -20,7 +20,11 @@
       "Election"
    ],
    "results":{
-      "Yes":"35",
-      "No":"41"
+      "Yes":{
+         "votes":35
+      },
+      "No":{
+         "votes":41
+      }
    }
 }

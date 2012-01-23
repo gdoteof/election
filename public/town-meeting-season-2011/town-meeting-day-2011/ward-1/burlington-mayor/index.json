@@ -20,7 +20,11 @@
       "Election"
    ],
    "results":{
-      "Kurt Wright":"51",
-      "Miro Weinberger":"50"
+      "Kurt Wright":{
+         "votes":51
+      },
+      "Miro Weinberger":{
+         "votes":50
+      }
    }
 }
