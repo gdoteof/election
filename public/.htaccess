@@ -2,3 +2,5 @@ Options +All +MultiViews
 DirectoryIndex index
 AddType text/html .html
 AddType application/json .json
+ExpiresActive On
+ExpiresDefault A10
