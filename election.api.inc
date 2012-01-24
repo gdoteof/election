@@ -20,7 +20,7 @@ function _elec_get_format_from_accept_header(){
 function _elec_return_as($data, $format, $type){
   switch($format){
     case 'json': 
-      header('Content-type: text/json');
+      header('Content-type: application/json');
       print str_replace("\/", "/", json_encode($data));
       exit;
     case 'html':
@@ -341,6 +341,7 @@ function _elec_get_event($season_slug, $event_slug){
     }
   }
   $districts_data = _elec_fix_district_keys($districts_data);
+  $districts_data = _elec_cctv_districts($districts_data);
   $data = array_merge($data, $districts_data);
   _elec_write_cache($_GET['q'], $data);
   return $data;
@@ -769,4 +770,28 @@ function _elec_remove_csv_extension($s){
 // Simply strips the leading forward slash form basepath() 
 function _elec_bp(){
  return substr(base_path(),1);
+}
+
+
+function _elec_cctv_districts($data){
+  $munis = $data['municipalities'];
+  $districts_array = array();
+  foreach($data as $type => $districts){
+    foreach($districts as $district){
+      foreach($munis as $muni){
+        if($district['title'] == $muni['title']){
+          break 2;
+        }
+      }
+      foreach($districts_array as $entry){
+        if($entry['title'] == $district['title']){
+          break 2;
+        }
+      }
+      $districts_array[] = $district;
+    }
+  }
+  $nd['districts'] = $districts_array;
+  $nd['municipalities'] = $data['municipalities'];
+  return $nd;
 }
