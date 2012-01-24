@@ -4,3 +4,11 @@ AddType text/html .html
 AddType application/json .json
 ExpiresActive On
 ExpiresDefault A10
+
+#RewriteEngine On
+#RewriteRule .* - [R=503,L]
+#Header always set Retry-After "Thu, 19 Jan 2012 21:56:02 GMT"
+
+#RewriteEngine On
+#RewriteBase /
+#RewriteRule ^.*$ timeout.php  [NC,L]
