@@ -23,7 +23,7 @@ $(document).ready(function() {
             //TODO: Default refresh time?
             updateBallotItemArticle(uri, $(element), 60000, cache);
             //TODO: Indicate when results were udpated for each item, e.g. "Results updated within the last five minutes."
-        });    
+        });
     }
 
     function updateBallotItemArticle(uri, element, refreshTime, cache) {
