@@ -1,4 +1,5 @@
 <?php
+//CCTV BRANCH
 
 function _elec_get_format_from_accept_header(){
   $accept = $_SERVER['HTTP_ACCEPT'];
