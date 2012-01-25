@@ -400,7 +400,12 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   if (!$district_nid){
     _elec_404("District $district_slug not found for $event_slug");
   }
+
   $ballot_item_nid = _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid);
+
+  if (!$ballot_item_nid){
+    _elec_404("$ballot_item_slug not found for district $district_slug");
+  }
 
   $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
   $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
