@@ -416,10 +416,16 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     }
   }
 
+  
   $results = array();
   if(is_array($ballot_item_results)){
+    $total_votes = array_sum($ballot_item_results);
+
     foreach($ballot_item_results as $key => $option){
-      $results[str_replace('_',' ', $key)] = $option;
+      $results[str_replace('_',' ', $key)] = array(
+        'votes' => $option,
+        'percent' => (100 * round($option / $total_votes, 2)),
+      );
     }
   }
 
@@ -775,3 +781,4 @@ function _elec_remove_csv_extension($s){
 function _elec_bp(){
  return substr(base_path(),1);
 }
+

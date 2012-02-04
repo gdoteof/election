@@ -160,6 +160,10 @@ function election_nodeapi(&$node, $op, $a3=NULL, $a4=NULL){
   if($op=='insert' || $op == 'update'){
     $slug = _elec_title_to_slug($node->title);
     db_query('INSERT INTO {election_slug} (nid, slug, type) VALUES (%d,"%s", "%s") ON DUPLICATE KEY UPDATE slug="%s", type="%s"', $node->nid, $slug, $node->type, $slug, $node->type);
+
+    if ($node->type == 'elec_ballot_item'){
+      db_query('INSERT INTO {election_algorithm} (ballot_item_nid, algorithm,n) VALUES (%d, "%s", %d) on DUPLICATE KEY UPDATE algorithm="%s", n=%d', $node->nid, $node->elec_algo_type, $node->elec_algo_n, $node->elec_algo_type, $node->elec_algo_n);
+    }
   }
   elseif($op=='delete'){
     switch($node->type){
@@ -187,4 +191,40 @@ function _elec_remove_results_for_district($district_nid){
 
 function _elec_remove_results_for_ballot_item($ballot_item_nid){
   db_query('DELETE FROM {election_results} WHERE ballot_item_nid=%d', $ballot_item_nid);  
+}
+
+function election_form_elec_ballot_item_node_form_alter(&$form, &$form_state){
+  $algo = _elec_get_algo($form['nid']['#value']);
+  $form['elec_algorithm'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'How to determine winner(s)',
+    '#collapseable' => false,
+  );
+  $form['elec_algorithm']['elec_algo_type'] = array(
+    '#type' => 'select',
+    '#title' => 'Algorithm',
+    '#options' => _elec_algorithm_options(),
+    '#default_value' => ($algo['algorithm']) ? $algo['algorithm'] : 'gt_n',
+  );
+  $form['elec_algorithm']['elec_algo_n'] = array(
+    '#type' => 'textfield',
+    '#size' => 3,
+    '#title' => 'N',
+    '#default_value' => ($algo['n']) ? $algo['n'] : '50',
+  );
+}
+
+
+function _elec_algorithm_options(){
+  return array(
+    'gt_n' => '> N',
+    'gte_n' => '>= N',
+    'top_n' => 'Top N',
+  );
+}
+
+//Returns a two part array with the algorithm and 'n'
+function _elec_get_algo($nid){
+  $algo = db_fetch_array(db_query('SELECT algorithm, n from {election_algorithm} where ballot_item_nid=%d', $nid));
+  return ($algo) ? $algo : array('algorithm' => NULL, 'n' => NULL);
 }

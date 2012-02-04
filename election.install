@@ -86,6 +86,30 @@ function election_schema(){
     ),
     'primary key' => array( 'nid'),
   );
+
+  $schema['election_algorithm'] = array(
+    'description' => 'Table for storing the algorithm for determing the winner for a ballot item',
+    'fields' => array(
+      'ballot_item_nid' => array(
+        'description'=> 'The nid of the ballot item', 
+        'type' => 'int',
+        'not null' => true,
+      ),
+      'algorithm' => array(
+        'description' => 'The algorithm to determine the winner',
+        'type' => 'varchar',
+        'not null' => true,
+        'length' => 255,
+      ),
+      'n' => array(
+        'description'=> 'The N in the algorithm', 
+        'type' => 'float',
+        'not null' => true,
+      ),
+     ),
+    'primary key' => array('ballot_item_nid'),
+  );
+
   return $schema;
 }
 
@@ -229,3 +253,40 @@ function election_uninstall(){
   node_types_rebuild();
   cache_clear_all();
 }
+
+
+function election_update_6100() {
+   $ret = array();
+   db_add_field($ret, 'election_results', 'complete', array('type'=>'int', 'size'=>'tiny','not noll'=>true,  'default'=>0));
+  return $ret;
+}
+
+function election_update_6101() {
+  $schema['election_algorithm'] = array(
+    'description' => 'Table for storing the algorithm for determing the winner for a ballot item',
+    'fields' => array(
+      'ballot_item_nid' => array(
+        'description'=> 'The nid of the ballot item', 
+        'type' => 'int',
+        'not null' => true,
+      ),
+      'algorithm' => array(
+        'description' => 'The algorithm to determine the winner',
+        'type' => 'varchar',
+        'not null' => true,
+        'length' => 255,
+      ),
+      'n' => array(
+        'description'=> 'The N in the algorithm', 
+        'type' => 'float',
+        'not null' => true,
+      ),
+    ),
+    'primary key' => array('ballot_item_nid'),
+  );
+  
+  $ret = array();
+  db_create_table($ret, 'election_algorithm', $schema['election_algorithm']);
+  return $ret;
+}
+
