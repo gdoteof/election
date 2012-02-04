@@ -157,15 +157,27 @@ function _elec_html_ballot_item($data){
   $total_votes = 0;
   foreach ($data->results as $result){ $total_votes += $result['votes']; }
 
-  $results = "<ul>\n";
+  $results = <<<TABLE
+  <table>
+    <thead>
+      <tr class="result">
+        <th class="option candidate">Candidate</th>
+        <th class="votes">Votes</th>
+        <th class="percent">Percent</th>
+      </tr>
+    </thead>
+    <tbody>
+TABLE;
   foreach ($data->results as $option => $result){
     $percent = number_format($result['votes'] / $total_votes * 100, 1);
     $opt_type = ($type=='election') ? 'candidate' : 'boolean';
-    $results .= '  <li class="result">' . "\n";
-    $results .= '    <span class="option ' . $opt_type . '">' . $option . "</span>\n";
-    $results .= '    <span class="votes" title="' . $result . '">' . $result['votes'] . " ($percent%)". "</span>\n";
-    $results .= '  </li>'. "\n";
+    $results .= '  <tr class="result">' . "\n";
+    $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
+    $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
+    $results .= '    <td class="percent">' .  $percent . "</td>\n";
+    $results .= '  </tr>'. "\n";
   }
+  $results .= "</tbody></table>";
   print <<<BALLOT
 <!DOCTYPE html>
 <head>
