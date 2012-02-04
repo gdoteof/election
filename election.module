@@ -74,6 +74,7 @@ function election_result_form($form_state, $node){
     $query = 'SELECT results from {election_results} where district_nid=%d AND ballot_item_nid=%d';
     $results = unserialize(db_result(db_query($query, $node->nid, $ballot_node->nid)));
 
+    $complete = db_result(db_query('SELECT complete from {election_results} where district_nid=%d AND ballot_item_nid=%d', $node->nid, $ballot_node->nid));
     $ballot_item_form = array();
     $ballot_item_form['title'] = array(
       '#type' => 'item',
@@ -101,7 +102,13 @@ function election_result_form($form_state, $node){
     );
     $form['ballot_item_' . $ballot_node->nid] = $ballot_item_form;
     $form['ballot_item_' . $ballot_node->nid]['#tree'] = TRUE;
+    $form['ballot_item_' . $ballot_node->nid]['complete'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Complete'),
+      '#default_value' => $complete,
+    );
   } //end foreach field_elec_ballot_items
+
 
   $form['district_nid'] = array('#type'=>'value', '#value'=>$node->nid);
   $form['submit'] = array(
@@ -121,10 +128,12 @@ function election_result_form_submit($form, &$form_state){
     $updated = $ballot_item['updated'];
     unset($ballot_item['updated']);
 
+    $complete = $ballot_item['complete'];
+    unset($ballot_item['complete']);
+
     //if this value is already in the DB we need to update, rather than insert
     //we do this by passing the primary key to drupal_write_record
     $u_i = ($updated) ? array('district_nid', 'ballot_item_nid') : NULL;
-
     //The rest are results
     $results = $ballot_item;
 
@@ -132,9 +141,11 @@ function election_result_form_submit($form, &$form_state){
       'district_nid' => $form_state['values']['district_nid'],
       'ballot_item_nid' => $ballot_item_nid,
       'results' => $results,
+      'complete' => $complete,
     );
     $success = drupal_write_record('election_results', $data, $u_i);
   }
+  drupal_set_message("Results updated.");
 }
 
 function _elec_ballot_item_access($node){

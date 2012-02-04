@@ -59,6 +59,13 @@ function election_schema(){
         'size' => 'normal',
         'serialize' => TRUE,
       ),
+      'complete' => array(
+        'description' => 'Are the results complete?',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'type' => 'int',
+        'default' => 0,
+      ),
     ),
     'primary key' => array( 'district_nid', 'ballot_item_nid'),
   );
