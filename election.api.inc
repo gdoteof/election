@@ -169,9 +169,10 @@ function _elec_html_ballot_item($data){
     <tbody>
 TABLE;
   foreach ($data->results as $option => $result){
+    $winner = ($result['winner']) ? 'winner' : '';
     $percent = number_format($result['votes'] / $total_votes * 100, 1);
     $opt_type = ($type=='election') ? 'candidate' : 'boolean';
-    $results .= '  <tr class="result">' . "\n";
+    $results .= '  <tr class="result ' . $winner . '">' . "\n";
     $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
     $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
     $results .= '    <td class="percent">' .  $percent . "</td>\n";
@@ -421,6 +422,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
 
   $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
   $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
+  $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results);
   $tags = array();
   foreach($ballot_item_node->taxonomy as $term){
     if($term->vid == variable_get('elec_ballot_vid', NULL)){
@@ -437,7 +439,9 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
       $results[str_replace('_',' ', $key)] = array(
         'votes' => $option,
         'percent' => (100 * round($option / $total_votes, 2)),
+        'winner' => in_array($key, $winners),
       );
+
     }
   }
 
@@ -576,6 +580,12 @@ function _elec_get_ballot_item_result($ballot_item_nid, $district_nid){
     return unserialize($results);
   }
   return FALSE;
+}
+
+function _elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid){
+  $query = 'SELECT complete from {election_results} where district_nid = %d AND ballot_item_nid=%d';
+  $results = db_result(db_query($query, $district_nid, $ballot_item_nid));
+  return $results;
 }
 
 /*
@@ -794,3 +804,82 @@ function _elec_bp(){
  return substr(base_path(),1);
 }
 
+function _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results){
+  if (!_elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid)){
+    return array();
+  }
+  $algo_a = db_fetch_array(db_query('SELECT algorithm, n from {election_algorithm} where ballot_item_nid=%d', $ballot_item_nid));
+  if(!$algo_a) return;
+  $algorithms = _elec_get_winner_algos();
+  if( isset($algorithms[$algo_a['algorithm']]) && function_exists($algorithms[$algo_a['algorithm']]['callback']) ){
+   $winners = call_user_func_array($algorithms[$algo_a['algorithm']]['callback'], array($ballot_item_results, $algo_a['n']));
+  }
+  return $winners;
+  
+}
+
+
+//Returns an array of the indexes of the results array that should be marked winners;
+function _elec_algorithm_gt_n($results, $n){
+  $winners = array();
+  $total_votes = array_sum($results);
+  $need_more_than = ($n / 100) * $total_votes;
+  foreach($results as $option=>$votes){
+    if($votes > $need_more_than){
+      $winners[] = $option;
+    }
+  }
+  if (sizeof($winners) > 1){
+    $winners = array(max($winners));
+  }
+  return $winners;
+}
+
+function _elec_algorithm_gte_n($results, $n){
+  $winners = array();
+  $total_votes = array_sum($results);
+  $need_atleast = ($n / 100) * $total_votes;
+  foreach($results as $option=>$votes){
+    if($votes >= $need_atleast){
+      $winners[] = $option;
+    }
+  }
+  if (sizeof($winners) > 1){
+    $winners = array(max($winners));
+  }
+  return $winners;
+}
+
+function _elec_algorithm_top_n($results, $n){
+  $winners = array();
+  arsort($results);
+  $count = 0;
+  foreach($results as $option=>$votes){
+    $winners[] =$option;
+    ++$count;
+    if($count >= $n) break;
+  }
+  return $winners;
+}
+
+
+function _elec_get_winner_algos(){
+  $built_in =  array(
+    'gt_n' => array(
+      'name' => '> N',
+      'id' => 'gt_n',
+      'callback' => '_elec_algorithm_gt_n',
+    ),
+    'gte_n' => array(
+      'name' => '>= N',
+      'id' => 'gte_n',
+      'callback' => '_elec_algorithm_gte_n',
+    ),
+    'top_n' => array(
+      'name' => 'Top N',
+      'id' => 'top_n',
+      'callback' => '_elec_algorithm_top_n',
+    ),
+  );
+  return $built_in;
+}
