@@ -438,7 +438,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     foreach($ballot_item_results as $key => $option){
       $results[str_replace('_',' ', $key)] = array(
         'votes' => $option,
-        'percent' => (100 * round($option / $total_votes, 2)),
+        'percent' => (100 * round($option / $total_votes, 3)),
         'winner' => in_array($key, $winners),
       );
 
@@ -503,6 +503,21 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
     }
   }
+
+  //Add percentage to data
+  foreach($summed_results as $key => $ind_result){
+    $total_for_ind = array_sum($ind_result['results']);
+    $r_w_p = array(); // results with percent   
+    foreach($ind_result['results'] as $option => $votes){
+      $r_w_p[$option] = array(
+        'votes' => $votes,
+        'percent' => (100 * round($votes / $total_for_ind, 3)),
+      );
+    }
+    $summed_results[$key]['results'] = $r_w_p;
+  }
+
+
   $tags = array();
   foreach($district_node->taxonomy as $tag){ $tags[] = $tag->name; }
 
