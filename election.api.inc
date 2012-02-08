@@ -417,31 +417,34 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   $ballot_item_nid = _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid);
 
   if (!$ballot_item_nid){
-    _elec_404("$ballot_item_slug not found for district $district_slug");
-  }
-
-  $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
-  $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
-  $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results);
-  $tags = array();
-  foreach($ballot_item_node->taxonomy as $term){
-    if($term->vid == variable_get('elec_ballot_vid', NULL)){
-      $tags[] = $term->name;
+    $results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug);
+    if(!$results){
+      _elec_404("$ballot_item_slug not found for district $district_slug");
     }
-  }
+  } else {
+    $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
+    $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
+    $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results);
+    $tags = array();
+    foreach($ballot_item_node->taxonomy as $term){
+      if($term->vid == variable_get('elec_ballot_vid', NULL)){
+        $tags[] = $term->name;
+      }
+    }
 
-  
-  $results = array();
-  if(is_array($ballot_item_results)){
-    $total_votes = array_sum($ballot_item_results);
+    
+    $results = array();
+    if(is_array($ballot_item_results)){
+      $total_votes = array_sum($ballot_item_results);
 
-    foreach($ballot_item_results as $key => $option){
-      $results[str_replace('_',' ', $key)] = array(
-        'votes' => $option,
-        'percent' => (100 * round($option / $total_votes, 3)),
-        'winner' => in_array($key, $winners),
-      );
+      foreach($ballot_item_results as $key => $option){
+        $results[str_replace('_',' ', $key)] = array(
+          'votes' => $option,
+          'percent' => (100 * round($option / $total_votes, 3)),
+          'winner' => in_array($key, $winners),
+        );
 
+      }
     }
   }
 
@@ -504,7 +507,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
     }
   }
 
-  //Add percentage to data
+  //Add percentage and link to data
   foreach($summed_results as $key => $ind_result){
     $total_for_ind = array_sum($ind_result['results']);
     $r_w_p = array(); // results with percent   
@@ -515,6 +518,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
       );
     }
     $summed_results[$key]['results'] = $r_w_p;
+    $summed_results[$key]['link'] =  '/' . $_GET['q'] . '/' . _elec_slug_from_nid($key);
   }
 
 
@@ -740,6 +744,10 @@ function _elec_nid_from_season_slug($slug){
   return db_result(db_query('SELECT nid FROM {election_slug} WHERE slug="%s" AND type="elec_election_season"', $slug)); 
 }
 
+function _elec_slug_from_nid($nid){
+  return db_result(db_query('SELECT slug FROM {election_slug} WHERE nid=%d', $nid)); 
+}
+
 function _elec_nid_from_event_slug($slug, $season_nid){
   $query = "SELECT es.nid FROM election_slug es " .
            "JOIN content_field_elec_election_events ee ON " .
@@ -897,4 +905,38 @@ function _elec_get_winner_algos(){
     ),
   );
   return $built_in;
+}
+
+
+function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug){
+  $ballot_item_results = _elec_get_ballot_item_results_by_district($district_nid);
+  $summed_results = array();
+  foreach($ballot_item_results as $ballot_item){
+    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
+    $summed_results[$ballot_item_key]['text'] =  _elec_get_ballot_item_text($ballot_item_key);
+    foreach($item as $choice_key => $choice){
+     $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
+    }
+  }
+
+  //Add percentage to data
+  foreach($summed_results as $key => $ind_result){
+    $total_for_ind = array_sum($ind_result['results']);
+    $r_w_p = array(); // results with percent   
+    foreach($ind_result['results'] as $option => $votes){
+      $r_w_p[$option] = array(
+        'votes' => $votes,
+        'percent' => (100 * round($votes / $total_for_ind, 3)),
+      );
+    }
+    $summed_results[$key]['results'] = $r_w_p;
+  }
+
+  foreach($summed_results as $nid => $results){
+    $slug = db_result(db_query('SELECT slug from {election_slug} WHERE nid=%d', $nid));
+    if($slug == $ballot_item_slug){
+      return $results['results'];
+    }
+  }
+  return null;
 }
