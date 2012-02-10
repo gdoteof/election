@@ -170,9 +170,10 @@ function _elec_html_ballot_item($data){
 TABLE;
   foreach ($data->results as $option => $result){
     $winner = ($result['winner']) ? 'winner' : '';
+    $complete = ($result['complete']) ? ' complete ' : '';
     $percent = number_format($result['votes'] / $total_votes * 100, 1);
     $opt_type = ($type=='election') ? 'candidate' : 'boolean';
-    $results .= '  <tr class="result ' . $winner . '">' . "\n";
+    $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
     $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
     $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
     $results .= '    <td class="percent">' .  $percent . "</td>\n";
@@ -612,11 +613,9 @@ function _elec_get_ballot_item_is_complete_recur($ballot_item_nid, $district_nid
   if($complete === "0"){
     return FALSE;
   }
-  $children_complete = array();
   foreach($district_node->field_elec_sub_districts as $sub_district){
    if(!$sub_district['nid']) continue;
    if (_elec_get_ballot_item_is_complete_recur($ballot_item_nid, $sub_district['nid']) == FALSE){
-    $dd = $sub_district['nid'];
      return FALSE;
    }
   }
