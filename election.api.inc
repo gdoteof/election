@@ -94,7 +94,7 @@ function _elec_arg_parse(){
     return _elec_return_as(_elec_get_ballot_item($season, $event_slug, $district_slug, $ballot_item_slug), $format, $type);
   }
   else{
-    dpm($args);
+//    dpm($args);
   }
   return 'main parse';
 }
@@ -432,7 +432,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
       }
     }
 
-    
+    $complete =  (_elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid)) ? TRUE : FALSE;
     $results = array();
     if(is_array($ballot_item_results)){
       $total_votes = array_sum($ballot_item_results);
@@ -442,6 +442,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
           'votes' => $option,
           'percent' => (100 * round($option / $total_votes, 3)),
           'winner' => in_array($key, $winners),
+          'complete' => $complete,
         );
 
       }
@@ -602,7 +603,7 @@ function _elec_get_ballot_item_result($ballot_item_nid, $district_nid){
 }
 
 function _elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid){
-  $query = 'SELECT complete from {election_results} where district_nid = %d AND ballot_item_nid=%d';
+  $query = 'SELECT complete from {election_results} where district_nid=%d AND ballot_item_nid=%d';
   $results = db_result(db_query($query, $district_nid, $ballot_item_nid));
   return $results;
 }
