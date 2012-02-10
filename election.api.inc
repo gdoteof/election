@@ -602,6 +602,27 @@ function _elec_get_ballot_item_result($ballot_item_nid, $district_nid){
   return FALSE;
 }
 
+function _elec_get_ballot_item_is_complete_recur($ballot_item_nid, $district_nid){
+  if(! $district_nid ) return NULL;
+  $district_node = node_load(array('nid'=> $district_nid));
+  $data = array();
+  $query = 'SELECT complete from {election_results} where district_nid = %d AND ballot_item_nid=%d';
+  $query_result = db_query($query, $district_nid, $ballot_item_nid);
+  $complete = db_result($query_result);
+  if($complete === "0"){
+    return FALSE;
+  }
+  $children_complete = array();
+  foreach($district_node->field_elec_sub_districts as $sub_district){
+   if(!$sub_district['nid']) continue;
+   if (_elec_get_ballot_item_is_complete_recur($ballot_item_nid, $sub_district['nid']) == FALSE){
+    $dd = $sub_district['nid'];
+     return FALSE;
+   }
+  }
+  return TRUE;
+}
+
 function _elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid){
   $query = 'SELECT complete from {election_results} where district_nid=%d AND ballot_item_nid=%d';
   $results = db_result(db_query($query, $district_nid, $ballot_item_nid));
@@ -919,7 +940,6 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug){
      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
     }
   }
-
   //Add percentage to data
   foreach($summed_results as $key => $ind_result){
     $total_for_ind = array_sum($ind_result['results']);
@@ -936,6 +956,11 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug){
   foreach($summed_results as $nid => $results){
     $slug = db_result(db_query('SELECT slug from {election_slug} WHERE nid=%d', $nid));
     if($slug == $ballot_item_slug){
+      $complete = _elec_get_ballot_item_is_complete_recur($nid, $district_nid);
+      $ret = array();
+      foreach($results['results'] as $key => $option){
+        $results['results'][$key]['complete'] = $complete; 
+      }
       return $results['results'];
     }
   }
