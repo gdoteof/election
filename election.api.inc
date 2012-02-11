@@ -155,7 +155,7 @@ function _elec_html_ballot_item($data){
   $tags .="  </ul>\n";
 
   $total_votes = 0;
-  foreach ($data->results as $result){ $total_votes += $result['votes']; }
+  foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
 
   $results = <<<TABLE
   <table>
@@ -163,7 +163,9 @@ function _elec_html_ballot_item($data){
       <tr class="result">
         <th class="option candidate">Candidate</th>
         <th class="votes">Votes</th>
-        <th class="percent">Percent</th>
+TABLE;
+  if($complete) $results .= '<th class="percent">Percent</th>';
+  $results .= <<<TABLE
       </tr>
     </thead>
     <tbody>
@@ -176,7 +178,7 @@ TABLE;
     $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
     $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
     $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
-    $results .= '    <td class="percent">' .  $percent . "</td>\n";
+    if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "</td>\n"; }
     $results .= '  </tr>'. "\n";
   }
   $results .= "</tbody></table>";
