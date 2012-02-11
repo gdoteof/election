@@ -418,7 +418,9 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   $ballot_item_nid = _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid);
 
   if (!$ballot_item_nid){
-    $results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug);
+    $results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, $ballot_item_nid);
+    //So we can get the tags
+    $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
     if(!$results){
       _elec_404("$ballot_item_slug not found for district $district_slug");
     }
@@ -426,12 +428,6 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
     $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
     $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results);
-    $tags = array();
-    foreach($ballot_item_node->taxonomy as $term){
-      if($term->vid == variable_get('elec_ballot_vid', NULL)){
-        $tags[] = $term->name;
-      }
-    }
 
     $complete =  (_elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid)) ? TRUE : FALSE;
     $results = array();
@@ -447,6 +443,13 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
         );
 
       }
+    }
+  }
+
+  $tags = array();
+  foreach($ballot_item_node->taxonomy as $term){
+    if($term->vid == variable_get('elec_ballot_vid', NULL)){
+      $tags[] = $term->name;
     }
   }
 
@@ -928,8 +931,8 @@ function _elec_get_winner_algos(){
   return $built_in;
 }
 
-
-function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug){
+//ballot item nid is filled in by reference, basically as a hack, as its needed elsewhere
+function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot_item_nid){
   $ballot_item_results = _elec_get_ballot_item_results_by_district($district_nid);
   $summed_results = array();
   foreach($ballot_item_results as $ballot_item){
@@ -960,6 +963,7 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug){
       foreach($results['results'] as $key => $option){
         $results['results'][$key]['complete'] = $complete; 
       }
+      $ballot_item_nid = $nid; // fill in ballot_item_nid
       return $results['results'];
     }
   }
