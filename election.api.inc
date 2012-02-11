@@ -171,7 +171,7 @@ TABLE;
   foreach ($data->results as $option => $result){
     $winner = ($result['winner']) ? 'winner' : '';
     $complete = ($result['complete']) ? ' complete ' : '';
-    $percent = number_format($result['votes'] / $total_votes * 100, 1);
+    $percent = ($complete) ? number_format($result['votes'] / $total_votes * 100, 1) : 'n/a';
     $opt_type = ($type=='election') ? 'candidate' : 'boolean';
     $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
     $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
@@ -441,8 +441,14 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
           'winner' => in_array($key, $winners),
           'complete' => $complete,
         );
-
       }
+      if(!$complete){
+        foreach($results as $key => $val){
+          unset($results[$key]['winner']);
+          unset($results[$key]['percent']);
+        }
+      }
+
     }
   }
 
@@ -964,6 +970,13 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
         $results['results'][$key]['complete'] = $complete; 
       }
       $ballot_item_nid = $nid; // fill in ballot_item_nid
+      
+      if(!$complete){
+        foreach($results['results'] as $key => $val){
+          unset($results['results'][$key]['percent']);
+        }
+      }
+
       return $results['results'];
     }
   }
