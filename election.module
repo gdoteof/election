@@ -68,6 +68,16 @@ function _elec_edit_results($node){
 function election_result_form($form_state, $node){
   $form = array();
   // Loop through each ballot item in the district
+  if($node->field_elec_ballot_items[0]['nid'] == null){
+    //sanity check
+    db_query('DELETE FROM {election_results} WHERE district_nid=%d', $node->nid);
+    return array(
+      'message' => array(
+        '#type' => 'markup',
+        '#value' => 'No ballot items',
+      ),
+    );
+  }
   foreach($node->field_elec_ballot_items as $ballot_item_nid){
     $ballot_node = node_load( array('nid'=>$ballot_item_nid['nid']));
 
@@ -119,6 +129,8 @@ function election_result_form($form_state, $node){
 }
 
 function election_result_form_submit($form, &$form_state){
+  //sanity check.  we need to delete everything before submit to catch removed items
+  db_query('DELETE FROM {election_results} WHERE district_nid=%d', $form_state['values']['district_nid']);
   foreach($form_state['values'] as $key => $ballot_item){
     if(! is_array($ballot_item) ) continue; //stuff in here we don't want
 
@@ -131,9 +143,6 @@ function election_result_form_submit($form, &$form_state){
     $complete = $ballot_item['complete'];
     unset($ballot_item['complete']);
 
-    //if this value is already in the DB we need to update, rather than insert
-    //we do this by passing the primary key to drupal_write_record
-    $u_i = ($updated) ? array('district_nid', 'ballot_item_nid') : NULL;
     //The rest are results
     $results = $ballot_item;
 
