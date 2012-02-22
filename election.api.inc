@@ -455,7 +455,20 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     }
   }
 
+  $algo_a = db_fetch_array(db_query('SELECT algorithm, n from {election_algorithm} where ballot_item_nid=%d', $ballot_item_nid));
+  $algorithms = _elec_get_winner_algos();
+  if( isset($algorithms[$algo_a['algorithm']]) && function_exists($algorithms[$algo_a['algorithm']]['callback']. '_threshold') ){
+    //print "the function is " . $algorithms[$algo_a['algorithm']]['callback'] . '_threshold';
+    $temp_results = array();
+    foreach($results as $key => $val){
+      $temp_results[] = $val['votes'];
+    }
 
+    $threshold = call_user_func_array($algorithms[$algo_a['algorithm']]['callback'] . '_threshold', array($temp_results, $algo_a['n']));
+    foreach ($results as $key => $val){
+      $results[$key]['winning_threshold'] = $threshold;
+    }
+  }
 
   $tags = array();
   foreach($ballot_item_node->taxonomy as $term){
@@ -903,6 +916,13 @@ function _elec_algorithm_gt_n($results, $n){
   return $winners;
 }
 
+function _elec_algorithm_gt_n_threshold($results, $n){
+  $winners = array();
+  $total_votes = array_sum($results);
+  $need_more_than = ($n / 100) * $total_votes;
+  return $need_more_than + 1;
+}
+
 function _elec_algorithm_gte_n($results, $n){
   $winners = array();
   $total_votes = array_sum($results);
@@ -916,6 +936,13 @@ function _elec_algorithm_gte_n($results, $n){
     $winners = array(max($winners));
   }
   return $winners;
+}
+
+function _elec_algorithm_gte_n_threshold($results, $n){
+  $winners = array();
+  $total_votes = array_sum($results);
+  $need_atleast = ($n / 100) * $total_votes;
+  return $need_atleast;
 }
 
 function _elec_algorithm_top_n($results, $n){
