@@ -426,6 +426,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     if(!$results){
       _elec_404("$ballot_item_slug not found for district $district_slug");
     }
+
   } else {
     $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
     $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
@@ -454,11 +455,18 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     }
   }
 
+
+
   $tags = array();
   foreach($ballot_item_node->taxonomy as $term){
     if($term->vid == variable_get('elec_ballot_vid', NULL)){
-      $tags[] = $term->name;
+      $tags[] = $term->name; 
     }
+  }
+  
+  if(!in_array('Referendum', $tags)){
+    //sort ballot items for non-referendums issue #13
+    uasort($results, "election_results_compare");
   }
 
   $district_node = node_load(array('nid'=>$district_nid));
@@ -489,6 +497,11 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   ); 
   _elec_write_cache($_GET['q'], $data);
   return $data;
+}
+
+//function for uasort to compare election results
+function election_results_compare($a, $b){
+  return $b['votes'] -  $a['votes'];
 }
 
 function _elec_get_district($season_slug, $event_slug, $district_slug){
