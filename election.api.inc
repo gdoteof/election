@@ -439,7 +439,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
 
       foreach($ballot_item_results as $key => $option){
         $results[str_replace('_',' ', $key)] = array(
-          'votes' => $option,
+          'votes' => (int)$option,
           'percent' => (100 * round($option / $total_votes, 3)),
           'winner' => in_array($key, $winners),
           'complete' => $complete,
