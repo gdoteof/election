@@ -919,14 +919,14 @@ function _elec_algorithm_gt_n($results, $n){
 function _elec_algorithm_gt_n_threshold($results, $n){
   $winners = array();
   $total_votes = array_sum($results);
-  $need_more_than = ($n / 100) * $total_votes;
+  $need_more_than = floor(($n / 100) * $total_votes);
   return $need_more_than + 1;
 }
 
 function _elec_algorithm_gte_n($results, $n){
   $winners = array();
   $total_votes = array_sum($results);
-  $need_atleast = ($n / 100) * $total_votes;
+  $need_atleast = ceil(($n / 100) * $total_votes);
   foreach($results as $option=>$votes){
     if($votes >= $need_atleast){
       $winners[] = $option;
@@ -941,7 +941,7 @@ function _elec_algorithm_gte_n($results, $n){
 function _elec_algorithm_gte_n_threshold($results, $n){
   $winners = array();
   $total_votes = array_sum($results);
-  $need_atleast = ($n / 100) * $total_votes;
+  $need_atleast = ceil(($n / 100) * $total_votes);
   return $need_atleast;
 }
 
