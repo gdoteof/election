@@ -16,7 +16,7 @@ $(document).ready(function() {
 
     function updateBallotItemArticles(cache) {
         $("article.ballot-item-results").each(function(index, element) {
-            var uri = $(element).find('h1 a').first().attr("href");
+            var uri = $(element).data('link');
             if (!(uri in timeouts)) {
                 timeouts[uri] = {};
             }
