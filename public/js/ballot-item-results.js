@@ -27,6 +27,14 @@ $(document).ready(function() {
 
     function updateBallotItemArticle(uri, element, refreshTime, cache) {
         cache = typeof(cache) != 'undefined' ? cache : true;
+        if (element.is(':hidden')) {
+            clearTimeoutsByUri(uri);
+            var timeout = setTimeout(function() {
+                updateBallotItemArticle(uri, element, refreshTime);                
+            }, refreshTime + 1000);
+            timeouts[uri][timeout] = null;
+            return;
+        }
         $.ajax({
             url: uri,
             dataType: 'json',
