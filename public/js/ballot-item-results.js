@@ -54,6 +54,9 @@ $(document).ready(function() {
                         //TODO: Format votes
                         resultElement.find(".votes").text(data.results[result].votes);
                         resultElement.find(".percent").text(data.results[result].percent);
+                        if (data.results[result].complete) {
+                            resultElement.addClass("complete");
+                        }
                         tableBody.append(resultElement);
                     }
                 }

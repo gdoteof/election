@@ -22,11 +22,13 @@
    "results":{
       "Kurt Wright":{
          "votes":201,
-         "percent":50.1
+         "percent":50.1,
+         "complete":true
       },
       "Miro Weinberger":{
          "votes":200,
-         "percent":49.9
+         "percent":49.9,
+         "complete":true
       }
    }
 }
