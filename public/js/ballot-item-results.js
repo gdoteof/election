@@ -75,10 +75,13 @@ $(document).ready(function() {
                     }
                     element.find("footer .incomplete").remove();
                     element.find("footer .complete").remove();
-                    if (complete) {
-                        element.find("footer").prepend(MESSAGES.complete);
-                    } else if (false === complete) {
-                        element.find("footer").prepend(MESSAGES.incomplete);
+                    //TODO: This check should not be necessary
+                    if (0 == element.find("footer .partial").length) {
+                        if (complete) {
+                            element.find("footer").prepend(MESSAGES.complete);
+                        } else if (false === complete) {
+                            element.find("footer").prepend(MESSAGES.incomplete);
+                        }
                     }
                 }
                 var date = new Date(jqXHR.getResponseHeader("Date"));
