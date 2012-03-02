@@ -102,21 +102,6 @@ function _elec_arg_parse(){
   return 'main parse';
 }
 
-/*function _elec_as_html($data,$type){
-  if $type == 'season'{
-    _elec_html_season($data);
-  }elseif $type == 'event' && substr($_GET['q'], -4) == '.skl'{
-    _elec_html_event_skeleton($data);
-  }elseif $type == 'event'{
-    
-
-
-
-
-  }
-  exit;
-}*/
-
 function _elec_as_html($data,$type){
   switch($type){
     case 'season':
