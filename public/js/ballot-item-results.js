@@ -1,5 +1,9 @@
 $(document).ready(function() {
     var timeouts = {};
+    var MESSAGES = {
+        "incomplete": '<p class="incomplete">These are incomplete results.</p>',
+        "complete": '<p class="complete">These are complete but unofficial results.</p>'
+    };
     updateBallotItemArticles();
 
     $("a.refresh").click(function(e) {
@@ -48,6 +52,8 @@ $(document).ready(function() {
                         return "<td class=\"" + $(this).attr("class") + "\">" + $(this).html() + "</td>";
                     });
                     var tableBody = element.find("tbody").empty();
+                    //TODO: "complete" should be at overall results level
+                    var complete = null;
                     for (result in data.results) {
                         var resultElement = templateRow.clone();
                         resultElement.find(".option").text(result);
@@ -59,8 +65,20 @@ $(document).ready(function() {
                         }
                         if (data.results[result].complete) {
                             resultElement.addClass("complete");
+                            if (null === complete) {
+                                complete = true;
+                            }
+                        } else if (false === data.results[result].complete) {
+                            complete = false;
                         }
                         tableBody.append(resultElement);
+                    }
+                    element.find("footer .incomplete").remove();
+                    element.find("footer .complete").remove();
+                    if (complete) {
+                        element.find("footer").prepend(MESSAGES.complete);
+                    } else if (false === complete) {
+                        element.find("footer").prepend(MESSAGES.incomplete);
                     }
                 }
                 var date = new Date(jqXHR.getResponseHeader("Date"));

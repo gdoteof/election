@@ -22,11 +22,13 @@
    "results":{
       "Yes":{
          "votes":300,
-         "percent":37.5
+         "percent":37.5,
+         "complete":false
       },
       "No":{
          "votes":500,
-         "percent":62.5
+         "percent":62.5,
+         "complete":false
       }
    }
 }
