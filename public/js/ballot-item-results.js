@@ -63,11 +63,11 @@ $(document).ready(function() {
                         tableBody.append(resultElement);
                     }
                 }
-                var date = jqXHR.getResponseHeader("Date");
+                var date = new Date(jqXHR.getResponseHeader("Date"));
                 //TODO: Formate date
-                element.find(".updated").text(date);
-                var expires = jqXHR.getResponseHeader("Expires");
-                var expiration = Date.parse(expires) - Date.parse(date);
+                element.find(".updated").text($.format.date(date, "MMM d, yyyy K:mm:ss a"));
+                var expires = new Date(jqXHR.getResponseHeader("Expires"));
+                var expiration = expires.valueOf() - date.valueOf();
                 if (expiration <= 0) {
                     expiration = refreshTime;
                 }
