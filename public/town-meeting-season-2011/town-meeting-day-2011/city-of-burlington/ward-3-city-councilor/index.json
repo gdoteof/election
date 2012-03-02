@@ -1,6 +1,6 @@
 {
-   "title":"Burlington Mayor",
-   "link":"/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/",
+   "title":"Ward 3 City Councilor",
+   "link":"/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/ward-3-city-councilor/",
    "election_season":{
       "title":"Town Meeting Season 2011",
       "link":"/town-meeting-season-2011/"
@@ -20,13 +20,21 @@
       "Election"
    ],
    "results":{
-      "Kurt Wright":{
-         "votes":201,
-         "percent":50.1
+      "Vince Brennan":{
+         "votes":354,
+         "percent":60.2,
+         "winner":true,
+         "complete":true
       },
-      "Miro Weinberger":{
-         "votes":200,
-         "percent":49.9
+      "Lynn Mesick":{
+         "votes":171,
+         "percent":29.1,
+         "complete":true
+      },
+      "Ron Ruloff":{
+         "votes":63,
+         "percent":10.7,
+         "complete":true
       }
    }
 }
