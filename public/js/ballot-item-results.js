@@ -56,7 +56,9 @@ $(document).ready(function() {
                     var complete = null;
                     for (result in data.results) {
                         var resultElement = templateRow.clone();
-                        resultElement.find(".option").text(result);
+                        resultElement.find(".option").contents().filter(function() {
+                            return this.nodeType == 3;
+                        }).replaceWith(result);
                         //TODO: Format votes
                         resultElement.find(".votes").text(data.results[result].votes);
                         resultElement.find(".percent").text(data.results[result].percent);
