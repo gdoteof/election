@@ -5,26 +5,14 @@ body {
     color: black;
     text-align: center;
 }
-a {
-    color: #333;
-    text-decoration: underline;
-}
-a:hover,
-a:focus {
-    color: #222;
-}
-strong {
-    font-weight: bold;
-}
-em {
-    font-style: italic;
-}
-h1 a {
-    text-decoration: none;
-}
-h1 a:hover,
-h1 a:focus {
-    text-decoration: underline;
+h1,
+p,
+ul,
+ol,
+dl,
+table,
+img {
+    margin-top: 1.0em;
 }
 h1,
 p,
@@ -36,44 +24,21 @@ td {
     font-size: 1.6em;
     line-height: 1.4;
 }
-h1,
-p,
-ul,
-ol,
-dl,
-table,
-img {
-    margin-top: 1.0em;
+h1 {
+    font-size: 1.8em;
+    font-weight: bold;
+}
+h1 a {
+    text-decoration: none;
+}
+h1 a:hover,
+h1 a:focus {
+    text-decoration: underline;
 }
 li,
 dt,
 dd {
     margin-top: 0.5em;
-}
-h1 {
-    font-size: 1.8em;
-    font-weight: bold;
-}
-th,
-td {
-    border: 1px solid #888;
-    border-top: none;
-    border-left: none;
-}
-th:last-child,
-td:last-child {
-    border-right: none;
-}
-tr:last-child td {
-    border-bottom: none;
-}
-th,
-td {
-    padding: 0.4em;
-}
-th {
-    font-size: 1.2em;
-    color: #555;
 }
 li {
     margin-left: 0.5em;
@@ -91,4 +56,36 @@ li ol {
 }
 li li {
     font-size: 1.0em;
+}
+th,
+td {
+    padding: 0.4em;
+    border: 1px solid #888;
+    border-top: none;
+    border-left: none;
+}
+th:last-child,
+td:last-child {
+    border-right: none;
+}
+th {
+    font-size: 1.2em;
+    color: #555;
+}
+tr:last-child td {
+    border-bottom: none;
+}
+a {
+    color: #333;
+    text-decoration: underline;
+}
+a:hover,
+a:focus {
+    color: #222;
+}
+strong {
+    font-weight: bold;
+}
+em {
+    font-style: italic;
 }
