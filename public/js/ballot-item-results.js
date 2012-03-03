@@ -107,7 +107,7 @@ $(document).ready(function() {
                 }
                 var date = new Date(jqXHR.getResponseHeader("Date"));
                 //TODO: Handle timezone difference between server and client
-                element.find(".updated").text($.format.date(date, "MMM d, yyyy K:mm:ss a"));
+                element.find(".updated").text($.format.date(date, "MMM d, yyyy h:mm:ss a"));
                 var expires = new Date(jqXHR.getResponseHeader("Expires"));
                 var expiration = expires.valueOf() - date.valueOf();
                 if (expiration <= 0) {
