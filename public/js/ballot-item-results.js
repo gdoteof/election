@@ -37,6 +37,7 @@ $(document).ready(function() {
         if ("" != location.hash) {
             $("article" + location.hash).children("article").show().end().parent("article").parent("article").show().children("article").show();
             location.hash = location.hash;
+            $("#sidebar nav#nav-results select").val(location.hash);
         }
     });
     $(window).trigger("hashchange");
