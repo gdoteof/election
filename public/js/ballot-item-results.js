@@ -32,6 +32,15 @@ $(document).ready(function() {
         });
     }
 
+    $(window).hashchange(function(e) {
+        $("article.district-results").children("article").hide();
+        if ("" != location.hash) {
+            $("article" + location.hash).children("article").show().end().parent("article").show();
+            location.hash = location.hash;
+        }
+    });
+    $(window).trigger("hashchange");
+
     $("a.refresh").click(function(e) {
         e.preventDefault();
         updateBallotItemArticles(false);
