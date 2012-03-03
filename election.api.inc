@@ -1056,7 +1056,6 @@ function _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item
 
 //Returns an array of the indexes of the results array that should be marked winners;
 function _elec_algorithm_gt_n($results, $n){
-print "in gt n"; print_r($results);
   $winners = array();
   $total_votes = array_sum($results);
   $need_more_than = ($n / 100) * $total_votes;
