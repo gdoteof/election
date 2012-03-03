@@ -368,12 +368,15 @@ into the theme, where it evaluates and prints.  -AC*/
 
 function _elec_html_event_skeleton($data){
   $data = (object)$data;
+
   $season_slug = _elec_last_uri_path($data->election_season['link']);
   $season_nid = _elec_nid_from_season_slug($season_slug);
   $event_slug = _elec_last_uri_path(substr($_GET['q'], 0, -4));
   //$event_slug = _elec_last_uri_path($_SERVER["REQUEST_URI"]);
   $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
+
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season- GG
+
   $election_nav = '<p>'. $season_slug . '<br/>' . $event_slug . '</p>' . /*print_r($data) .*/ "\n";
   $election_nav .= '<nav>' . "\n"; //collect html for nav
   $ballot_items = '';   //collect html for results
@@ -390,18 +393,18 @@ function _elec_html_event_skeleton($data){
       $district_data = (object)$district_data;
       //$ballot_items .= ' '.print_r($district_data).' ';
 
-  	 foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
-	   /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
-	   $ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
+      foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
+        /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
+        $ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
 
-             foreach($ballot_item_list as $ballot_item){
-               
-	       $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
-	       $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$district_slug,$ballot_item_slug);
-	       $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
-	     }/*ballot item loop*/
+        foreach($ballot_item_list as $ballot_item){
 
-	  }/*ballot item type loop*/
+          $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
+          $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$district_slug,$ballot_item_slug);
+          $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
+        }/*ballot item loop*/
+
+      }/*ballot item type loop*/
 
     }/*district loop*/
 
