@@ -92,6 +92,7 @@ $(document).ready(function() {
                         }
                         tableBody.append(resultElement);
                         orderedList.append(graphResultElement);
+                        bindResultMouseoverAndMouseout(graphResultElement);
                     }
                     element.find("footer .incomplete").remove();
                     element.find("footer .complete").remove();
@@ -155,5 +156,48 @@ $(document).ready(function() {
                 }
             }
         });
+    }
+    var graphInfo = $("<div class=\"info\" />").appendTo("body");
+    bindResultMouseoverAndMouseout($("article.ballot-item-results .graph .result"));
+    function bindResultMouseoverAndMouseout(element) {
+        element.mouseover(function() {
+            showGraphInfo(graphInfo, $(this));
+            $(this).removeAttr("title");
+        }).mouseout(function() {
+            hideGraphInfo(graphInfo);
+        });
+    }
+    function showGraphInfo(graphInfo, result) {
+        var option = result.find(".option").text();
+        var votes = result.find(".votes").text();
+        var percent = result.find(".percent").text();
+        graphInfo.show().empty().append("<h1>" + option + "</h1>").append("<p>Votes: " + votes + "</p>").append("<p>Percent: " + percent + "</p>");
+        var marker = $("<canvas class=\"marker\" width=\"" + graphInfo.innerWidth() + "\" height=\"" + (graphInfo.innerHeight() * 0.2) + "\" style=\"bottom: " + (graphInfo.innerHeight() * -0.2) + "px;\" />").appendTo(graphInfo);
+        drawGraphInfoMarker(marker, graphInfo.css("backgroundColor"));
+        placeGraphInfo(graphInfo, result);
+    }
+    function hideGraphInfo(graphInfo) {
+        graphInfo.hide();
+    }
+    function placeGraphInfo(graphInfo, result) {
+        var placeGraphX = ((result.position().left + (result.innerWidth() / 2)) - (graphInfo.innerWidth() / 2)) + "px";
+        var placeGraphY = ((result.position().top - graphInfo.innerHeight()) + parseInt(graphInfo.find("canvas.marker").css("bottom"))) + "px";
+        graphInfo.css("top", placeGraphY).css("left", placeGraphX);
+    }
+    function drawGraphInfoMarker(marker, backgroundColor) {
+        var canvas = marker.get(0);
+        var canvasWidth = marker.innerWidth();
+        var canvasHeight = marker.innerHeight();
+        if (canvas.getContext) {
+            var ctx = canvas.getContext("2d");
+            ctx.fillStyle = backgroundColor;
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            ctx.beginPath();
+            ctx.moveTo(canvasWidth * 0.45, 0);
+            ctx.lineTo(canvasWidth * 0.55, 0);
+            ctx.lineTo(canvasWidth * 0.50, canvasHeight);
+            ctx.closePath();
+            ctx.fill();
+        };
     }
 });
