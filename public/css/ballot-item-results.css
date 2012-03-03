@@ -1,5 +1,49 @@
+.district-results h1 {
+    margin-top: 0;
+}
+.district-results > article > h1 {
+    padding: 0.4em 1.0em;
+    background-color: #666;
+    color: white;
+}
+.district-results h1 a {
+    display: block;
+    padding: 0.4em 1.0em;
+    background-color: #444;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#444));
+    background-image: -webkit-linear-gradient(top, #555, #444);
+    background-image: -moz-linear-gradient(top, #555, #444);
+    background-image: -ms-linear-gradient(top, #555, #444);
+    background-image: -o-linear-gradient(top, #555, #444);
+    font-size: 2.0em;
+    color: white;
+    text-decoration: none;
+}
+.district-results h1 a:hover,
+.district-results h1 a:focus {
+    background-color: #333;
+    background-image: none;
+}
+.district-results.ward > article > h1 {
+    background-color: #AAA;
+    font-size: 1.4em;
+}
+.district-results.ward h1 a {
+    background-color: #888;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#999), to(#888));
+    background-image: -webkit-linear-gradient(top, #999, #888);
+    background-image: -moz-linear-gradient(top, #999, #888);
+    background-image: -ms-linear-gradient(top, #999, #888);
+    background-image: -o-linear-gradient(top, #999, #888);
+    font-size: 1.0em;
+}
+.district-results.ward h1 a:hover,
+.district-results.ward h1 a:focus {
+    background-color: #777;
+    background-image: none;
+}
 .ballot-item-results {
-    margin-top: 0.2em;
+    margin-top: 0.1em;
     padding: 1.5em;
     background-color: #EEE;
     text-align: center;
@@ -77,6 +121,11 @@
 }
 .ballot-item-results .graph .result {
     opacity: 0.8;
+}
+.ballot-item-results .result:nth-child(n) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(n) {
+    margin-left: 0;
+    border-left: none;
 }
 .ballot-item-results .result:nth-child(12n+1) .graph-swatch,
 .ballot-item-results .graph .result:nth-child(12n+1) {
