@@ -1,0 +1,94 @@
+body {
+    background-color: white;
+    font-family: Arial, sans-serif;
+    font-size: 62.5%;
+    color: black;
+    text-align: center;
+}
+a {
+    color: #333;
+    text-decoration: underline;
+}
+a:hover,
+a:focus {
+    color: #222;
+}
+strong {
+    font-weight: bold;
+}
+em {
+    font-style: italic;
+}
+h1 a {
+    text-decoration: none;
+}
+h1 a:hover,
+h1 a:focus {
+    text-decoration: underline;
+}
+h1,
+p,
+li,
+dt,
+dd,
+th,
+td {
+    font-size: 1.6em;
+    line-height: 1.4;
+}
+h1,
+p,
+ul,
+ol,
+dl,
+table,
+img {
+    margin-top: 1.0em;
+}
+li,
+dt,
+dd {
+    margin-top: 0.5em;
+}
+h1 {
+    font-size: 1.8em;
+    font-weight: bold;
+}
+th,
+td {
+    border: 1px solid #888;
+    border-top: none;
+    border-left: none;
+}
+th:last-child,
+td:last-child {
+    border-right: none;
+}
+tr:last-child td {
+    border-bottom: none;
+}
+th,
+td {
+    padding: 0.4em;
+}
+th {
+    font-size: 1.2em;
+    color: #555;
+}
+li {
+    margin-left: 0.5em;
+    list-style-position: inside;
+}
+ol li {
+    list-style-type: decimal;
+}
+ul li {
+    list-style-type: disc;
+}
+li ul,
+li ol {
+    margin-top: 0;
+}
+li li {
+    font-size: 1.0em;
+}
