@@ -248,3 +248,21 @@ function _elec_get_algo($nid){
   $algo = db_fetch_array(db_query('SELECT algorithm, n from {election_algorithm} where ballot_item_nid=%d', $nid));
   return ($algo) ? $algo : array('algorithm' => NULL, 'n' => NULL);
 }
+//gets last slug form a URI - no input checking yet
+function _elec_last_uri_path($uri){
+  $chars = strlen($uri) - 1;
+  $lastchr = substr($uri,$chars);
+  if($lastchr == "/"){
+    $uri = rtrim($uri,"/");
+  }
+  $uri_array = explode("/", $uri);
+  $final_part = count($uri_array) - 1;
+  $slug_end = $uri_array[$final_part];
+  return $slug_end;
+}
+
+/*maybe  hook cron for refresh of .txt here temporarily to access at node template level tpl.php*/
+/*function election_cron(){
+	what to do....
+};
+*/

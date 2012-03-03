@@ -39,6 +39,9 @@ function _elec_arg_parse(){
   if(substr($_GET['q'], -4) == '.csv'){
     $format = "csv";
     $uri = substr($_GET['q'], 0, -4);
+  }elseif(substr($_GET['q'], -4) == '.skl'){
+    $format = "html";
+    $uri = substr($_GET['q'], 0, -4);
   }
   else{
     $uri = $_GET['q'];
@@ -105,10 +108,16 @@ function _elec_as_html($data,$type){
       _elec_html_season($data);
       break;
     case 'event':
-      _elec_html_event($data);
+      /* a bit clunky, but should give us the skeleton refresh method as part of the API*/  
+      if(substr($_GET['q'], -4) == '.skl'){
+        _elec_html_event_skeleton($data);
+      }else{
+        _elec_html_event($data);
+      }
       break;
     case 'district':
       _elec_html_district($data);
+      break;
     case 'ballot_item':
       _elec_html_ballot_item($data);
       break;
@@ -206,6 +215,64 @@ TABLE;
 BALLOT;
 }
 
+function _elec_html_ballot_item_skel($data){
+  $data = (object)$data;
+  $election_season_href = $data->election_season['link'];
+  $election_season_title = $data->election_season['title'];
+  $season_slug = _elec_title_to_slug($election_season_title);
+  $election_event_href = $data->election_event['link'];
+  $election_event_title = $data->election_event['title'];
+  $event_slug = _elec_title_to_slug($election_event_title);
+  $district_href = $data->district['link'];
+  $district_title = $data->district['title'];
+  $district_slug = _elec_title_to_slug($district_title);
+  $ballot_item_title = $data->title;
+  $ballot_item_slug = _elec_title_to_slug($ballot_item_title);
+  $data_link = base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
+
+  $tags = "<ul>\n";
+  foreach ($data->tags as $tag){ $type = strtolower($tag); $tags .= '    <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
+  $tags .="  </ul>\n";
+
+  $total_votes = 0;
+  $results = '<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">';
+  $results .='<h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>';
+  foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
+  $opt_type_th = ($type=='election') ? 'Candidates' : 'Options';
+  $results .= <<<TABLE
+  <table>
+    <thead>
+      <tr class="result">
+        <th class="options">$opt_type_th</th>
+        <th class="votes">Votes</th>
+TABLE;
+  if($complete) $results .= '<th class="percent">Percent</th>';
+  $results .= <<<TABLE
+      </tr>
+    </thead>
+    <tbody>
+TABLE;
+  $graph = '<ol class="graph">' . "\n";
+  foreach ($data->results as $option => $result){
+    $winner = ($result['winner']) ? 'winner' : '';
+    $complete = ($result['complete']) ? ' complete ' : '';
+    $percent = ($complete) ? number_format($result['votes'] / $total_votes * 100, 1) : 'n/a';
+    $opt_type = ($type=='election') ? 'candidate' : 'boolean';
+    $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
+    $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
+    $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
+    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ': ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span>: <span class="votes">' . $result['votes']  . ' votes</span>, <span class="percent">'. $percent . "%" . '</span></li>' . "\n";
+    if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "</td>\n"; }
+    $results .= '  </tr>'. "\n";
+  }
+  $results .= "</tbody></table>" . "\n";
+  $results .= $graph . '</ol>' . "\n";
+  $results .= '<footer></footer>' . "\n";
+  $results .= '</article>' . "\n";
+  //print $results;
+return $results;
+}
+
 function _elec_html_district($data){
   $data = (object)$data;
   $election_season_href = $data->election_season['link'];
@@ -291,6 +358,75 @@ EVENT;
   exit;
 }
 
+/*builds the HTML skeleton and nav interface for the results page -
+we need to be able to call this function with the election event $data.
+This is a very heavy function and so the final call dumps it to a
+uniquely named .php file baed on the election event nid. Inside it is
+just the string variable storing all the results and a print command.
+It is then included as a php file (via nid to reconstruct filename) from the file cache
+into the theme, where it evaluates and prints.  -AC*/
+
+function _elec_html_event_skeleton($data){
+  $data = (object)$data;
+  $season_slug = _elec_last_uri_path($data->election_season['link']);
+  $season_nid = _elec_nid_from_season_slug($season_slug);
+  $event_slug = _elec_last_uri_path(substr($_GET['q'], 0, -4));
+  //$event_slug = _elec_last_uri_path($_SERVER["REQUEST_URI"]);
+  $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
+  $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season- GG
+  $election_nav = '<p>'. $season_slug . '<br/>' . $event_slug . '</p>' . /*print_r($data) .*/ "\n";
+  $election_nav .= '<nav>' . "\n"; //collect html for nav
+  $ballot_items = '';   //collect html for results
+  foreach($district_type_containers as $key => $container){
+
+    foreach($container as $e_event){
+      $district_slug = _elec_title_to_slug($e_event['title']);
+      $district_nid = _elec_nid_from_district_slug($district_slug);
+      $election_nav .= '<a href="#' . $e_event['title'] . '">' . $e_event['title'] . '</a>' . "\n";/* district nav */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
+      //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
+      $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
+      /*$district_data = _  need burlington sub districts branch? summed */
+      $district_data = (object)$district_data;
+      //$ballot_items .= ' '.print_r($district_data).' ';
+
+  	 foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
+	   /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
+	   $ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
+
+             foreach($ballot_item_list as $ballot_item){
+               
+	       $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
+	       $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$district_slug,$ballot_item_slug);
+	       $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
+	     }/*ballot item loop*/
+
+	  }/*ballot item type loop*/
+
+    }/*district loop*/
+
+  }/*district type loop*/
+  $ballot_items .= "\n";/*end results html*/
+  $election_nav .= "</nav>" . "\n";/*end nav html*/
+  $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper"  class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
+  print $elec_results;
+  _elec_html_skel_to_file($event_nid,$elec_results);
+  exit;
+};
+
+/* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
+function _elec_html_skel_to_file($event_nid,$elec_results){
+  $file = file_directory_path() . '/' . 'election' . '/' . strval($event_nid) . '-elec-skeleton' . '.php';
+  //$elec_results =  "here is some cached HTML skeleton from the election module";
+  $output = '<?php $results = \'' . $elec_results . '\'; ' . "\n" . 'print $results; ?>';
+  //print($file);
+  $filehandle = fopen( $file , "w");
+  fwrite($filehandle, $output);
+  fclose($filehandle);
+};
+
+
+
 function _elec_as_csv($data,$type){
   $filename = str_replace('/','_', $_GET['q']);
   if($type != 'ballot_item' && $type != 'district'){
@@ -301,6 +437,7 @@ function _elec_as_csv($data,$type){
     foreach($data['ballot_item_results'] as $key => $ballot_item){
       $output[] = array($ballot_item['text']);
       unset($ballot_item['text']);
+      // bug with "Array" string formatting - remember to fix AC - 
       $options = array(''); $results = array('');
       foreach($ballot_item['results'] as $option => $result){
         $options[] = str_replace('_',' ', $option); 
@@ -934,14 +1071,14 @@ function _elec_algorithm_gt_n($results, $n){
 function _elec_algorithm_gt_n_threshold($results, $n){
   $winners = array();
   $total_votes = array_sum($results);
-  $need_more_than = ($n / 100) * $total_votes;
+  $need_more_than = floor(($n / 100) * $total_votes);
   return $need_more_than + 1;
 }
 
 function _elec_algorithm_gte_n($results, $n){
   $winners = array();
   $total_votes = array_sum($results);
-  $need_atleast = ($n / 100) * $total_votes;
+  $need_atleast = ceil(($n / 100) * $total_votes);
   foreach($results as $option=>$votes){
     if($votes >= $need_atleast){
       $winners[] = $option;
@@ -956,7 +1093,7 @@ function _elec_algorithm_gte_n($results, $n){
 function _elec_algorithm_gte_n_threshold($results, $n){
   $winners = array();
   $total_votes = array_sum($results);
-  $need_atleast = ($n / 100) * $total_votes;
+  $need_atleast = ceil(($n / 100) * $total_votes);
   return $need_atleast;
 }
 
