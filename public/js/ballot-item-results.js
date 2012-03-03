@@ -35,7 +35,7 @@ $(document).ready(function() {
     $(window).hashchange(function(e) {
         $("article.district-results").children("article").hide();
         if ("" != location.hash) {
-            $("article" + location.hash).children("article").show().end().parent("article").show();
+            $("article" + location.hash).children("article").show().end().parent("article").parent("article").show().children("article").show();
             location.hash = location.hash;
         }
     });
