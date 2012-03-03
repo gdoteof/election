@@ -51,22 +51,39 @@ $(document).ready(function() {
                     templateRow.find("th").replaceWith(function() {
                         return "<td class=\"" + $(this).attr("class") + "\">" + $(this).html() + "</td>";
                     });
+                    //TODO: First item isn't a good template
+                    var templateListItem = element.find("ol.graph li.result:first").clone();
+                    templateListItem.removeClass("winner").removeClass("complete");
+                    templateListItem.removeAttr("title");
+                    templateListItem.removeAttr("style");
                     var tableBody = element.find("tbody").empty();
+                    var orderedList = element.find("ol.graph").empty();
                     //TODO: "complete" should be at overall results level
                     var complete = null;
                     for (result in data.results) {
                         var resultElement = templateRow.clone();
+                        var graphResultElement = templateListItem.clone();
                         resultElement.find(".option").contents().filter(function() {
                             return this.nodeType == 3;
                         }).replaceWith(result);
+                        graphResultElement.find(".option").text(result);
                         //TODO: Format votes
                         resultElement.find(".votes").text(data.results[result].votes);
+                        graphResultElement.find(".votes").text(data.results[result].votes);
                         resultElement.find(".percent").text(data.results[result].percent);
+                        graphResultElement.find(".percent").text(data.results[result].percent);
+                        graphResultElement.width(data.results[result].percent + "%");
+                        graphResultElement.attr(
+                            "title",
+                            result + ": " + data.results[result].votes + " votes, " + data.results[result].percent + "%"
+                        );
                         if (data.results[result].winner) {
                             resultElement.addClass("winner");
+                            graphResultElement.addClass("winner");
                         }
                         if (data.results[result].complete) {
                             resultElement.addClass("complete");
+                            graphResultElement.addClass("complete");
                             if (null === complete) {
                                 complete = true;
                             }
@@ -74,6 +91,7 @@ $(document).ready(function() {
                             complete = false;
                         }
                         tableBody.append(resultElement);
+                        orderedList.append(graphResultElement);
                     }
                     element.find("footer .incomplete").remove();
                     element.find("footer .complete").remove();
