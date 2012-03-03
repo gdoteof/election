@@ -78,6 +78,11 @@
 .ballot-item-results .graph .result {
     opacity: 0.8;
 }
+.ballot-item-results .result:nth-child(n) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(n) {
+    margin-left: 0;
+    border-left: none;
+}
 .ballot-item-results .result:nth-child(12n+1) .graph-swatch,
 .ballot-item-results .graph .result:nth-child(12n+1) {
     background-color: #792779;
