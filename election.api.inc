@@ -441,7 +441,7 @@ function _elec_as_csv($data,$type){
       $options = array(''); $results = array('');
       foreach($ballot_item['results'] as $option => $result){
         $options[] = str_replace('_',' ', $option); 
-        $results[] = $result;
+        $results[] = $result['votes'];
       }
       $output[] = $options;
       $output[] = $results;
