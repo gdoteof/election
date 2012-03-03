@@ -1173,6 +1173,14 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
         $results['results'][$key]['winner'] = in_array($key, $winners);
       }
 
+      if(!$complete){
+        foreach($results['results'] as $key => $val){
+          unset($results['results'][$key]['percent']);
+          unset($results['results'][$key]['winner']);
+
+        }
+      }
+
       return $results['results'];
     }
   }
