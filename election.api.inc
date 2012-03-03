@@ -1038,7 +1038,9 @@ function _elec_bp(){
 }
 
 function _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results){
-  if (!_elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid)){
+  $query = 'SELECT count(*) FROM {election_results} WHERE ballot_item_nid=%d AND district_nid=%d';
+  $aggregate = ! (db_result(db_query($query, $ballot_item_nid, $district_nid)));
+  if (!$aggregate && !_elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid)){
     return array();
   }
   $algo_a = db_fetch_array(db_query('SELECT algorithm, n from {election_algorithm} where ballot_item_nid=%d', $ballot_item_nid));
@@ -1054,6 +1056,7 @@ function _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item
 
 //Returns an array of the indexes of the results array that should be marked winners;
 function _elec_algorithm_gt_n($results, $n){
+print "in gt n"; print_r($results);
   $winners = array();
   $total_votes = array_sum($results);
   $need_more_than = ($n / 100) * $total_votes;
@@ -1158,17 +1161,17 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
   foreach($summed_results as $nid => $results){
     $slug = db_result(db_query('SELECT slug from {election_slug} WHERE nid=%d', $nid));
     if($slug == $ballot_item_slug){
+      $ballot_item_nid = $nid; // fill in ballot_item_nid
       $complete = _elec_get_ballot_item_is_complete_recur($nid, $district_nid);
-      $ret = array();
+
+      foreach($results['results'] as $key => $option){
+        $results_for_winner_detection[$key] = $option['votes'];
+      }
+      $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $results_for_winner_detection);
+
       foreach($results['results'] as $key => $option){
         $results['results'][$key]['complete'] = $complete; 
-      }
-      $ballot_item_nid = $nid; // fill in ballot_item_nid
-      
-      if(!$complete){
-        foreach($results['results'] as $key => $val){
-          unset($results['results'][$key]['percent']);
-        }
+        $results['results'][$key]['winner'] = in_array($key, $winners);
       }
 
       return $results['results'];
