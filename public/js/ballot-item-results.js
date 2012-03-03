@@ -175,14 +175,14 @@ $(document).ready(function() {
         graphInfo.show().empty().append("<h1>" + option + "</h1>").append("<p>Votes: " + votes + "</p>").append("<p>Percent: " + percent + "</p>");
         var marker = $("<canvas class=\"marker\" width=\"" + graphInfo.innerWidth() + "\" height=\"" + (graphInfo.innerHeight() * 0.2) + "\" style=\"bottom: " + (graphInfo.innerHeight() * -0.2) + "px;\" />").appendTo(graphInfo);
         drawGraphInfoMarker(marker, graphInfo.css("backgroundColor"));
-        placeGraphInfo(graphInfo, result);
+        placeGraphInfo(graphInfo, marker, result);
     }
     function hideGraphInfo(graphInfo) {
         graphInfo.hide();
     }
-    function placeGraphInfo(graphInfo, result) {
-        var placeGraphX = ((result.position().left + (result.innerWidth() / 2)) - (graphInfo.innerWidth() / 2)) + "px";
-        var placeGraphY = ((result.position().top - graphInfo.innerHeight()) + parseInt(graphInfo.find("canvas.marker").css("bottom"))) + "px";
+    function placeGraphInfo(graphInfo, marker, result) {
+        var placeGraphX = (result.offset().left + (-(graphInfo.innerWidth() / 2) + (result.innerWidth() / 2))) + "px";
+        var placeGraphY = (result.offset().top - (graphInfo.innerHeight() + marker.innerHeight())) + "px";
         graphInfo.css("top", placeGraphY).css("left", placeGraphX);
     }
     function drawGraphInfoMarker(marker, backgroundColor) {
