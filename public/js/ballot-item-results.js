@@ -169,8 +169,9 @@ $(document).ready(function() {
     }
     function showGraphInfo(graphInfo, result) {
         var option = result.find(".option").text();
-        var votes = result.find(".votes").text();
-        var percent = result.find(".percent").text();
+        //TODO: Don't hardcode the concatenated labels
+        var votes = result.find(".votes").text() + " votes";
+        var percent = result.find(".percent").text() + "%";
         graphInfo.show().empty().append("<h1>" + option + "</h1>").append("<p>Votes: " + votes + "</p>").append("<p>Percent: " + percent + "</p>");
         var marker = $("<canvas class=\"marker\" width=\"" + graphInfo.innerWidth() + "\" height=\"" + (graphInfo.innerHeight() * 0.2) + "\" style=\"bottom: " + (graphInfo.innerHeight() * -0.2) + "px;\" />").appendTo(graphInfo);
         drawGraphInfoMarker(marker, graphInfo.css("backgroundColor"));
