@@ -78,26 +78,53 @@
 .ballot-item-results .graph .result {
     opacity: 0.8;
 }
-.ballot-item-results .result:nth-child(n) .graph-swatch,
-.ballot-item-results .graph .result:nth-child(n) {
-    margin-left: 0;
-    border-left: none;
+.ballot-item-results .result:nth-child(12n+1) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+1) {
+    background-color: #792779;
 }
-.ballot-item-results .result:nth-child(4n+1) .graph-swatch,
-.ballot-item-results .graph .result:nth-child(4n+1) {
-    background-color: #6BAE22;
+.ballot-item-results .result:nth-child(12n+2) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+2) {
+    background-color: #FDD303;
 }
-.ballot-item-results .result:nth-child(4n+2) .graph-swatch,
-.ballot-item-results .graph .result:nth-child(4n+2) {
+.ballot-item-results .result:nth-child(12n+3) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+3) {
     background-color: #CA3357;
 }
-.ballot-item-results .result:nth-child(4n+3) .graph-swatch,
-.ballot-item-results .graph .result:nth-child(4n+3) {
+.ballot-item-results .result:nth-child(12n+4) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+4) {
     background-color: #5C69B5;
 }
-.ballot-item-results .result:nth-child(4n+4) .graph-swatch,
-.ballot-item-results .graph .result:nth-child(4n+4) {
-    background-color: #ABF384;
+.ballot-item-results .result:nth-child(12n+5) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+5) {
+    background-color: #6BAE22;
+}
+.ballot-item-results .result:nth-child(12n+6) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+6) {
+    background-color: #0BC0E7;
+}
+.ballot-item-results .result:nth-child(12n+7) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+7) {
+    background-color: #F31A38;
+}
+.ballot-item-results .result:nth-child(12n+8) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+8) {
+    background-color: #EA5F02;
+}
+.ballot-item-results .result:nth-child(12n+9) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+9) {
+    background-color: #D483C9;
+}
+.ballot-item-results .result:nth-child(12n+10) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+10) {
+    background-color: #31820D;
+}
+.ballot-item-results .result:nth-child(12n+11) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+11) {
+    background-color: #5A13EB;
+}
+.ballot-item-results .result:nth-child(12n+12) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(12n+12) {
+    background-color: #11D0AA;
 }
 .info {
     position: absolute;
