@@ -6,6 +6,32 @@ $(document).ready(function() {
     };
     updateBallotItemArticles();
 
+    var select = $("<select/>").append($('<option/>').text("<select>").val("#"));
+    $("#sidebar nav#nav-results > ol > li").each(function() {
+        //TODO: Fix deeper recursion issues and make this more elegant
+        recursivelyGenerateSelectFromList($(this), select);
+    });
+    $(select).change(function() {
+        location.hash = $(this).val();
+    });
+    $("#sidebar nav#nav-results > ol").replaceWith(select);
+
+    function recursivelyGenerateSelectFromList(listItem, selectOrOptgroup)
+    {
+        var option = $("<option/>")
+            .text($(listItem).find("a").first().text())
+            .val($(listItem).find("a").attr("href"));
+        selectOrOptgroup.append(option);
+        var optGroup = null; 
+        $(listItem).find("> ol > li").each(function () {
+            if (null == optGroup) {
+                optGroup = $("<optgroup/>");
+                selectOrOptgroup.append(optGroup);
+            }
+            recursivelyGenerateSelectFromList($(this), optGroup);
+        });
+    }
+
     $("a.refresh").click(function(e) {
         e.preventDefault();
         updateBallotItemArticles(false);
