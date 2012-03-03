@@ -1,49 +1,55 @@
-article.ballot-item-results {
+.ballot-item-results {
     width: 96%;
     margin-top: 0.2em;
     padding: 1.5em 2%;
     background-color: #EEE;
     text-align: center;
 }
-article.ballot-item-results > *:first-child,
-#elections-module .info > *:first-child {
+.ballot-item-results li,
+.ballot-item-results dt,
+.ballot-item-results dd,
+.ballot-item-results table,
+.ballot-item-results .graph {
+    margin-left: auto;
+    margin-right: auto;
+}
+.ballot-item-results > *:first-child,
+.info > *:first-child {
     margin-top: 0;
 }
-article.district-results > h1 {
-    padding: 0.2em;
-    background-color: #CCC;
-    font-size: 3.6em;
-}
-article.ballot-item-results > h1 {
+.ballot-item-results h1 {
     font-size: 2.6em;
 }
-article.ballot-item-results th,
-article.ballot-item-results td {
+.ballot-item-results th,
+.ballot-item-results td {
     padding: 0.4em 0.8em 0.3em 0.4em;
 }
-article.ballot-item-results table .votes,
-article.ballot-item-results table .percent {
+.ballot-item-results table .votes,
+.ballot-item-results table .percent {
     padding-left: 0.8em;
     padding-right: 0.8em;
     text-align: center;
 }
-article.ballot-item-results td.votes,
-article.ballot-item-results td.percent {
+.ballot-item-results td.votes,
+.ballot-item-results td.percent {
     text-align: right;
 }
-.winner td {
+.ballot-item-results .option .graph-swatch {
+    width: 0.8em;
+    height: 0.8em;
+    display: inline-block;
+    *float: left;
+    margin-right: 0.3em;
+    background-color: #AAA;
+}
+.ballot-item-results th.option .graph-swatch {
+    display: none;
+}
+.ballot-item-results .winner td {
     background-color: rgba(0, 0, 0, 0.1);
     font-weight: bold;
 }
-article.ballot-item-results li,
-article.ballot-item-results dt,
-article.ballot-item-results dd,
-article.ballot-item-results table,
-article.ballot-item-results .graph {
-    margin-left: auto;
-    margin-right: auto;
-}
-article.ballot-item-results .graph {
+.ballot-item-results .graph {
     max-width: 400px;
     overflow: hidden;
     background-color: transparent;
@@ -56,53 +62,43 @@ article.ballot-item-results .graph {
     -webkit-border-radius: 0.5em;
     border-radius: 0.5em;
 }
-article.ballot-item-results .graph .result {
+.ballot-item-results .graph .result {
     position: relative;
     height: 3.0em;
     float: left;
     clear: none;
-    margin: 0;
+    margin: 0 0 0 -1px;
+    background-color: #AAA;
+    border-left: 1px solid #666;
     font-size: 1.0em;
     color: white;
     text-align: left;
     list-style: none;
     text-indent: -999em;
 }
-article.ballot-item-results .option .graph-swatch {
-    width: 0.8em;
-    height: 0.8em;
-    float: left;
-    display: inline-block;
-    margin-right: 0.3em;
-}
-article.ballot-item-results th.option .graph-swatch {
-    display: none;
-}
-article.ballot-item-results .graph .result {
+.ballot-item-results .graph .result {
     opacity: 0.8;
 }
-article.ballot-item-results .result:nth-child(4n+1) .graph-swatch,
-article.ballot-item-results .graph .result:nth-child(4n+1) {
+.ballot-item-results .result:nth-child(n) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(n) {
+    margin-left: 0;
+    border-left: none;
+}
+.ballot-item-results .result:nth-child(4n+1) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(4n+1) {
     background-color: #6BAE22;
 }
-article.ballot-item-results .result:nth-child(4n+2) .graph-swatch,
-article.ballot-item-results .graph .result:nth-child(4n+2) {
+.ballot-item-results .result:nth-child(4n+2) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(4n+2) {
     background-color: #CA3357;
 }
-article.ballot-item-results .result:nth-child(4n+3) .graph-swatch,
-article.ballot-item-results .graph .result:nth-child(4n+3) {
+.ballot-item-results .result:nth-child(4n+3) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(4n+3) {
     background-color: #5C69B5;
 }
-article.ballot-item-results .result:nth-child(4n+4) .graph-swatch,
-article.ballot-item-results .graph .result:nth-child(4n+4) {
+.ballot-item-results .result:nth-child(4n+4) .graph-swatch,
+.ballot-item-results .graph .result:nth-child(4n+4) {
     background-color: #ABF384;
-}
-article.ballot-item-results .footer {
-    margin-top: 2.0em;
-    font-size: 0.8em;
-}
-article.ballot-item-results .footer p {
-    margin-top: 0.5em;
 }
 .info {
     position: absolute;
@@ -130,4 +126,11 @@ article.ballot-item-results .footer p {
 .info canvas.marker {
     position: absolute;
     left: 0;
+}
+.ballot-item-results .footer {
+    margin-top: 2.0em;
+    font-size: 0.8em;
+}
+.ballot-item-results .footer p {
+    margin-top: 0.5em;
 }
