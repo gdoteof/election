@@ -420,6 +420,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   $ballot_item_nid = _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid);
 
   if (!$ballot_item_nid){
+    $possible_leaf = false;
     $results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, $ballot_item_nid);
     //So we can get the tags
     $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
@@ -428,6 +429,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     }
 
   } else {
+    $possible_leaf = true;
     $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
     $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
     $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results);
@@ -467,6 +469,19 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     $threshold = call_user_func_array($algorithms[$algo_a['algorithm']]['callback'] . '_threshold', array($temp_results, $algo_a['n']));
     foreach ($results as $key => $val){
       $results[$key]['winning_threshold'] = $threshold;
+    }
+  }
+
+
+  $leaf_ballot_item = false; //boolean
+  $leaf_ballot_item = _elec_is_leaf_ballot_item($ballot_item_nid);
+
+  if($possible_leaf && $leaf_ballot_item) {
+    foreach($results as $key => $val){
+      unset($results[$key]['winner']);
+      unset($results[$key]['percent']);
+      unset($results[$key]['complete']);
+      unset($results[$key]['winning_threshold']);
     }
   }
 
@@ -1023,4 +1038,9 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
     }
   }
   return null;
+}
+
+function _elec_is_leaf_ballot_item($ballot_item_nid){
+  $query = 'SELECT COUNT(*) FROM {content_field_elec_ballot_items} WHERE field_elec_ballot_items_nid = %d'; 
+  return ( db_result(db_query($query, $ballot_item_nid)) > 1 ) ? true : false;
 }
