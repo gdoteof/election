@@ -10,6 +10,21 @@ body {
     color: black;
     text-align: center;
 }
+noscript {
+    width: 85%;
+    display: block;
+    margin-bottom: 2.0em;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.9em;
+}
+noscript p,
+noscript p a {
+    color: #888;
+}
+body.javascript-enabled noscript {
+    display: none;
+}
 h1,
 p,
 ul,
@@ -251,6 +266,12 @@ em {
     margin-left: 0;
     margin-right: 0.6em;
     font-size: 1.5em;
+}
+#live-blog iframe {
+    display: none;
+}
+body.javascript-enabled #live-blog iframe {
+    display: block;
 }
 #meta {
     padding-top: 5.0em;
