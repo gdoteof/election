@@ -38,7 +38,10 @@ $(document).ready(function() {
     updateBallotItemArticles();
     $("article.district-results").bind("scrollTo", function(e) {
         var scrollTarget = "#" + $(this).attr("id");
-        $("article.district-results").children("article").hide();
+        //TODO: Find a better way to ignore the parent district results article
+        $(scrollTarget).parent("article").parent("article").addClass("scrolled-to");
+        $("article.district-results:not(.scrolled-to)").children("article").hide();
+        $(scrollTarget).parent("article").parent("article").removeClass("scrolled-to");
         $("article" + scrollTarget).children("article").show().end().parent("article").parent("article").show().children("article").show();
         updateBallotItemArticles();
         $("#sidebar nav#nav-results select").val(scrollTarget);
