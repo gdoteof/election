@@ -5,66 +5,60 @@
     <title>Burlington Mayor</title>
     <link href="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/"
     rel="canonical"/>
+    <link href="/css/reset.css" rel="stylesheet" type="text/css" media="handheld, all" />
+    <link href="/css/layout.css" rel="stylesheet" type="text/css" media="handheld, all" />
+    <link href="/css/ballot-item-results.css" rel="stylesheet" type="text/css" media="handheld, all" />
+    <script src="/js/html5shiv.js" type="text/javascript"></script>
+    <script src="/js/html5shiv-printshiv.js" type="text/javascript"></script>
+    <script src="/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+    <script src="/js/jquery.format-1.2.min.js" type="text/javascript"></script>
+    <script src="/js/jquery.ba-hashchange.min.js" type="text/javascript"></script>
+    <script src="/js/jquery.smooth-scroll.min.js" type="text/javascript"></script>
+    <script src="/js/ballot-item-results.js" type="text/javascript"></script>
   </head>
   <body>
-    <h1>Ballot Item Results</h1>
-    <article class="ballot-item-results election">
-      <h1 class="title">
-        <a href=
-        "/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/">
-        Burlington Mayor</a>
-      </h1>
-      <ul>
-        <li class="result">
-          <span class="option candidate">Kurt Wright</span>
-          <abbr class="votes" title="200">201 (50.1%)</abbr>
-        </li>
-        <li class="result">
-          <span class="option candidate">Miro Weinberger</span>
-          <abbr class="votes" title="200">200 (49.9%)</abbr>
-        </li>
-      </ul>
-      <img src="http://placehold.it/300x225&amp;text=Results+Chart" width="300" height="225" alt="Results Chart"/>
-      <p>These results do not include Ward 2, Ward 4, Ward 5, Ward 6, and Ward 7.</p>
-    </article>
-    <nav>
-      <h1>Wards</h1>
-      <ul>
-        <li>
-          <a href=
-          "/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-mayor/"
-          class="ballot-item-results election">Ward 1</a>
-        </li>
-        <li>
-          <a href=
-          "/town-meeting-season-2011/town-meeting-day-2011/ward-3/burlington-mayor/"
-          class="ballot-item-results election">Ward 3</a>
-        </li>
-      </ul>
-    </nav>
-    <nav>
-      <h1>Breadcrumbs</h1>
-      <dl>
-        <dt>Election Season</dt>
-        <dd><a href="/town-meeting-season-2011/"
-        class="election-season">Town Meeting Season 2011</a>
-        </dd>
-        <dt>Election Event</dt>
-        <dd><a href="/town-meeting-season-2011/town-meeting-day-2011/"
-        class="election-event">Town Meeting Day 2011</a>
-        </dd>
-        <dt>Municipality</dt>
-        <dd><a href="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/"
-        class="district-results municipality">
-        City of Burlington</a>
-        </dd>
-      </dl>
-    </nav>
-    <footer>
-      <h2>Tags</h2>
-      <ul>
-        <li class="tag">Election</li>
-      </ul>
-    </footer>
+    <div id="elections" class="view-ballot-item-results">
+      <article id="results">
+        <h1>Results</h1>
+        <article id="city-of-burlington" class="district-results municipality">
+          <h1>City of Burlington</h1>
+          <article>
+            <h1>Elections</h1>
+            <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/">
+              <h1>Burlington Mayor</h1>
+              <table>
+                <thead>
+                  <tr class="result">
+                    <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                    <th class="votes">Votes</th>
+                    <th class="percent">Percent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="result">
+                    <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                    <td class="votes">201</td>
+                    <td class="percent">50.1</td>
+                  </tr>
+                  <tr class="result">
+                    <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                    <td class="votes">200</td>
+                    <td class="percent">49.9</td>
+                  </tr>
+                </tbody>
+              </table>
+              <ol class="graph">
+                <li class="result" title="Kurt Wright: 201 votes, 50.1%" style="width: 50.1%"><span class="option candidate">Kurt Wright</span>: <span class="votes">201</span> votes, <span class="percent">50.1</span>%</li>
+                <li class="result" title="Miro Weinberger: 200 votes, 49.95%" style="width: 49.9%"><span class="option candidate">Miro Weinberger</span>: <span class="votes">200</span> votes, <span class="percent">49.9</span>%</li>
+              </ol>
+              <footer>
+                <p class="incomplete">These are incomplete results.</p>
+                <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+              </footer>
+            </article>
+          </article>
+        </article>
+      </article>
+    </div>
   </body>
 </html>
