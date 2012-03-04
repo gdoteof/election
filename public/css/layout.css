@@ -201,6 +201,11 @@ em {
 }
 #sidebar header {
     padding-bottom: 2.0em;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#AAA), to(#BBB));
+    background-image: -webkit-linear-gradient(top, #AAA, #BBB);
+    background-image: -moz-linear-gradient(top, #AAA, #BBB);
+    background-image: -ms-linear-gradient(top, #AAA, #BBB);
+    background-image: -o-linear-gradient(top, #AAA, #BBB);
 }
 #sidebar nav {
     margin-left: -0.8em;
