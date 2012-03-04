@@ -238,6 +238,10 @@ em {
 #sidebar nav a:focus {
     color: #BBB;
 }
+#nav-results select {
+    margin-top: 0.2em;
+    font-size: 1.5em;
+}
 #nav-tools li {
     display: inline;
     margin-left: 0;
