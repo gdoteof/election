@@ -12,7 +12,7 @@ $(document).ready(function() {
         recursivelyGenerateSelectFromList($(this), select);
     });
     $(select).change(function() {
-        location.hash = $(this).val();
+        $($(this).val()).trigger("scrollTo");
     });
     $("#sidebar nav#nav-results > ol").replaceWith(select);
 
@@ -32,12 +32,30 @@ $(document).ready(function() {
         });
     }
 
-    $(window).hashchange(function(e) {
+    $("article.district-results").children("article").hide();
+    $("article.district-results").bind("scrollTo", function(e) {
+        var scrollTarget = "#" + $(this).attr("id");
         $("article.district-results").children("article").hide();
+        $("article" + scrollTarget).children("article").show().end().parent("article").parent("article").show().children("article").show();
+        $("#sidebar nav#nav-results select").val(scrollTarget);
+        $.smoothScroll({
+            scrollTarget: scrollTarget,
+            afterScroll: function () {
+                location.hash = scrollTarget;
+            }
+        });
+        // Prevents the event from bubbling up the DOM tree to parent districts
+        e.stopPropagation();
+    });
+
+    $("article.district-results h1 a").click(function() {
+        $($(this).attr("href")).trigger("scrollTo");
+        return false;
+    });
+
+    $(window).hashchange(function(e) {
         if ("" != location.hash) {
-            $("article" + location.hash).children("article").show().end().parent("article").parent("article").show().children("article").show();
-            location.hash = location.hash;
-            $("#sidebar nav#nav-results select").val(location.hash);
+            $(location.hash).trigger("scrollTo");
         }
     });
     $(window).trigger("hashchange");
