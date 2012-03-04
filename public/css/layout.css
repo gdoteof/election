@@ -1,5 +1,5 @@
 body {
-    background-color: #EEE;
+    background-color: white;
     font-family: Arial, sans-serif;
     font-size: 62.5%;
     color: black;
@@ -130,7 +130,20 @@ em {
 #sidebar {
     width: 330px;
     padding-bottom: 1.0em;
-    background-color: #DDD;
+}
+#sidebar h1,
+#sidebar p,
+#sidebar li {
+    line-height: 1.2;
+}
+#sidebar li {
+    margin-top: 0.6em;
+    margin-left: 0;
+    list-style: none;
+}
+#sidebar li li {
+    margin-top: 0.4em;
+    margin-left: 1.0em;
 }
 #channel-17-town-meeting-television-logo {
     width: 260px;
@@ -140,6 +153,92 @@ em {
     margin-right: auto;
     background: transparent url(/images/channel-17-town-meeting-television-260x71.png) no-repeat center center;
     text-indent: -999em;
+}
+#sidebar h1#organization-name,
+#sidebar nav,
+#live-blog {
+    position: relative;
+    overflow: hidden;
+    padding: 0.1em 1.0em 1.0em;
+    background-color: #BBB;
+    font-size: 1.0em;
+    -moz-box-shadow: 0 2px 2px #AAA;
+    -webkit-box-shadow: 0 2px 2px #AAA;
+    box-shadow: 0 2px 2px #AAA;
+    z-index: 5;
+}
+#sidebar h1#organization-name {
+    margin-top: 0;
+    padding-top: 2.6em;
+    padding-bottom: 3.0em;
+}
+#sidebar nav {
+    margin-left: -0.8em;
+    margin-right: -0.8em;
+    padding-left: 1.8em;
+    padding-right: 1.8em;
+    background-color: #444;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#444));
+    background-image: -webkit-linear-gradient(top, #555, #444);
+    background-image: -moz-linear-gradient(top, #555, #444);
+    background-image: -ms-linear-gradient(top, #555, #444);
+    background-image: -o-linear-gradient(top, #555, #444);
+    border-bottom: 1px solid #999;
+    text-align: left;
+}
+#sidebar nav#nav-results {
+    padding-bottom: 2.0em;
+    z-index: 6;
+}
+#sidebar nav#nav-tools {
+    padding-bottom: 1.8em;
+    background-color: #666;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#777), to(#666));
+    background-image: -webkit-linear-gradient(top, #777, #666);
+    background-image: -moz-linear-gradient(top, #777, #666);
+    background-image: -ms-linear-gradient(top, #777, #666);
+    background-image: -o-linear-gradient(top, #777, #666);
+    z-index: 7;
+}
+#nav-results,
+#nav-tools,
+#live-blog {
+    -moz-border-radius: 1.0em;
+    -webkit-border-radius: 1.0em;
+    border-radius: 1.0em;
+}
+#nav-results {
+    -moz-border-radius-bottomleft: 0;
+    -webkit-border-bottom-left-radius: 0;
+    border-bottom-left-radius: 0;
+    -moz-border-radius-bottomright: 0;
+    -webkit-border-bottom-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+#nav-tools,
+#live-blog {
+    -moz-border-radius-topleft: 0;
+    -webkit-border-top-left-radius: 0;
+    border-top-left-radius: 0;
+    -moz-border-radius-topright: 0;
+    -webkit-border-top-right-radius: 0;
+    border-top-right-radius: 0;
+}
+#sidebar nav h1,
+#sidebar nav p,
+#sidebar nav li,
+#sidebar nav a {
+    color: #DDD;
+}
+#sidebar nav a:hover,
+#sidebar nav a:focus {
+    color: #BBB;
+}
+#nav-tools li {
+    display: inline;
+    margin-left: 0;
+    margin-right: 0.6em;
+    font-size: 1.5em;
 }
 #meta {
     padding-top: 5.0em;
