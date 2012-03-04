@@ -12,7 +12,9 @@ $(document).ready(function() {
         recursivelyGenerateSelectFromList($(this), select);
     });
     $(select).change(function() {
-        $($(this).val()).trigger("scrollTo");
+        if (0 == $($(this).val()).trigger("scrollTo").length) {
+            location.hash = $(this).val();
+        }
     });
     $("#sidebar nav#nav-results > ol").replaceWith(select);
 
