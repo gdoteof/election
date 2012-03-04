@@ -93,3 +93,75 @@ strong {
 em {
     font-style: italic;
 }
+#page {
+    width: 960px;
+    overflow: hidden;
+    margin: 0 auto;
+    background-color: white;
+}
+#introduction,
+#live-broadcast,
+#results,
+#sidebar,
+#meta {
+    overflow: hidden;
+    padding: 0 1.0em;
+    _padding-left: 9px;
+    _padding-right: 9px;
+}
+#introduction,
+#live-broadcast,
+#results {
+    width: 590px;
+    float: left;
+}
+#introduction,
+#live-broadcast,
+#results,
+#meta {
+    clear: both;
+}
+#introduction {
+    text-align: left;
+}
+#introduction h1 {
+    font-size: 4.6em;
+}
+#sidebar {
+    width: 330px;
+    padding-bottom: 1.0em;
+    background-color: #DDD;
+}
+#channel-17-town-meeting-television-logo {
+    width: 260px;
+    height: 71px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background: transparent url(/images/channel-17-town-meeting-television-260x71.png) no-repeat center center;
+    text-indent: -999em;
+}
+#meta {
+    padding-top: 5.0em;
+    padding-bottom: 3.0em;
+    font-size: 0.8em;
+}
+#meta nav {
+    margin-bottom: 1.6em;
+}
+#meta ul,
+#meta ol,
+#meta p,
+#meta li {
+    margin-top: 0.2em;
+}
+#meta p,
+#meta li {
+    line-height: 1.2;
+}
+#meta li {
+    display: inline;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+    list-style: none;
+}
