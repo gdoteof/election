@@ -15,632 +15,633 @@
     <script src="/js/ballot-item-results.js" type="text/javascript"></script>
   </head>
   <body>
-    <header id="introduction">
-      <h1>Town Meeting Day 2012</h1>
-      <p>Special thanks to Main Street Landing, Channel 17 Town Meeting Television, Comcast Cable and Burlington Telecom subscribers, and the members of CCTV for sponsoring our live election coverage. Special thanks as well to Seven Days for contributing their <a href="#live-blog">live blog coverage</a>!</p>
-    </header>
-    <article id="live-broadcast">
-      <h1>Live Broadcast</h1>
-      <script type="text/javascript" src="http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/jwplayer.js"></script><div id="cctv_elec_player"><a href="http://get.adobe.com/flashplayer/">Get the Adobe Flash Player Plugin to view this video.</a></div>
-      <script type="text/javascript">
-          jwplayer("cctv_elec_player").setup({
-              height: 443,
-              width: 590,
-              modes: [
-                      /* try mp4 rtmp/rtmpt - works for all browsers with flash plugin 9.0.115+ installed */
-                  { type: "flash", 
-                    src: "http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/player.swf", 
-                    config: {
-                      image: "http://www.cctv.org/files/streamplayer/Livewebstreamlogo.jpg",
-                      file: "eventstream",
-                      streamer: "rtmp://stream2.cctv.org/live",
-                      provider: "rtmp"
-                    }
-                  },
-                   /* try mp4 via html5 - works for safari and iOS */
-                  { type: "html5",
-                    config: {
-                      image: "http://www.cctv.org/files/streamplayer/Livewebstreamlogo.jpg",
-                      file: "http://stream2.cctv.org/live/eventstream/playlist.m3u8"
-                    }
-                  },
-      
-              ]
-          });
-      </script>
-    </article>
-    <article id="results">
-      <h1>Results</h1>
-      <article id="city-of-burlington" class="district-results municipality">
-        <h1><a href="#city-of-burlington">City of Burlington</a></h1>
-        <article>
-          <h1>Elections</h1>
-          <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/">
-            <h1>Burlington Mayor</h1>
-            <table>
-              <thead>
-                <tr class="result">
-                  <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                  <th class="votes">Votes</th>
-                  <th class="percent">Percent</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="result">
-                  <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                  <td class="votes">201</td>
-                  <td class="percent">50.1</td>
-                </tr>
-                <tr class="result">
-                  <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                  <td class="votes">200</td>
-                  <td class="percent">49.9</td>
-                </tr>
-              </tbody>
-            </table>
-            <ol class="graph">
-              <li class="result" title="Kurt Wright: 201 votes, 50.1%" style="width: 50.1%"><span class="option candidate">Kurt Wright</span>: <span class="votes">201</span> votes, <span class="percent">50.1</span>%</li>
-              <li class="result" title="Miro Weinberger: 200 votes, 49.95%" style="width: 49.9%"><span class="option candidate">Miro Weinberger</span>: <span class="votes">200</span> votes, <span class="percent">49.9</span>%</li>
-            </ol>
-            <footer>
-              <p class="incomplete">These are incomplete results.</p>
-              <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-            </footer>
+    <div id="page">
+      <header id="introduction">
+        <h1>Town Meeting Day 2012</h1>
+        <p>Special thanks to Main Street Landing, Channel 17 Town Meeting Television, Comcast Cable and Burlington Telecom subscribers, and the members of CCTV for sponsoring our live election coverage. Special thanks as well to Seven Days for contributing their <a href="#live-blog">live blog coverage</a>!</p>
+      </header>
+      <article id="live-broadcast">
+        <h1>Live Broadcast</h1>
+        <script type="text/javascript" src="http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/jwplayer.js"></script><div id="cctv_elec_player"><a href="http://get.adobe.com/flashplayer/">Get the Adobe Flash Player Plugin to view this video.</a></div>
+        <script type="text/javascript">
+            jwplayer("cctv_elec_player").setup({
+                height: 443,
+                width: 590,
+                modes: [
+                        /* try mp4 rtmp/rtmpt - works for all browsers with flash plugin 9.0.115+ installed */
+                    { type: "flash", 
+                      src: "http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/player.swf", 
+                      config: {
+                        image: "http://www.cctv.org/files/streamplayer/Livewebstreamlogo.jpg",
+                        file: "eventstream",
+                        streamer: "rtmp://stream2.cctv.org/live",
+                        provider: "rtmp"
+                      }
+                    },
+                     /* try mp4 via html5 - works for safari and iOS */
+                    { type: "html5",
+                      config: {
+                        image: "http://www.cctv.org/files/streamplayer/Livewebstreamlogo.jpg",
+                        file: "http://stream2.cctv.org/live/eventstream/playlist.m3u8"
+                      }
+                    },
+        
+                ]
+            });
+        </script>
+      </article>
+      <article id="results">
+        <h1>Results</h1>
+        <article id="city-of-burlington" class="district-results municipality">
+          <h1><a href="#city-of-burlington">City of Burlington</a></h1>
+          <article>
+            <h1>Elections</h1>
+            <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-mayor/">
+              <h1>Burlington Mayor</h1>
+              <table>
+                <thead>
+                  <tr class="result">
+                    <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                    <th class="votes">Votes</th>
+                    <th class="percent">Percent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="result">
+                    <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                    <td class="votes">201</td>
+                    <td class="percent">50.1</td>
+                  </tr>
+                  <tr class="result">
+                    <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                    <td class="votes">200</td>
+                    <td class="percent">49.9</td>
+                  </tr>
+                </tbody>
+              </table>
+              <ol class="graph">
+                <li class="result" title="Kurt Wright: 201 votes, 50.1%" style="width: 50.1%"><span class="option candidate">Kurt Wright</span>: <span class="votes">201</span> votes, <span class="percent">50.1</span>%</li>
+                <li class="result" title="Miro Weinberger: 200 votes, 49.95%" style="width: 49.9%"><span class="option candidate">Miro Weinberger</span>: <span class="votes">200</span> votes, <span class="percent">49.9</span>%</li>
+              </ol>
+              <footer>
+                <p class="incomplete">These are incomplete results.</p>
+                <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+              </footer>
+            </article>
+            <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/ward-3-city-councilor/">
+              <h1>Ward 3 City Councilor</h1>
+              <table>
+                <thead>
+                  <tr class="result">
+                    <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                    <th class="votes">Votes</th>
+                    <th class="percent">Percent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="result winner complete">
+                    <td class="option candidate"><span class="graph-swatch"></span>Vince Brennan</td>
+                    <td class="votes">354</td>
+                    <td class="percent">60.2</td>
+                  </tr>
+                  <tr class="result complete">
+                    <td class="option candidate"><span class="graph-swatch"></span>Lynn Mesick</td>
+                    <td class="votes">171</td>
+                    <td class="percent">29.1</td>
+                  </tr>
+                  <tr class="result complete">
+                    <td class="option candidate"><span class="graph-swatch"></span>Ron Ruloff</td>
+                    <td class="votes">63</td>
+                    <td class="percent">10.7</td>
+                  </tr>
+                </tbody>
+              </table>
+              <ol class="graph">
+                <li class="result" title="Vince Brennan: 354 votes, 60.2%" style="width: 60.2%"><span class="option candidate">Vince Brennan</span>: <span class="votes">354</span> votes, <span class="percent">60.2</span>%</li>
+                <li class="result" title="Lynn Mesick: 171 votes, 29.1%" style="width: 29.1%"><span class="option candidate">Lynn Mesick</span>: <span class="votes">171</span> votes, <span class="percent">29.1</span>%</li>
+                <li class="result" title="Ron Ruloff: 63 votes, 10.7%" style="width: 10.7%"><span class="option candidate">Ron Ruloff</span>: <span class="votes">63</span> votes, <span class="percent">10.7</span>%</li>
+              </ol>
+              <footer>
+                <p class="complete">These are complete but unofficial results.</p>
+                <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+              </footer>
+            </article>
           </article>
-          <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/ward-3-city-councilor/">
-            <h1>Ward 3 City Councilor</h1>
-            <table>
-              <thead>
-                <tr class="result">
-                  <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                  <th class="votes">Votes</th>
-                  <th class="percent">Percent</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="result winner complete">
-                  <td class="option candidate"><span class="graph-swatch"></span>Vince Brennan</td>
-                  <td class="votes">354</td>
-                  <td class="percent">60.2</td>
-                </tr>
-                <tr class="result complete">
-                  <td class="option candidate"><span class="graph-swatch"></span>Lynn Mesick</td>
-                  <td class="votes">171</td>
-                  <td class="percent">29.1</td>
-                </tr>
-                <tr class="result complete">
-                  <td class="option candidate"><span class="graph-swatch"></span>Ron Ruloff</td>
-                  <td class="votes">63</td>
-                  <td class="percent">10.7</td>
-                </tr>
-              </tbody>
-            </table>
-            <ol class="graph">
-              <li class="result" title="Vince Brennan: 354 votes, 60.2%" style="width: 60.2%"><span class="option candidate">Vince Brennan</span>: <span class="votes">354</span> votes, <span class="percent">60.2</span>%</li>
-              <li class="result" title="Lynn Mesick: 171 votes, 29.1%" style="width: 29.1%"><span class="option candidate">Lynn Mesick</span>: <span class="votes">171</span> votes, <span class="percent">29.1</span>%</li>
-              <li class="result" title="Ron Ruloff: 63 votes, 10.7%" style="width: 10.7%"><span class="option candidate">Ron Ruloff</span>: <span class="votes">63</span> votes, <span class="percent">10.7</span>%</li>
-            </ol>
-            <footer>
-              <p class="complete">These are complete but unofficial results.</p>
-              <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-            </footer>
+          <article>
+            <h1>Referendums</h1>
+            <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-school-budget/">
+              <h1>Burlington School Budget</h1>
+              <table>
+                <thead>
+                  <tr class="result">
+                    <th class="option"><span class="graph-swatch"></span>Option</th>
+                    <th class="votes">Votes</th>
+                    <th class="percent">Percent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="result">
+                    <td class="option"><span class="graph-swatch"></span>Yes</td>
+                    <td class="votes">300</td>
+                    <td class="percent">37.5</td>
+                  </tr>
+                  <tr class="result">
+                    <td class="option"><span class="graph-swatch"></span>No</td>
+                    <td class="votes">500</td>
+                    <td class="percent">62.5</td>
+                  </tr>
+                </tbody>
+              </table>
+              <ol class="graph">
+                <li class="result" title="Yes: 300 votes, 37.5%" style="width: 37.5%"><span class="option candidate">Yes</span>: <span class="votes">300</span> votes, <span class="percent">37.5</span>%</li>
+                <li class="result" title="No: 500 votes, 62.5%" style="width: 62.5%"><span class="option candidate">No</span>: <span class="votes">500</span> votes, <span class="percent">62.5</span>%</li>
+              </ol>
+              <footer>
+                <p class="incomplete">These are incomplete results.</p>
+                <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+              </footer>
+            </article>
+          </article>
+          <article>
+            <h1>Wards</h1>
+            <article id="city-of-burlington-ward-1" class="district-results ward">
+              <h1><a href="#city-of-burlington-ward-1">Ward 1</a></h1>
+              <article>
+                <h1>Elections</h1>
+                <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-mayor/">
+                  <h1>Burlington Mayor</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                        <td class="votes">51</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                        <td class="votes">50</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+              <article>
+                <h1>Referendums</h1>
+                <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-school-budget/">
+                  <h1>Burlington School Budget</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option"><span class="graph-swatch"></span>Option</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>Yes</td>
+                        <td class="votes">35</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>No</td>
+                        <td class="votes">41</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+            </article>
+            <article id="city-of-burlington-ward-2" class="district-results ward">
+              <h1><a href="#city-of-burlington-ward-2">Ward 2</a></h1>
+              <article>
+                <h1>Elections</h1>
+                <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-2/burlington-mayor/">
+                  <h1>Burlington Mayor</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                        <td class="votes">68</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                        <td class="votes">35</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+              <article>
+                <h1>Referendums</h1>
+                <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-2/burlington-school-budget/">
+                  <h1>Burlington School Budget</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option"><span class="graph-swatch"></span>Option</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>Yes</td>
+                        <td class="votes">35</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>No</td>
+                        <td class="votes">41</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+            </article>
+            <article id="city-of-burlington-ward-3" class="district-results ward">
+              <h1><a href="#city-of-burlington-ward-3">Ward 3</a></h1>
+              <article>
+                <h1>Elections</h1>
+                <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-3/burlington-mayor/">
+                  <h1>Burlington Mayor</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                        <td class="votes">56</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                        <td class="votes">52</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+              <article>
+                <h1>Referendums</h1>
+                <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-3/burlington-school-budget/">
+                  <h1>Burlington School Budget</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option"><span class="graph-swatch"></span>Option</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>Yes</td>
+                        <td class="votes">35</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>No</td>
+                        <td class="votes">41</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+            </article>
+            <article id="city-of-burlington-ward-4" class="district-results ward">
+              <h1><a href="#city-of-burlington-ward-4">Ward 4</a></h1>
+              <article>
+                <h1>Elections</h1>
+                <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-4/burlington-mayor/">
+                  <h1>Burlington Mayor</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                        <td class="votes">56</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                        <td class="votes">52</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+              <article>
+                <h1>Referendums</h1>
+                <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-4/burlington-school-budget/">
+                  <h1>Burlington School Budget</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option"><span class="graph-swatch"></span>Option</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>Yes</td>
+                        <td class="votes">35</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>No</td>
+                        <td class="votes">41</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+            </article>
+            <article id="city-of-burlington-ward-5" class="district-results ward">
+              <h1><a href="#city-of-burlington-ward-5">Ward 5</a></h1>
+              <article>
+                <h1>Elections</h1>
+                <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-5/burlington-mayor/">
+                  <h1>Burlington Mayor</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                        <td class="votes">56</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                        <td class="votes">52</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+              <article>
+                <h1>Referendums</h1>
+                <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-5/burlington-school-budget/">
+                  <h1>Burlington School Budget</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option"><span class="graph-swatch"></span>Option</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>Yes</td>
+                        <td class="votes">35</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>No</td>
+                        <td class="votes">41</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+            </article>
+            <article id="city-of-burlington-ward-6" class="district-results ward">
+              <h1><a href="#city-of-burlington-ward-6">Ward 6</a></h1>
+              <article>
+                <h1>Elections</h1>
+                <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-6/burlington-mayor/">
+                  <h1>Burlington Mayor</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                        <td class="votes">56</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                        <td class="votes">52</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+              <article>
+                <h1>Referendums</h1>
+                <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-6/burlington-school-budget/">
+                  <h1>Burlington School Budget</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option"><span class="graph-swatch"></span>Option</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>Yes</td>
+                        <td class="votes">35</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>No</td>
+                        <td class="votes">41</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+            </article>
+            <article id="city-of-burlington-ward-7" class="district-results ward">
+              <h1><a href="#city-of-burlington-ward-7">Ward 7</a></h1>
+              <article>
+                <h1>Elections</h1>
+                <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-7/burlington-mayor/">
+                  <h1>Burlington Mayor</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
+                        <td class="votes">56</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
+                        <td class="votes">52</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+              <article>
+                <h1>Referendums</h1>
+                <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-7/burlington-school-budget/">
+                  <h1>Burlington School Budget</h1>
+                  <table>
+                    <thead>
+                      <tr class="result">
+                        <th class="option"><span class="graph-swatch"></span>Option</th>
+                        <th class="votes">Votes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>Yes</td>
+                        <td class="votes">35</td>
+                      </tr>
+                      <tr class="result">
+                        <td class="option"><span class="graph-swatch"></span>No</td>
+                        <td class="votes">41</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <footer>
+                    <p class="partial">These are partial results for this election or referendum.</p>
+                    <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
+                  </footer>
+                </article>
+              </article>
+            </article>
           </article>
         </article>
-        <article>
-          <h1>Referendums</h1>
-          <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/city-of-burlington/burlington-school-budget/">
-            <h1>Burlington School Budget</h1>
-            <table>
-              <thead>
-                <tr class="result">
-                  <th class="option"><span class="graph-swatch"></span>Option</th>
-                  <th class="votes">Votes</th>
-                  <th class="percent">Percent</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="result">
-                  <td class="option"><span class="graph-swatch"></span>Yes</td>
-                  <td class="votes">300</td>
-                  <td class="percent">37.5</td>
-                </tr>
-                <tr class="result">
-                  <td class="option"><span class="graph-swatch"></span>No</td>
-                  <td class="votes">500</td>
-                  <td class="percent">62.5</td>
-                </tr>
-              </tbody>
-            </table>
-            <ol class="graph">
-              <li class="result" title="Yes: 300 votes, 37.5%" style="width: 37.5%"><span class="option candidate">Yes</span>: <span class="votes">300</span> votes, <span class="percent">37.5</span>%</li>
-              <li class="result" title="No: 500 votes, 62.5%" style="width: 62.5%"><span class="option candidate">No</span>: <span class="votes">500</span> votes, <span class="percent">62.5</span>%</li>
-            </ol>
-            <footer>
-              <p class="incomplete">These are incomplete results.</p>
-              <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-            </footer>
-          </article>
+        <article id="city-of-south-burlington" class="district-results municipality">
+          <h1><a href="#city-of-south-burlington">City of South Burlington</a></h1>
         </article>
-        <article>
-          <h1>Wards</h1>
-          <article id="city-of-burlington-ward-1" class="district-results ward">
-            <h1><a href="#city-of-burlington-ward-1">Ward 1</a></h1>
-            <article>
-              <h1>Elections</h1>
-              <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-mayor/">
-                <h1>Burlington Mayor</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                      <td class="votes">51</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                      <td class="votes">50</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-            <article>
-              <h1>Referendums</h1>
-              <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-1/burlington-school-budget/">
-                <h1>Burlington School Budget</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option"><span class="graph-swatch"></span>Option</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>Yes</td>
-                      <td class="votes">35</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>No</td>
-                      <td class="votes">41</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-          </article>
-          <article id="city-of-burlington-ward-2" class="district-results ward">
-            <h1><a href="#city-of-burlington-ward-2">Ward 2</a></h1>
-            <article>
-              <h1>Elections</h1>
-              <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-2/burlington-mayor/">
-                <h1>Burlington Mayor</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                      <td class="votes">68</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                      <td class="votes">35</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-            <article>
-              <h1>Referendums</h1>
-              <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-2/burlington-school-budget/">
-                <h1>Burlington School Budget</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option"><span class="graph-swatch"></span>Option</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>Yes</td>
-                      <td class="votes">35</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>No</td>
-                      <td class="votes">41</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-          </article>
-          <article id="city-of-burlington-ward-3" class="district-results ward">
-            <h1><a href="#city-of-burlington-ward-3">Ward 3</a></h1>
-            <article>
-              <h1>Elections</h1>
-              <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-3/burlington-mayor/">
-                <h1>Burlington Mayor</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                      <td class="votes">56</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                      <td class="votes">52</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-            <article>
-              <h1>Referendums</h1>
-              <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-3/burlington-school-budget/">
-                <h1>Burlington School Budget</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option"><span class="graph-swatch"></span>Option</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>Yes</td>
-                      <td class="votes">35</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>No</td>
-                      <td class="votes">41</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-          </article>
-          <article id="city-of-burlington-ward-4" class="district-results ward">
-            <h1><a href="#city-of-burlington-ward-4">Ward 4</a></h1>
-            <article>
-              <h1>Elections</h1>
-              <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-4/burlington-mayor/">
-                <h1>Burlington Mayor</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                      <td class="votes">56</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                      <td class="votes">52</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-            <article>
-              <h1>Referendums</h1>
-              <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-4/burlington-school-budget/">
-                <h1>Burlington School Budget</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option"><span class="graph-swatch"></span>Option</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>Yes</td>
-                      <td class="votes">35</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>No</td>
-                      <td class="votes">41</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-          </article>
-          <article id="city-of-burlington-ward-5" class="district-results ward">
-            <h1><a href="#city-of-burlington-ward-5">Ward 5</a></h1>
-            <article>
-              <h1>Elections</h1>
-              <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-5/burlington-mayor/">
-                <h1>Burlington Mayor</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                      <td class="votes">56</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                      <td class="votes">52</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-            <article>
-              <h1>Referendums</h1>
-              <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-5/burlington-school-budget/">
-                <h1>Burlington School Budget</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option"><span class="graph-swatch"></span>Option</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>Yes</td>
-                      <td class="votes">35</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>No</td>
-                      <td class="votes">41</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-          </article>
-          <article id="city-of-burlington-ward-6" class="district-results ward">
-            <h1><a href="#city-of-burlington-ward-6">Ward 6</a></h1>
-            <article>
-              <h1>Elections</h1>
-              <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-6/burlington-mayor/">
-                <h1>Burlington Mayor</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                      <td class="votes">56</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                      <td class="votes">52</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-            <article>
-              <h1>Referendums</h1>
-              <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-6/burlington-school-budget/">
-                <h1>Burlington School Budget</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option"><span class="graph-swatch"></span>Option</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>Yes</td>
-                      <td class="votes">35</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>No</td>
-                      <td class="votes">41</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-          </article>
-          <article id="city-of-burlington-ward-7" class="district-results ward">
-            <h1><a href="#city-of-burlington-ward-7">Ward 7</a></h1>
-            <article>
-              <h1>Elections</h1>
-              <article class="ballot-item-results election" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-7/burlington-mayor/">
-                <h1>Burlington Mayor</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option candidate"><span class="graph-swatch"></span>Candidate</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Kurt Wright</td>
-                      <td class="votes">56</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option candidate"><span class="graph-swatch"></span>Miro Weinberger</td>
-                      <td class="votes">52</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-            <article>
-              <h1>Referendums</h1>
-              <article class="ballot-item-results referendum" data-link="/town-meeting-season-2011/town-meeting-day-2011/ward-7/burlington-school-budget/">
-                <h1>Burlington School Budget</h1>
-                <table>
-                  <thead>
-                    <tr class="result">
-                      <th class="option"><span class="graph-swatch"></span>Option</th>
-                      <th class="votes">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>Yes</td>
-                      <td class="votes">35</td>
-                    </tr>
-                    <tr class="result">
-                      <td class="option"><span class="graph-swatch"></span>No</td>
-                      <td class="votes">41</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <footer>
-                  <p class="partial">These are partial results for this election or referendum.</p>
-                  <p>Updated <span class="updated">Mar 2, 2012 4:58:06 PM</span></p>
-                </footer>
-              </article>
-            </article>
-          </article>
+        <article id="city-of-winooski" class="district-results municipality">
+          <h1><a href="#city-of-winooski">City of Winooski</a></h1>
+        </article>
+        <article id="town-of-essex" class="district-results municipality">
+          <h1><a href="#town-of-essex">Town of Essex</a></h1>
+        </article>
+        <article id="town-of-colchester" class="district-results municipality">
+          <h1><a href="#town-of-colchester">Town of Colchester</a></h1>
+        </article>
+        <article id="town-of-williston" class="district-results municipality">
+          <h1><a href="#town-of-williston">Town of Williston</a></h1>
         </article>
       </article>
-      <article id="city-of-south-burlington" class="district-results municipality">
-        <h1><a href="#city-of-south-burlington">City of South Burlington</a></h1>
-      </article>
-      <article id="city-of-winooski" class="district-results municipality">
-        <h1><a href="#city-of-winooski">City of Winooski</a></h1>
-      </article>
-      <article id="town-of-essex" class="district-results municipality">
-        <h1><a href="#town-of-essex">Town of Essex</a></h1>
-      </article>
-      <article id="town-of-colchester" class="district-results municipality">
-        <h1><a href="#town-of-colchester">Town of Colchester</a></h1>
-      </article>
-      <article id="town-of-williston" class="district-results municipality">
-        <h1><a href="#town-of-williston">Town of Williston</a></h1>
-      </article>
-    </article>
-    <section id="sidebar">
-      <h1><a href="#" id="channel-17-town-meeting-television-logo">Channel 17 Town Meeting Television</a></h1>
-      <nav id="nav-results">
-        <h1>Results by District</h1>
-        <ol>
-          <li><a href="#city-of-burlington">City of Burlington</a>
-            <ol>
-              <li><a href="#city-of-burlington-ward-1">Ward 1</a></li>
-              <li><a href="#city-of-burlington-ward-2">Ward 2</a></li>
-              <li><a href="#city-of-burlington-ward-3">Ward 3</a></li>
-              <li><a href="#city-of-burlington-ward-4">Ward 4</a></li>
-              <li><a href="#city-of-burlington-ward-5">Ward 5</a></li>
-              <li><a href="#city-of-burlington-ward-6">Ward 6</a></li>
-              <li><a href="#city-of-burlington-ward-7">Ward 7</a></li>
-            </ol>
-          </li>
-          <li><a href="#city-of-south-burlington">City of South Burlington</a></li>
-          <li><a href="#city-of-winooski">City of Winooski</a></li>
-          <li><a href="#town-of-essex">Town of Essex</a></li>
-          <li><a href="#town-of-colchester">Town of Colchester</a></li>
-          <li><a href="#town-of-williston">Town of Williston</a></li>
-        </ol>
-      </nav>
-      <nav id="nav-tools">
-        <ul>
-          <li><a href="" class="refresh">Refresh Results</a></li>
-          <li><a href="#live-broadcast" class="live-broadcast">Watch Live Broadcast</a></li>
-        </ul>
-      </nav>
-      <article id="live-blog">
-        <h1>Live Blog</h1>
-        <iframe src="http://www.coveritlive.com/index2.php/option=com_altcaster/task=viewaltcast/altcast_code=61407c3950/height=550/width=330" scrolling="no" height="550px" width="330px" frameBorder="0" allowTransparency="true" ><a href="http://www.coveritlive.com/mobile.php/option=com_mobile/task=viewaltcast/altcast_code=61407c3950">Town Meeting Election Night Coverage</a></iframe>
-      </article>
-    </section>
-    <footer>
-    <footer id="meta">
-      <nav>
-        <ul>
-          <li><a href="/about-us/staff">Staff List</a></li>
-          <li><a href="/about-us">About Us</a></li>
-          <li><a href="/contact-us">Contact Us</a></li>
-          <li><a href="/sitemap">Site Map</a></li>
-          <li><a href="/privacy-policy-statement">Privacy Policy</a></li>
-        </ul>
-      </nav>
-      <p>©2008 Channel 17/Town Meeting Television and CCTV Center for Media &amp; Democracy</p>
-      <p>294 North Winooski Ave., Burlington, VT 05401 • Phone (802) 862-3966 • Fax (802) 860-2370</p>
-    </footer>
+      <section id="sidebar">
+        <h1><a href="#" id="channel-17-town-meeting-television-logo">Channel 17 Town Meeting Television</a></h1>
+        <nav id="nav-results">
+          <h1>Results by District</h1>
+          <ol>
+            <li><a href="#city-of-burlington">City of Burlington</a>
+              <ol>
+                <li><a href="#city-of-burlington-ward-1">Ward 1</a></li>
+                <li><a href="#city-of-burlington-ward-2">Ward 2</a></li>
+                <li><a href="#city-of-burlington-ward-3">Ward 3</a></li>
+                <li><a href="#city-of-burlington-ward-4">Ward 4</a></li>
+                <li><a href="#city-of-burlington-ward-5">Ward 5</a></li>
+                <li><a href="#city-of-burlington-ward-6">Ward 6</a></li>
+                <li><a href="#city-of-burlington-ward-7">Ward 7</a></li>
+              </ol>
+            </li>
+            <li><a href="#city-of-south-burlington">City of South Burlington</a></li>
+            <li><a href="#city-of-winooski">City of Winooski</a></li>
+            <li><a href="#town-of-essex">Town of Essex</a></li>
+            <li><a href="#town-of-colchester">Town of Colchester</a></li>
+            <li><a href="#town-of-williston">Town of Williston</a></li>
+          </ol>
+        </nav>
+        <nav id="nav-tools">
+          <ul>
+            <li><a href="" class="refresh">Refresh Results</a></li>
+            <li><a href="#live-broadcast" class="live-broadcast">Watch Live Broadcast</a></li>
+          </ul>
+        </nav>
+        <article id="live-blog">
+          <h1>Live Blog</h1>
+          <iframe src="http://www.coveritlive.com/index2.php/option=com_altcaster/task=viewaltcast/altcast_code=61407c3950/height=550/width=330" scrolling="no" height="550px" width="330px" frameBorder="0" allowTransparency="true" ><a href="http://www.coveritlive.com/mobile.php/option=com_mobile/task=viewaltcast/altcast_code=61407c3950">Town Meeting Election Night Coverage</a></iframe>
+        </article>
+      </section>
+      <footer id="meta">
+        <nav>
+          <ul>
+            <li><a href="/about-us/staff">Staff List</a></li>
+            <li><a href="/about-us">About Us</a></li>
+            <li><a href="/contact-us">Contact Us</a></li>
+            <li><a href="/sitemap">Site Map</a></li>
+            <li><a href="/privacy-policy-statement">Privacy Policy</a></li>
+          </ul>
+        </nav>
+        <p>©2008 Channel 17/Town Meeting Television and CCTV Center for Media &amp; Democracy</p>
+        <p>294 North Winooski Ave., Burlington, VT 05401 • Phone (802) 862-3966 • Fax (802) 860-2370</p>
+      </footer>
+    </div>
   </body>
 </html>
