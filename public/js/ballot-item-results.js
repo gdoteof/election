@@ -6,7 +6,7 @@ $(document).ready(function() {
     };
     updateBallotItemArticles();
 
-    var select = $("<select/>").append($('<option/>').text("<select>").val("#"));
+    var select = $("<select/>").append($('<option/>').text("Select a District…").val("#"));
     $("#sidebar nav#nav-results > ol > li").each(function() {
         //TODO: Fix deeper recursion issues and make this more elegant
         recursivelyGenerateSelectFromList($(this), select);
