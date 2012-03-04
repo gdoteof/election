@@ -1,10 +1,10 @@
 body {
     background-color: white;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DDD), to(white));
-    background-image: -webkit-linear-gradient(top, #DDD, white);
-    background-image: -moz-linear-gradient(top, #DDD, white);
-    background-image: -ms-linear-gradient(top, #DDD, white);
-    background-image: -o-linear-gradient(top, #DDD, white);
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(white));
+    background-image: -webkit-linear-gradient(top, #EEE, white);
+    background-image: -moz-linear-gradient(top, #EEE, white);
+    background-image: -ms-linear-gradient(top, #EEE, white);
+    background-image: -o-linear-gradient(top, #EEE, white);
     font-family: Arial, sans-serif;
     font-size: 62.5%;
     color: black;
