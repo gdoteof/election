@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    $("body").addClass("javascript-enabled");
     var timeouts = {};
     var MESSAGES = {
         "incomplete": '<p class="incomplete">These are incomplete results.</p>',

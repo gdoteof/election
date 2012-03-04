@@ -10,6 +10,21 @@ body {
     color: black;
     text-align: center;
 }
+noscript {
+    width: 85%;
+    display: block;
+    margin-bottom: 2.0em;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.9em;
+}
+noscript p,
+noscript p a {
+    color: #888;
+}
+body.javascript-enabled noscript {
+    display: none;
+}
 h1,
 p,
 ul,
@@ -118,6 +133,12 @@ em {
 #results {
     width: 590px;
     float: left;
+}
+@media all and (min-height: 875px) {
+    body.javascript-enabled #meta {
+        width: 590px;
+        float: left;
+    }
 }
 #introduction,
 #live-broadcast,
@@ -252,10 +273,15 @@ em {
     margin-right: 0.6em;
     font-size: 1.5em;
 }
+#live-blog iframe {
+    display: none;
+}
+body.javascript-enabled #live-blog iframe {
+    display: block;
+}
 #meta {
     padding-top: 5.0em;
     padding-bottom: 3.0em;
-    font-size: 0.8em;
 }
 #meta nav {
     margin-bottom: 1.6em;
@@ -268,6 +294,7 @@ em {
 }
 #meta p,
 #meta li {
+    font-size: 1.2em;
     line-height: 1.2;
 }
 #meta li {
@@ -275,4 +302,10 @@ em {
     margin-left: 0.2em;
     margin-right: 0.2em;
     list-style: none;
+}
+@media all and (min-height: 875px) {
+    body.javascript-enabled #sidebar {
+        position: fixed;
+        margin-left: 610px;
+    }
 }
