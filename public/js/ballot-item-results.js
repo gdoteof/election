@@ -4,7 +4,6 @@ $(document).ready(function() {
         "incomplete": '<p class="incomplete">These are incomplete results.</p>',
         "complete": '<p class="complete">These are complete but unofficial results.</p>'
     };
-    updateBallotItemArticles();
 
     var select = $("<select/>").append($('<option/>').text("Select a District…").val("#"));
     $("#sidebar nav#nav-results > ol > li").each(function() {
@@ -35,6 +34,7 @@ $(document).ready(function() {
     }
 
     $("article.district-results").children("article").hide();
+    updateBallotItemArticles();
     $("article.district-results").bind("scrollTo", function(e) {
         var scrollTarget = "#" + $(this).attr("id");
         $("article.district-results").children("article").hide();
