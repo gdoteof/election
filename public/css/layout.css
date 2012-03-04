@@ -156,6 +156,9 @@ em {
 #introduction h1 {
     font-size: 4.6em;
 }
+#live-broadcast {
+    margin-bottom: 2.0em;
+}
 #sidebar {
     width: 330px;
     padding-bottom: 1.0em;
