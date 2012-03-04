@@ -183,7 +183,7 @@ em {
     background: transparent url(/images/channel-17-town-meeting-television-260x71.png) no-repeat center center;
     text-indent: -999em;
 }
-#sidebar h1#organization-name,
+#sidebar header,
 #sidebar nav,
 #live-blog {
     position: relative;
@@ -196,10 +196,8 @@ em {
     box-shadow: 0 2px 2px #AAA;
     z-index: 5;
 }
-#sidebar h1#organization-name {
-    margin-top: 0;
-    padding-top: 2.6em;
-    padding-bottom: 3.0em;
+#sidebar header {
+    padding-bottom: 2.0em;
 }
 #sidebar nav {
     margin-left: -0.8em;
