@@ -227,6 +227,7 @@ function _elec_html_ballot_item_skel($data){
   $district_title = $data->district['title'];
   $district_slug = _elec_title_to_slug($district_title);
   $ballot_item_title = $data->title;
+  $last_update = strftime('%b %e, %Y %r',mktime());
   $ballot_item_slug = _elec_title_to_slug($ballot_item_title);
   $data_link = base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
 
@@ -239,11 +240,12 @@ function _elec_html_ballot_item_skel($data){
   $results .='<h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>';
   foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
   $opt_type_th = ($type=='election') ? 'Candidates' : 'Options';
+  $opt_type_class = ($type=='election') ? 'candidate' : '';
   $results .= <<<TABLE
   <table>
     <thead>
       <tr class="result">
-        <th class="options">$opt_type_th</th>
+        <th class="option $opt_type_class"><span class="graph-swatch"></span>$opt_type_th</th>
         <th class="votes">Votes</th>
 TABLE;
   if($complete) $results .= '<th class="percent">Percent</th>';
@@ -253,21 +255,23 @@ TABLE;
     <tbody>
 TABLE;
   $graph = '<ol class="graph">' . "\n";
+  $footer = '<footer>' . "\n";
   foreach ($data->results as $option => $result){
     $winner = ($result['winner']) ? 'winner' : '';
     $complete = ($result['complete']) ? ' complete ' : '';
     $percent = ($complete) ? number_format($result['votes'] / $total_votes * 100, 1) : 'n/a';
-    $opt_type = ($type=='election') ? 'candidate' : 'boolean';
+    $opt_type = ($type=='election') ? 'candidate' : '';
     $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
-    $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
+    $results .= '    <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
     $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
-    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ': ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span>: <span class="votes">' . $result['votes']  . ' votes</span>, <span class="percent">'. $percent . "%" . '</span></li>' . "\n";
+    $footer .= '' . "\n";
+    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ' : ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span> : <span class="votes">' . $result['votes']  . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
     if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "</td>\n"; }
     $results .= '  </tr>'. "\n";
   }
   $results .= "</tbody></table>" . "\n";
   $results .= $graph . '</ol>' . "\n";
-  $results .= '<footer></footer>' . "\n";
+  $results .= $footer . 'generated p first row footer here' . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>';
   $results .= '</article>' . "\n";
   //print $results;
 return $results;
