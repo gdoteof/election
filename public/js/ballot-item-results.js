@@ -34,7 +34,7 @@ $(document).ready(function() {
         });
     }
 
-    $("article.district-results").children("article").hide();
+    $(".view-election-event article.district-results").children("article").hide();
     updateBallotItemArticles();
     $("article.district-results").bind("scrollTo", function(e) {
         var scrollTarget = "#" + $(this).attr("id");
