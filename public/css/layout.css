@@ -122,7 +122,11 @@ em {
     clear: both;
 }
 #introduction {
+    margin-bottom: 3.0em;
     text-align: left;
+}
+#introduction > * {
+    padding-right: 1.0em;
 }
 #introduction h1 {
     font-size: 4.6em;
