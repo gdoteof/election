@@ -121,7 +121,9 @@ $(document).ready(function() {
                     var orderedList = element.find("ol.graph").empty();
                     //TODO: "complete" should be at overall results level
                     var complete = null;
+                    var totalVotes = 0;
                     for (result in data.results) {
+                        totalVotes += parseInt(data.results[result].votes);
                         var resultElement = templateRow.clone();
                         var graphResultElement = templateListItem.clone();
                         resultElement.find(".option").contents().filter(function() {
@@ -154,6 +156,11 @@ $(document).ready(function() {
                         tableBody.append(resultElement);
                         orderedList.append(graphResultElement);
                         bindResultMouseoverAndMouseout(graphResultElement);
+                    }
+                    if (totalVotes > 0) {
+                        element.find("ol.graph").show();
+                    } else {
+                        element.find("ol.graph").hide();
                     }
                     element.find("footer .incomplete").remove();
                     element.find("footer .complete").remove();
