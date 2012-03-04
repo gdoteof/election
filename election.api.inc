@@ -367,6 +367,7 @@ It is then included as a php file (via nid to reconstruct filename) from the fil
 into the theme, where it evaluates and prints.  -AC*/
 
 function _elec_html_event_skeleton($data){
+  //print "<pre>"; print_r($data); print "</pre>";
   $data = (object)$data;
 
   $season_slug = _elec_last_uri_path($data->election_season['link']);
@@ -391,8 +392,14 @@ function _elec_html_event_skeleton($data){
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
       /*$district_data = _  need burlington sub districts branch? summed */
       $district_data = (object)$district_data;
-      //$ballot_items .= ' '.print_r($district_data).' ';
-
+      /*
+      $ballot_items .= ''.print_r($district_data).' ';
+      print '<pre>'; 
+      print_r($container);
+      print_r($district_data->districts); 
+      print '</pre>';
+      */
+      _elec_skel_eat_subdistricts($district_data->districts, $event_nid,  $season_slug, $event_slug, $ballot_items, $election_nav);
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
         /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
         $ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
@@ -416,6 +423,47 @@ function _elec_html_event_skeleton($data){
   _elec_html_skel_to_file($event_nid,$elec_results);
   exit;
 };
+
+function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $event_slug,  &$ballot_items, &$election_nav, $depth = 1){
+  if(empty($sub_districts) ) return;
+  //print "(depth=$depth)sub distrcts:<pre>"; print_r($sub_districts); print "</pre>";
+  foreach($sub_districts as $key => $container){
+
+    foreach($container as $e_event){
+      $district_slug = _elec_title_to_slug($e_event['title']);
+      $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
+      $election_nav .= '<a href="#' . $e_event['title'] . '">' . $e_event['title'] . '</a>' . "\n";/* district nav */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
+      //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
+      $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
+      /*$district_data = _  need burlington sub districts branch? summed */
+      $district_data = (object)$district_data;
+      /*
+      $ballot_items .= ''.print_r($district_data).' ';
+      print "key is $key; container is ";
+      print '<pre>'; 
+      print_r($container);
+      print_r($district_data->districts); 
+      print '</pre>';
+      */
+      _elec_skel_eat_subdistricts($district_data->districts, $event_nid, $season_slug, $event_slug, $ballot_items, $election_nav, $depth+1);
+      foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
+        /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
+        $ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
+
+        foreach($ballot_item_list as $ballot_item){
+
+          $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
+          $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$district_slug,$ballot_item_slug);
+          $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
+
+        }/*ballot item loop*/
+
+      }/*ballot item type loop*/
+
+    }/*district loop*/
+  }
+}
 
 /* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
 function _elec_html_skel_to_file($event_nid,$elec_results){
@@ -1028,7 +1076,7 @@ function _elec_nid_from_ballot_item_slug($ballot_item_slug, $district_nid){
 }
 
 function _elec_remove_csv_extension($s){
-  if(substr($s,-4) == '.csv'){
+  if(substr($s,-4) == '.skl' || substr($s,-4) == '.csv'){
     return substr($s,0,-4);
   } else {
     return $s;
