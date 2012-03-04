@@ -40,6 +40,7 @@ $(document).ready(function() {
         var scrollTarget = "#" + $(this).attr("id");
         $("article.district-results").children("article").hide();
         $("article" + scrollTarget).children("article").show().end().parent("article").parent("article").show().children("article").show();
+        updateBallotItemArticles();
         $("#sidebar nav#nav-results select").val(scrollTarget);
         $.smoothScroll({
             scrollTarget: scrollTarget,
