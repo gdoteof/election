@@ -129,11 +129,11 @@
 }
 .ballot-item-results .result:nth-child(12n+1) .graph-swatch,
 .ballot-item-results .graph .result:nth-child(12n+1) {
-    background-color: #792779;
+    background-color: #863C86;
 }
 .ballot-item-results .result:nth-child(12n+2) .graph-swatch,
 .ballot-item-results .graph .result:nth-child(12n+2) {
-    background-color: #FDD303;
+    background-color: #FDD71C;
 }
 .ballot-item-results .result:nth-child(12n+3) .graph-swatch,
 .ballot-item-results .graph .result:nth-child(12n+3) {
