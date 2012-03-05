@@ -411,7 +411,12 @@ function _elec_html_event_skeleton($data){
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
       $election_nav .= '<a href="#' . $e_event['title'] . '">' . $e_event['title'] . '</a>' . "\n";/* district nav */
-      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
+      //$ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" 
+                    . '<h1 id="' . $e_event['title'] . '">' 
+                    . "<a href='#" . $district_slug . "'>" . ucfirst(_elec_slug_to_title($district_slug)) . '</a></h1>' 
+                    . "\n" . '</article>' . "\n";
+                    /* district header */
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
       /*$district_data = _  need burlington sub districts branch? summed */
@@ -469,7 +474,11 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
       $election_nav .= '<a href="#' . $e_event['title'] . '">' . $e_event['title'] . '</a>' . "\n";/* district nav */
-      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" 
+                    . '<h1 id="' . $e_event['title'] . '">' 
+                    . "<a href='#" . $district_slug . "'>" . ucfirst(_elec_slug_to_title($district_slug)) . '</a></h1>' 
+                    . "\n" . '</article>' . "\n";
+                    /* district header */
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
       $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
