@@ -387,7 +387,8 @@ function _elec_html_event_skeleton($data){
   $election_nav .= '<nav>' . "\n"; //collect html for nav
   $ballot_items = '';   //collect html for results
   foreach($district_type_containers as $key => $container){
-
+    //only use municipalities.
+    if($key == "municipalities"){   
     foreach($container as $e_event){
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
@@ -429,6 +430,8 @@ function _elec_html_event_skeleton($data){
       }/*ballot item type loop*/
 
     }/*district loop*/
+
+    }/* endif to do just municipalities*/
 
   }/*district type loop*/
   $ballot_items .= "\n";/*end results html*/
