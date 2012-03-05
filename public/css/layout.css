@@ -116,6 +116,18 @@ strong {
 em {
     font-style: italic;
 }
+small {
+    font-size: 0.8em;
+}
+small,
+small a {
+    color: #888;
+}
+@media all and (max-width: 640px) {
+    small {
+        font-size: 1.0em;
+    }
+}
 #elections {
     width: 960px;
     overflow: hidden;
