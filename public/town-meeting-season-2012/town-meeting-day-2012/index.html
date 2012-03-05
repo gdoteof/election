@@ -24,33 +24,35 @@
       </header>
       <article id="live-broadcast">
         <h1>Live Broadcast</h1>
-        <script type="text/javascript" src="http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/jwplayer.js"></script><div id="cctv-election-player"><noscript><p>Install the <a href="http://get.adobe.com/flashplayer/" target="_blank">Adobe Flash Player Plugin</a> and enable JavaScript to view our live coverage of Town Meeting Day 2012.</p></noscript></div>
-        <script type="text/javascript">
-            var imageUrl = "/images/town-meeting-day-2012-video-placeholder-590x443.jpg";
-            jwplayer("cctv-election-player").setup({
-                height: 443,
-                width: 590,
-                modes: [
-                        /* try mp4 rtmp/rtmpt - works for all browsers with flash plugin 9.0.115+ installed */
-                    { type: "flash", 
-                      src: "http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/player.swf", 
-                      config: {
-                        image: imageUrl,
-                        file: "eventstream",
-                        streamer: "rtmp://stream2.cctv.org/live",
-                        provider: "rtmp"
-                      }
-                    },
-                     /* try mp4 via html5 - works for safari and iOS */
-                    { type: "html5",
-                      config: {
-                        image: imageUrl,
-                        file: "http://stream2.cctv.org/live/eventstream/playlist.m3u8"
-                      }
-                    },
-                ]
-            });
-        </script>
+        <div class="embed" style="width: 590px; height: 443px;">
+          <script type="text/javascript" src="http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/jwplayer.js"></script><div id="cctv-election-player"><noscript><p>Install the <a href="http://get.adobe.com/flashplayer/" target="_blank">Adobe Flash Player Plugin</a> and enable JavaScript to view our live coverage of Town Meeting Day 2012.</p></noscript></div>
+          <script type="text/javascript">
+              var imageUrl = "/images/town-meeting-day-2012-video-placeholder-590x443.jpg";
+              jwplayer("cctv-election-player").setup({
+                  height: 443,
+                  width: 590,
+                  modes: [
+                          /* try mp4 rtmp/rtmpt - works for all browsers with flash plugin 9.0.115+ installed */
+                      { type: "flash", 
+                        src: "http://www.cctv.org/files/streamplayer/players_licensed/mediaplayer-5.7-licensed/player.swf", 
+                        config: {
+                          image: imageUrl,
+                          file: "eventstream",
+                          streamer: "rtmp://stream2.cctv.org/live",
+                          provider: "rtmp"
+                        }
+                      },
+                       /* try mp4 via html5 - works for safari and iOS */
+                      { type: "html5",
+                        config: {
+                          image: imageUrl,
+                          file: "http://stream2.cctv.org/live/eventstream/playlist.m3u8"
+                        }
+                      },
+                  ]
+              });
+          </script>
+        </div>
         <p>You might also want to view our <a href="#" target="_blank">Exit Voices</a> videos.</p>
       </article>
       <article id="results">
@@ -631,8 +633,10 @@
         </nav>
         <article id="live-blog">
           <h1>Live Blog</h1>
-          <noscript><p>Install the <a href="http://get.adobe.com/flashplayer/" target="_blank">Adobe Flash Player Plugin</a> and enable JavaScript to use this live blog.</p></noscript>
-          <iframe src="http://www.coveritlive.com/index2.php/option=com_altcaster/task=viewaltcast/altcast_code=61407c3950/height=550/width=310" scrolling="no" height="550px" width="310px" frameBorder="0" allowTransparency="true" ><a href="http://www.coveritlive.com/mobile.php/option=com_mobile/task=viewaltcast/altcast_code=61407c3950">Town Meeting Election Night Coverage</a></iframe>
+          <div class="embed" style="width: 310px; height: 550px;">
+            <noscript><p>Install the <a href="http://get.adobe.com/flashplayer/" target="_blank">Adobe Flash Player Plugin</a> and enable JavaScript to use this live blog.</p></noscript>
+            <iframe src="http://www.coveritlive.com/index2.php/option=com_altcaster/task=viewaltcast/altcast_code=61407c3950/height=550/width=310" scrolling="no" height="550px" width="310px" frameBorder="0" allowTransparency="true" ><a href="http://www.coveritlive.com/mobile.php/option=com_mobile/task=viewaltcast/altcast_code=61407c3950">Town Meeting Election Night Coverage</a></iframe>
+          </div>
         </article>
       </section>
       <footer id="meta">
