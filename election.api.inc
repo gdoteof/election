@@ -215,6 +215,19 @@ TABLE;
 BALLOT;
 }
 
+function _elec_html_ballot_item_footer($data){
+  $first_item = array_pop(array_slice($data->results, 0, 1));
+  if( !isset($first_item['winner']) ){
+    return ' <p class="partial">These are partial results.</p>';
+  }
+  elseif( $first_item['complete'] ){
+    return ' <p class="complete">These are complete but unofficial results</p>';
+  }
+  else{
+    return ' <p class="complete">These are complete but unofficial results</p>';
+  }
+}
+
 function _elec_html_ballot_item_skel($data){
   $data = (object)$data;
   $election_season_href = $data->election_season['link'];
@@ -272,7 +285,8 @@ TABLE;
   }
   $results .= "</tbody></table>" . "\n";
   $results .= $graph . '</ol>' . "\n";
-  $results .= $footer . 'generated p first row footer here' . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>';
+  $results .= $footer . _elec_html_ballot_item_footer($data) . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>';
+  //$results .= $footer . 'generated p first row footer here' . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>';
   $results .= '</article>' . "\n";
   //print $results;
 return $results;
