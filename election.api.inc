@@ -284,7 +284,11 @@ TABLE;
     $results .= '  </tr>'. "\n";
   }
   $results .= "</tbody></table>" . "\n";
-  $results .= $graph . '</ol>' . "\n";
+  if ($complete){
+    $results .=  $graph . '</ol>' . "\n";
+  }else{
+    $results .= '<ol class="graph"></ol>' . "\n";
+  }
   $results .= $footer . _elec_html_ballot_item_footer($data) . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>';
   //$results .= $footer . 'generated p first row footer here' . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>';
   $results .= '</article>' . "\n";
@@ -397,7 +401,7 @@ function _elec_html_event_skeleton($data){
 
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season- GG
 
-  $election_nav = '<p>'. $season_slug . '<br/>' . $event_slug . '</p>' . /*print_r($data) .*/ "\n";
+  /*$election_nav = '<p>'. $season_slug . '<br/>' . $event_slug . '</p>' . '<pre>' . print_r($data) . '</pre>' . "\n";*/
   $election_nav .= '<nav>' . "\n"; //collect html for nav
   $ballot_items = '';   //collect html for results
   foreach($district_type_containers as $key => $container){
