@@ -269,4 +269,16 @@ $(document).ready(function() {
             ctx.fill();
         };
     }
+    if ($(0 != "#elections.view-ballot-item-results").length) {
+        function resizeViewBallotItemResults() {
+            var windowHeight = $(window).height();
+            var resultsHeight = $("#elections.view-ballot-item-results #results").innerHeight();
+            $("#elections.view-ballot-item-results").height(windowHeight);
+            $("#elections.view-ballot-item-results #results").css("marginTop", ((windowHeight - resultsHeight) / 2 * 0.85) + "px")
+        }
+        resizeViewBallotItemResults();
+        $(window).resize(function() {
+            resizeViewBallotItemResults();
+        });
+    }
 });

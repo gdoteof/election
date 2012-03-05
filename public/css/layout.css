@@ -1,14 +1,18 @@
 body {
     background-color: white;
+    font-family: Arial, sans-serif;
+    font-size: 62.5%;
+    color: black;
+    text-align: center;
+}
+body,
+#elections.view-ballot-item-results {
+    background-color: white;
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(white));
     background-image: -webkit-linear-gradient(top, #EEE, white);
     background-image: -moz-linear-gradient(top, #EEE, white);
     background-image: -ms-linear-gradient(top, #EEE, white);
     background-image: -o-linear-gradient(top, #EEE, white);
-    font-family: Arial, sans-serif;
-    font-size: 62.5%;
-    color: black;
-    text-align: center;
 }
 noscript,
 .embed {
@@ -129,13 +133,15 @@ small a {
     }
 }
 #elections {
-    width: 960px;
     overflow: hidden;
     margin: 0 auto;
 }
+#elections.view-election-event {
+    width: 960px;
+}
 #introduction,
 #live-broadcast,
-#results,
+.view-election-event #results,
 #sidebar,
 #meta {
     overflow: hidden;
@@ -145,7 +151,7 @@ small a {
 }
 #introduction,
 #live-broadcast,
-#results {
+.view-election-event #results {
     width: 590px;
     float: left;
 }
@@ -157,7 +163,7 @@ small a {
 }
 #introduction,
 #live-broadcast,
-#results,
+.view-election-event #results,
 #meta {
     clear: both;
 }
@@ -183,6 +189,13 @@ small a {
 }
 #live-broadcast {
     margin-bottom: 2.0em;
+}
+.view-ballot-item-results #results {
+    width: 1024px;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.6em;
 }
 #sidebar {
     width: 330px;
@@ -357,7 +370,7 @@ body.javascript-enabled #live-blog iframe {
     }
     #introduction,
     #live-broadcast,
-    #results,
+    .view-election-event #results,
     #sidebar,
     #meta {
         width: auto;
