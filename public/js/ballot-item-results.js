@@ -36,6 +36,7 @@ $(document).ready(function() {
 
     $(".view-election-event article.district-results").children("article").hide();
     updateBallotItemArticles();
+    var scrolling = 0;
     $("article.district-results").bind("scrollTo", function(e) {
         var scrollTarget = "#" + $(this).attr("id");
         //TODO: Find a better way to ignore the parent district results article
@@ -45,10 +46,14 @@ $(document).ready(function() {
         $("article" + scrollTarget).children("article").show().end().parent("article").parent("article").show().children("article").show();
         updateBallotItemArticles();
         $("#sidebar nav#nav-results select").val(scrollTarget);
+        scrolling++;
         $.smoothScroll({
             scrollTarget: scrollTarget,
             afterScroll: function () {
-                location.hash = scrollTarget;
+                if (1 == scrolling) {
+                    location.hash = scrollTarget;
+                }
+                scrolling--;
             }
         });
         // Prevents the event from bubbling up the DOM tree to parent districts
