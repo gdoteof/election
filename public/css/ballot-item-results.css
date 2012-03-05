@@ -175,6 +175,14 @@
 .ballot-item-results .graph .result:nth-child(12n+12) {
     background-color: #11D0AA;
 }
+.ballot-item-results footer {
+    margin-top: 1.2em;
+}
+.ballot-item-results footer p {
+    margin-top: 0.2em;
+    font-size: 1.2em;
+    color: #666;
+}
 .info {
     position: absolute;
     top: 0;
