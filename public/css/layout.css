@@ -127,7 +127,7 @@ small,
 small a {
     color: #888;
 }
-@media all and (max-width: 640px) {
+@media all and (max-width: 990px) {
     small {
         font-size: 1.0em;
     }
@@ -174,7 +174,7 @@ small a {
 #introduction > * {
     padding-right: 1.0em;
 }
-@media all and (max-width: 640px) {
+@media all and (max-width: 990px) {
     #introduction {
         font-size: 1.2em;
         text-align: center;
@@ -227,7 +227,7 @@ small a {
 #introduction .channel-17-town-meeting-television-logo {
     display: none;
 }
-@media all and (max-width: 640px) {
+@media all and (max-width: 990px) {
     #introduction .channel-17-town-meeting-television-logo {
         width: 540px;
         height: 162px;
