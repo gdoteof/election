@@ -402,7 +402,7 @@ function _elec_html_event_skeleton($data){
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season- GG
 
   /*$election_nav = '<p>'. $season_slug . '<br/>' . $event_slug . '</p>' . '<pre>' . print_r($data) . '</pre>' . "\n";*/
-  $election_nav .= '<nav>' . "\n"; //collect html for nav
+  $election_nav .= ''; //collect html for nav
   $ballot_items = '';   //collect html for results
   foreach($district_type_containers as $key => $container){
     //only use municipalities.
@@ -410,8 +410,9 @@ function _elec_html_event_skeleton($data){
     foreach($container as $e_event){
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
-      $election_nav .= '<a href="#' . $e_event['title'] . '">' . $e_event['title'] . '</a>' . "\n";/* district nav */
-      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
+      $election_nav .= '<li><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></li>' . "\n";/* district nav */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' .  strtolower(_elec_swap_plurality($key)) . '">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . "\n" . '</article>' . "\n";/* district header */
+      //<a href="#city-of-burlington">City of Burlington</a>
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
       /*$district_data = _  need burlington sub districts branch? summed */
@@ -435,7 +436,7 @@ function _elec_html_event_skeleton($data){
       _elec_skel_eat_subdistricts($district_data->districts, $event_nid,  $season_slug, $event_slug, $ballot_items, $election_nav);
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
         /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
-        $ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
+        $ballot_items .= '<article>' . "\n" . '<h1>' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
 
         foreach($ballot_item_list as $ballot_item){
 
@@ -444,7 +445,7 @@ function _elec_html_event_skeleton($data){
           //print "ballot item data:<pre>"; print_r($ballot_items_data); print "</pre>";
           $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
         }/*ballot item loop*/
-
+        $ballot_items .= '</article>'. "\n";
       }/*ballot item type loop*/
 
     }/*district loop*/
@@ -453,10 +454,10 @@ function _elec_html_event_skeleton($data){
 
   }/*district type loop*/
   $ballot_items .= "\n";/*end results html*/
-  $election_nav .= "</nav>" . "\n";/*end nav html*/
+  $election_nav .= "\n";/*end nav html*/
   $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper"  class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
   print $elec_results;
-  _elec_html_skel_to_file($event_nid,$elec_results);
+  _elec_html_skel_to_file($event_nid,$ballot_items,$election_nav);
   exit;
 };
 
@@ -468,8 +469,8 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
     foreach($container as $e_event){
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
-      $election_nav .= '<a href="#' . $e_event['title'] . '">' . $e_event['title'] . '</a>' . "\n";/* district nav */
-      $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
+      $election_nav .= '<li><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></li>' . "\n";/* district nav */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' . strtolower(_elec_swap_plurality($key)) .'">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . "\n" . '</article>' . "\n";/* district header */
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
       $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
@@ -511,10 +512,10 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
 }
 
 /* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
-function _elec_html_skel_to_file($event_nid,$elec_results){
+function _elec_html_skel_to_file($event_nid,$elec_results,$elec_nav){
   $file = file_directory_path() . '/' . 'election' . '/' . strval($event_nid) . '-elec-skeleton' . '.php';
   //$elec_results =  "here is some cached HTML skeleton from the election module";
-  $output = '<?php $results = \'' . $elec_results . '\'; ' . "\n" . 'print $results; ?>';
+  $output = '<?php $results = \'' . $elec_results . '\'; ' . "\n" . '$elec_nav = \'' . $elec_nav . '\'; ' . "\n" . 'print $results; ?>';
   //print($file);
   $filehandle = fopen( $file , "w");
   fwrite($filehandle, $output);
