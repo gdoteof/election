@@ -219,6 +219,7 @@ function _elec_html_ballot_item_skel($data){
   $data = (object)$data;
   $election_season_href = $data->election_season['link'];
   $election_season_title = $data->election_season['title'];
+  //$election_season_title = $data->election_season['title'];
   $season_slug = _elec_title_to_slug($election_season_title);
   $election_event_href = $data->election_event['link'];
   $election_event_title = $data->election_event['title'];
@@ -226,7 +227,7 @@ function _elec_html_ballot_item_skel($data){
   $district_href = $data->district['link'];
   $district_title = $data->district['title'];
   $district_slug = _elec_title_to_slug($district_title);
-  $ballot_item_title = $data->title;
+  $ballot_item_title = ($data->text) ? ($data->text) : $data->title;
   $last_update = strftime('%b %e, %Y %r',mktime());
   $ballot_item_slug = _elec_title_to_slug($ballot_item_title);
   $data_link = base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
@@ -389,14 +390,23 @@ function _elec_html_event_skeleton($data){
 
     foreach($container as $e_event){
       $district_slug = _elec_title_to_slug($e_event['title']);
-      $district_nid = _elec_nid_from_district_slug($district_slug);
+      $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
       $election_nav .= '<a href="#' . $e_event['title'] . '">' . $e_event['title'] . '</a>' . "\n";/* district nav */
       $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
       /*$district_data = _  need burlington sub districts branch? summed */
+      
       $district_data = (object)$district_data;
+
+//start of ugliness
+      if(! empty($district_data->districts)){
+        //SCARY BADNESS!!!!!!!!!!!!!  This thing maniuplates $ballot_items
+        _elec_make_summed_district_data($district_nid, $ballot_items);
+      }
+//end of ugliness
       /*
+
       $ballot_items .= ''.print_r($district_data).' ';
       print '<pre>'; 
       print_r($container);
@@ -412,6 +422,7 @@ function _elec_html_event_skeleton($data){
 
           $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
           $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$district_slug,$ballot_item_slug);
+          //print "ballot item data:<pre>"; print_r($ballot_items_data); print "</pre>";
           $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
         }/*ballot item loop*/
 
@@ -440,8 +451,17 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       $ballot_items .= '<article id="' . $district_slug . '" class="district-results">' . "\n" . '<h1 id="' . $e_event['title'] . '">' . ucfirst(_elec_slug_to_title($district_slug)) . '</h1>' . "\n" . '</article>' . "\n";/* district header */
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
+      $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
+      //print "calling with district nid $district_nid ($district_slug) </br>";
+      //print "summed ballot items:<pre>"; print_r($summed_ballot_items); print "</pre>";
       /*$district_data = _  need burlington sub districts branch? summed */
       $district_data = (object)$district_data;
+//start of ugliness
+      if(! empty($district_data->districts)){
+        //SCARY BADNESS!!!!!!!!!!!!!  This thing maniuplates $ballot_items
+        _elec_make_summed_district_data($district_nid, $ballot_items);
+      }
+//end of ugliness
       /*
       $ballot_items .= ''.print_r($district_data).' ';
       print "key is $key; container is ";
@@ -1041,6 +1061,7 @@ function _elec_nid_from_district_slug($slug, $event_nid){
       }
     }
   }
+  return NULL;
 }
 
 function _elec_find_sub_district_recur($district_slug, $district_nid){
@@ -1245,4 +1266,57 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
 function _elec_is_leaf_ballot_item($ballot_item_nid){
   $query = 'SELECT COUNT(*) FROM {content_field_elec_ballot_items} WHERE field_elec_ballot_items_nid = %d'; 
   return ( db_result(db_query($query, $ballot_item_nid)) > 1 ) ? true : false;
+}
+
+
+//ballot items passed by reference
+function _elec_make_summed_district_data($district_nid, &$ballot_items){
+  $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
+  foreach($summed_ballot_items as $ballot_item){
+    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
+    $summed_results[$ballot_item_key]['text'] =  _elec_get_ballot_item_text($ballot_item_key);
+    foreach($item as $choice_key => $choice){
+      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
+    }
+  }
+  //print "summed ballot items for district $district_slug<pre>"; print_r($summed_ballot_items); print "</pre>";
+
+  //Add percentage to data
+  foreach($summed_results as $key => $ind_result){
+    $total_for_ind = array_sum($ind_result['results']);
+    $r_w_p = array(); // results with percent   
+    foreach($ind_result['results'] as $option => $votes){
+      $r_w_p[$option] = array(
+          'votes' => $votes,
+          'percent' => (100 * round($votes / $total_for_ind, 3)),
+          );
+    }
+    $summed_results[$key]['results'] = $r_w_p;
+  }
+
+  foreach($summed_results as $nid => $results){
+    $slug = db_result(db_query('SELECT slug from {election_slug} WHERE nid=%d', $nid));
+    $ballot_item_nid = $nid; // fill in ballot_item_nid
+    $complete = _elec_get_ballot_item_is_complete_recur($nid, $district_nid);
+
+    foreach($results['results'] as $key => $option){
+      $results_for_winner_detection[$key] = $option['votes'];
+    }
+    $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $results_for_winner_detection);
+
+    foreach($results['results'] as $key => $option){
+      $results['results'][$key]['complete'] = $complete; 
+      $results['results'][$key]['winner'] = in_array($key, $winners);
+    }
+
+    if(!$complete){
+      foreach($results['results'] as $key => $val){
+        unset($results['results'][$key]['percent']);
+        unset($results['results'][$key]['winner']);
+
+      }
+    }
+    //print "<pre>results!!!!!!11"; print_r($results); print '</pre>';
+    $ballot_items .= _elec_html_ballot_item_skel($results);
+  }
 }
