@@ -156,6 +156,16 @@ em {
 #introduction > * {
     padding-right: 1.0em;
 }
+@media all and (max-width: 640px) {
+    #introduction {
+        font-size: 1.2em;
+        text-align: center;
+    }
+    #introduction > * {
+        padding-left: 1.5em;
+        padding-right: 1.5em;
+    }
+}
 #introduction h1 {
     font-size: 4.6em;
 }
@@ -180,7 +190,7 @@ em {
     margin-top: 0.4em;
     margin-left: 1.0em;
 }
-#channel-17-town-meeting-television-logo {
+.channel-17-town-meeting-television-logo {
     width: 270px;
     height: 81px;
     display: block;
@@ -188,6 +198,17 @@ em {
     margin-right: auto;
     background: transparent url(/images/channel-17-town-meeting-television-outer-glow-270x81.png) no-repeat center center;
     text-indent: -999em;
+}
+#introduction .channel-17-town-meeting-television-logo {
+    display: none;
+}
+@media all and (max-width: 640px) {
+    #introduction .channel-17-town-meeting-television-logo {
+        width: 540px;
+        height: 162px;
+        margin-top: 5.0em;
+        background-image: url(/images/channel-17-town-meeting-television-outer-glow-540x162.png);
+    }
 }
 #sidebar header,
 #sidebar nav,
