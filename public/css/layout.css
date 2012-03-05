@@ -137,7 +137,7 @@ em {
     width: 590px;
     float: left;
 }
-@media all and (min-height: 875px) {
+@media all and (min-height: 875px) and (min-width: 991px) {
     body.javascript-enabled #meta {
         width: 590px;
         float: left;
@@ -312,9 +312,29 @@ body.javascript-enabled #live-blog iframe {
     margin-right: 0.2em;
     list-style: none;
 }
-@media all and (min-height: 875px) {
+@media all and (min-height: 875px) and (min-width: 991px) {
     body.javascript-enabled #sidebar {
         position: fixed;
         margin-left: 610px;
+    }
+}
+@media all and (max-width: 990px) {
+    #introduction .channel-17-town-meeting-television-logo {
+        display: block;
+    }
+    #introduction,
+    #live-broadcast,
+    #results,
+    #sidebar,
+    #meta {
+        width: auto;
+        float: none;
+        clear: none;
+    }
+    #sidebar nav {
+        display: none;
+    }
+    #sidebar .channel-17-town-meeting-television-logo {
+        display: none;
     }
 }
