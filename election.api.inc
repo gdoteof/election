@@ -527,9 +527,7 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
         }
         $ballot_items .= '</article><!--end ref-->';
 
-        $ballot_items .= '</article>';
       }
-      $ballot_items .= '</article><!--end ward cap2-->';
 //end of ugliness
       /*
       $ballot_items .= ''.print_r($district_data).' ';
@@ -560,6 +558,8 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
   }
   $election_nav .= '</ol>' . "\n" . '</li>' . "\n";
   //$ballot_items .= '</article>' . '<!--4c-->' . "\n";
+      $ballot_items .= '</article><!--end ward cap district=' . $district_slug .  '-->';
+      $ballot_items .= '</article><!--end ward cap district=' . $district_slug .  '-->';
 }
 
 /* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
