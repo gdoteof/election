@@ -402,7 +402,7 @@ function _elec_html_event_skeleton($data){
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season- GG
 
   /*$election_nav = '<p>'. $season_slug . '<br/>' . $event_slug . '</p>' . '<pre>' . print_r($data) . '</pre>' . "\n";*/
-  $election_nav .= ''; //collect html for nav
+  $election_nav = ''; //collect html for nav
   $ballot_items = '';   //collect html for results
   foreach($district_type_containers as $key => $container){
     //only use municipalities.
@@ -410,8 +410,8 @@ function _elec_html_event_skeleton($data){
     foreach($container as $e_event){
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
-      $election_nav .= '<li><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></li>' . "\n";/* district nav */
-      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' .  strtolower(_elec_swap_plurality($key)) . '">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . "\n" . '</article>' . "\n";/* district header */
+      $election_nav .= '<li><a href="#' . $district_slug . '">' . $e_event['title'] . '</a>';/* district nav */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' .  strtolower(_elec_swap_plurality($key)) . '">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . '<!--4o-->' . "\n";/* district header */
       //<a href="#city-of-burlington">City of Burlington</a>
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
@@ -463,14 +463,15 @@ function _elec_html_event_skeleton($data){
 
 function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $event_slug,  &$ballot_items, &$election_nav, $depth = 1){
   if(empty($sub_districts) ) return;
+  $election_nav .= '<ol>' . "\n";
   //print "(depth=$depth)sub distrcts:<pre>"; print_r($sub_districts); print "</pre>";
   foreach($sub_districts as $key => $container){
 
     foreach($container as $e_event){
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
-      $election_nav .= '<li><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></li>' . "\n";/* district nav */
-      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' . strtolower(_elec_swap_plurality($key)) .'">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . "\n" . '</article>' . "\n";/* district header */
+      $election_nav .= '<li><a href="#' . $district_slug . '">' . $e_event['title'] . '</a>';/* district nav */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' . strtolower(_elec_swap_plurality($key)) .'">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . '<!--2o-->' . "\n";/* district header */
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
       $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
@@ -478,6 +479,11 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       //print "summed ballot items:<pre>"; print_r($summed_ballot_items); print "</pre>";
       /*$district_data = _  need burlington sub districts branch? summed */
       $district_data = (object)$district_data;
+      if(empty($district_data->districts)){
+        $election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
+        //$ballot_items .= '</article>' . '<!--2c-->' . "\n";
+      }
+
 //start of ugliness
       if(! empty($district_data->districts)){
         //SCARY BADNESS!!!!!!!!!!!!!  This thing maniuplates $ballot_items
@@ -493,10 +499,11 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       print '</pre>';
       */
       _elec_skel_eat_subdistricts($district_data->districts, $event_nid, $season_slug, $event_slug, $ballot_items, $election_nav, $depth+1);
+      //$election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
         /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
-        $ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
-
+        /*$ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n"; district ballot-item type anchor and title */
+        $ballot_items .= '<article>' . "\n" . '<h1>' . ucfirst($ballot_item_type) . '</h1>' . '<!--1o-->' .  "\n";/* district ballot-item type anchor and title */
         foreach($ballot_item_list as $ballot_item){
 
           $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
@@ -504,11 +511,14 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
           $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
 
         }/*ballot item loop*/
-
+        $ballot_items .= '</article>'. '<!--1c-->' . "\n"; //here
       }/*ballot item type loop*/
-
+      $ballot_items .= '</article>' . '<!--2c-->' . "\n";
     }/*district loop*/
+    //$ballot_items .= '</article>' . '<!--3c-->' . "\n";
   }
+  $election_nav .= '</ol>' . "\n" . '</li>' . "\n";
+  //$ballot_items .= '</article>' . '<!--4c-->' . "\n";
 }
 
 /* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
@@ -1347,4 +1357,5 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items){
     $data_link = base_path() . $district_link . '/' . _elec_title_to_slug($district_node->title) . '/' . _elec_title_to_slug($ballot_item_node->title);
     $ballot_items .= _elec_html_ballot_item_skel($results, $data_link);
   }
+$ballot_items .= '</article>' . '<!--close bton summed-->' . "\n";
 }
