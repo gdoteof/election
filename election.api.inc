@@ -453,9 +453,7 @@ function _elec_html_event_skeleton($data){
       print '</pre>';
       */
       _elec_skel_eat_subdistricts($district_data->districts, $event_nid,  $season_slug, $event_slug, $ballot_items, $election_nav);
-      if(! empty($district_data->districts)){
-        $ballot_items .= '</article>' . '<!--close bton summed-->' . "\n";
-      }
+      
       //$election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
         /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
@@ -527,10 +525,11 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
         foreach($referendums as $referendum){
           $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
         }
-        $ballot_items .= '</article>';
+        $ballot_items .= '</article><!--end ref-->';
 
 
       }
+        $ballot_items .= '</article><!--end ward cap2-->';
 //end of ugliness
       /*
       $ballot_items .= ''.print_r($district_data).' ';
@@ -541,9 +540,6 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       print '</pre>';
       */
       _elec_skel_eat_subdistricts($district_data->districts, $event_nid, $season_slug, $event_slug, $ballot_items, $election_nav, $depth+1);
-      if(! empty($district_data->districts)){
-        $ballot_items .= '</article>' . '<!--close bton summed-->' . "\n";
-      }
       //$election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
         /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
