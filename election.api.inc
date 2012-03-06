@@ -418,6 +418,10 @@ function _elec_html_event_skeleton($data){
       /*$district_data = _  need burlington sub districts branch? summed */
       
       $district_data = (object)$district_data;
+      if(empty($district_data->districts)){
+        $election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
+        //$ballot_items .= '</article>' . '<!--new-->' . "\n";
+      }
 
 //start of ugliness
       if(! empty($district_data->districts)){
@@ -434,9 +438,10 @@ function _elec_html_event_skeleton($data){
       print '</pre>';
       */
       _elec_skel_eat_subdistricts($district_data->districts, $event_nid,  $season_slug, $event_slug, $ballot_items, $election_nav);
+      //$election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
         /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
-        $ballot_items .= '<article>' . "\n" . '<h1>' . ucfirst($ballot_item_type) . '</h1>' . "\n";/* district ballot-item type anchor and title */
+        $ballot_items .= '<article>' . "\n" . '<h1>' . ucfirst($ballot_item_type) . '</h1>' . '<!--3o-->' . "\n";/* district ballot-item type anchor and title */
 
         foreach($ballot_item_list as $ballot_item){
 
@@ -445,13 +450,15 @@ function _elec_html_event_skeleton($data){
           //print "ballot item data:<pre>"; print_r($ballot_items_data); print "</pre>";
           $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
         }/*ballot item loop*/
-        $ballot_items .= '</article>'. "\n";
+        $ballot_items .= '</article>' . '<!--6c-->' .  "\n"; //here2
       }/*ballot item type loop*/
-
+      if(empty($district_data->districts)){
+        $ballot_items .= '</article>' . '<!--new-->' . "\n";
+      }
     }/*district loop*/
-
+    $ballot_items .= '</article>' . '<!--5c-->' .  "\n"; /*end municipality loop*/
     }/* endif to do just municipalities*/
-
+ 
   }/*district type loop*/
   $ballot_items .= "\n";/*end results html*/
   $election_nav .= "\n";/*end nav html*/
@@ -1330,6 +1337,7 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items){
   }
 
   foreach($summed_results as $nid => $results){
+
     $ballot_item_nid = $nid; // fill in ballot_item_nid
     $complete = _elec_get_ballot_item_is_complete_recur($nid, $district_nid);
 
