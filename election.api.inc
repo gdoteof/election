@@ -488,6 +488,7 @@ function _elec_html_event_skeleton($data){
 
 function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $event_slug,  &$ballot_items, &$election_nav, $depth = 1){
   if(empty($sub_districts) ) return;
+  $ballot_items .= '<article><h1>Wards</h1>';
   $election_nav .= '<ol>' . "\n";
   //print "(depth=$depth)sub distrcts:<pre>"; print_r($sub_districts); print "</pre>";
   foreach($sub_districts as $key => $container){
@@ -527,6 +528,7 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
           $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
         }
         $ballot_items .= '</article>';
+        $ballot_items .= '</article>'; // Ward encapuslation article
 
       }
 //end of ugliness
