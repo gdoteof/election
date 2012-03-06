@@ -527,9 +527,9 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
         }
         $ballot_items .= '</article><!--end ref-->';
 
-
+        $ballot_items .= '</article>';
       }
-        $ballot_items .= '</article><!--end ward cap2-->';
+      $ballot_items .= '</article><!--end ward cap2-->';
 //end of ugliness
       /*
       $ballot_items .= ''.print_r($district_data).' ';
