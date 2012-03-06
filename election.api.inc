@@ -429,18 +429,18 @@ function _elec_html_event_skeleton($data){
         $referendums = array();
         $elections = array();
         _elec_make_summed_district_data($district_nid, $ballot_items, $referendums, $elections);
-        $ballot_items .= '<article style="display: block;"><h1>Referendums</h1>';
-        foreach($referendums as $referendum){
-          $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
-        }
 
-        $ballot_items .= '</article>';
         $ballot_items .= '<article style="display: block;"><h1>Elections</h1>';
         foreach($elections as $election){
           $ballot_items .= _elec_html_ballot_item_skel($election['results'], $election['data_link']);
         }
         $ballot_items .= '</article>';
 
+        $ballot_items .= '<article style="display: block;"><h1>Referendums</h1>';
+        foreach($referendums as $referendum){
+          $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
+        }
+        $ballot_items .= '</article>';
 
       }
 //end of ugliness
@@ -515,18 +515,18 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
         $referendums = array();
         $elections = array();
         _elec_make_summed_district_data($district_nid, $ballot_items, $referendums, $elections);
-        $ballot_items .= '<article style="display: block;"><h1>Referendums</h1>';
-        foreach($referendums as $referendum){
-          $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
-        }
 
-        $ballot_items .= '</article>';
         $ballot_items .= '<article style="display: block;"><h1>Elections</h1>';
         foreach($elections as $election){
           $ballot_items .= _elec_html_ballot_item_skel($election['results'], $election['data_link']);
         }
         $ballot_items .= '</article>';
 
+        $ballot_items .= '<article style="display: block;"><h1>Referendums</h1>';
+        foreach($referendums as $referendum){
+          $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
+        }
+        $ballot_items .= '</article>';
 
       }
 //end of ugliness
