@@ -1399,6 +1399,8 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items, &$refere
     $ballot_item_node = node_load(array('nid'=>$nid));
     //print "<pre>"; print_r($ballot_item_node->taxonomy);  print "</pre>";
     $vocab = variable_get('elec_ballot_vid', NULL); 
+    $district_node = node_load(array('nid'=>$district_nid));
+    $data_link = base_path() . $district_link . '/' . _elec_title_to_slug($district_node->title) . '/' . _elec_title_to_slug($ballot_item_node->title);
     foreach($ballot_item_node->taxonomy as $term){
       if ($term->vid == $vocab){
         if($term->name == 'Election'){
@@ -1415,8 +1417,6 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items, &$refere
       }
     }
 
-    $district_node = node_load(array('nid'=>$district_nid));
-    $data_link = base_path() . $district_link . '/' . _elec_title_to_slug($district_node->title) . '/' . _elec_title_to_slug($ballot_item_node->title);
      // $ballot_items .= _elec_html_ballot_item_skel($results, $data_link);
   }
 }
