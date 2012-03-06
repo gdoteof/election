@@ -1050,6 +1050,8 @@ function _elec_swap_plurality($string){
       return 'election';
     case 'election':
       return 'elections';
+    case 'wards':
+      return 'ward';
     case 'ward':
       return 'wards';
     case 'polling place':
