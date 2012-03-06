@@ -426,7 +426,23 @@ function _elec_html_event_skeleton($data){
 //start of ugliness
       if(! empty($district_data->districts)){
         //SCARY BADNESS!!!!!!!!!!!!!  This thing maniuplates $ballot_items
-        _elec_make_summed_district_data($district_nid, $ballot_items);
+        $referendums = array();
+        $elections = array();
+        _elec_make_summed_district_data($district_nid, $ballot_items, $referendums, $elections);
+        $ballot_items .= '<article style="display: block;"><h1>Referendums</h1>';
+        foreach($referendums as $referendum){
+          $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
+        }
+
+        $ballot_items .= '</article>';
+        $ballot_items .= '<article style="display: block;"><h1>Elections</h1>';
+        foreach($elections as $election){
+          $ballot_items .= _elec_html_ballot_item_skel($election['results'], $election['data_link']);
+        }
+        $ballot_items .= '</article>';
+
+        $ballot_items .= '</article>' . '<!--close bton summed-->' . "\n";
+
       }
 //end of ugliness
       /*
@@ -494,7 +510,23 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
 //start of ugliness
       if(! empty($district_data->districts)){
         //SCARY BADNESS!!!!!!!!!!!!!  This thing maniuplates $ballot_items
-        _elec_make_summed_district_data($district_nid, $ballot_items);
+        $referendums = array();
+        $elections = array();
+        _elec_make_summed_district_data($district_nid, $ballot_items, $referendums, $elections);
+        $ballot_items .= '<article style="display: block;"><h1>Referendums</h1>';
+        foreach($referendums as $referendum){
+          $ballot_items .= _elec_html_ballot_item_skel($referendum['results'], $referendum['data_link']);
+        }
+
+        $ballot_items .= '</article>';
+        $ballot_items .= '<article style="display: block;"><h1>Elections</h1>';
+        foreach($elections as $election){
+          $ballot_items .= _elec_html_ballot_item_skel($election['results'], $election['data_link']);
+        }
+        $ballot_items .= '</article>';
+
+        $ballot_items .= '</article>' . '<!--close bton summed-->' . "\n";
+
       }
 //end of ugliness
       /*
@@ -1309,7 +1341,7 @@ function _elec_is_leaf_ballot_item($ballot_item_nid){
 
 
 //ballot items passed by reference
-function _elec_make_summed_district_data($district_nid, &$ballot_items){
+function _elec_make_summed_district_data($district_nid, &$ballot_items, &$referendums, &$elections){
   $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
   foreach($summed_ballot_items as $ballot_item){
     foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
@@ -1361,9 +1393,26 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items){
     //print "<pre>results!!!!!!11"; print_r($results); print '</pre>';
     $district_link = substr($_GET['q'], 0, -4);
     $ballot_item_node = node_load(array('nid'=>$nid));
+    //print "<pre>"; print_r($ballot_item_node->taxonomy);  print "</pre>";
+    $vocab = variable_get('elec_ballot_vid', NULL); 
+    foreach($ballot_item_node->taxonomy as $term){
+      if ($term->vid == $vocab){
+        if($term->name == 'Election'){
+          $elections[] = array(
+              'results' => $results,
+              'data_link' => $data_link,
+              );
+        } elseif($term->name == 'Referendum'){
+          $referendums[] = array(
+              'results' => $results,
+              'data_link' => $data_link,
+              );   
+        }
+      }
+    }
+
     $district_node = node_load(array('nid'=>$district_nid));
     $data_link = base_path() . $district_link . '/' . _elec_title_to_slug($district_node->title) . '/' . _elec_title_to_slug($ballot_item_node->title);
-    $ballot_items .= _elec_html_ballot_item_skel($results, $data_link);
+     // $ballot_items .= _elec_html_ballot_item_skel($results, $data_link);
   }
-$ballot_items .= '</article>' . '<!--close bton summed-->' . "\n";
 }
