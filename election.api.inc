@@ -387,7 +387,7 @@ This is a very heavy function and so the final call dumps it to a
 uniquely named .php file baed on the election event nid. Inside it is
 just the string variable storing all the results and a print command.
 It is then included as a php file (via nid to reconstruct filename) from the file cache
-into the theme, where it evaluates and prints.  -AC*/
+into the theme (node-elec_election_event.tpl.php), where it evaluates and prints.  -AC*/
 
 function _elec_html_event_skeleton($data){
   //print "<pre>"; print_r($data); print "</pre>";
@@ -527,7 +527,9 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
         }
         $ballot_items .= '</article><!--end ref-->';
 
+        $ballot_items .= '</article>';
       }
+      //$ballot_items .= '</article><!--end ward cap2-->';
 //end of ugliness
       /*
       $ballot_items .= ''.print_r($district_data).' ';
@@ -554,12 +556,10 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       }/*ballot item type loop*/
       $ballot_items .= '</article>' . '<!--2c-->' . "\n";
     }/*district loop*/
-    //$ballot_items .= '</article>' . '<!--3c-->' . "\n";
+    $ballot_items .= '</article>' . '</article>' . '<!--wardsend-->' . '<!--burlingtonend-->' . "\n";
   }
   $election_nav .= '</ol>' . "\n" . '</li>' . "\n";
   //$ballot_items .= '</article>' . '<!--4c-->' . "\n";
-      $ballot_items .= '</article><!--end ward cap district=' . $district_slug .  '-->';
-      $ballot_items .= '</article><!--end ward cap district=' . $district_slug .  '-->';
 }
 
 /* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
