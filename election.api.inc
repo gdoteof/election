@@ -119,7 +119,11 @@ function _elec_as_html($data,$type){
       _elec_html_district($data);
       break;
     case 'ballot_item':
-      _elec_html_ballot_item($data);
+      if(substr($_GET['q'], -4) == '.skl'){
+        _elec_html_ballot_item_wrapper($data);
+      }else{
+        _elec_html_ballot_item($data);
+      }
       break;
   }
   exit;
@@ -158,19 +162,27 @@ function _elec_html_ballot_item($data){
   $election_event_title = $data->election_event['title'];
   $district_href = $data->district['link'];
   $district_title = $data->district['title'];
-
-  $tags = "<ul>\n";
-  foreach ($data->tags as $tag){ $type = strtolower($tag); $tags .= '    <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
-  $tags .="  </ul>\n";
+  $season_slug = _elec_title_to_slug($election_season_title);
+  $event_slug = _elec_title_to_slug($election_event_title);
+  $district_slug = _elec_title_to_slug($district_title);
+  $ballot_item_title = ($data->text) ? ($data->text) : $data->title;
+  $last_update = strftime('%b %e, %Y %r',mktime());
+  $ballot_item_slug = _elec_title_to_slug($ballot_item_title);
+  //$data_link = ($data_link_bypass) ? $data_link_bypass : base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
+  $data_link = base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
 
   $total_votes = 0;
-  foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
+  $results ='<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">' . "\n";
+  $results .='  <h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>' . "\n";
 
-  $results = <<<TABLE
+  foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
+  $opt_type_th = ($type=='election') ? 'Candidates' : 'Options';
+  $opt_type_class = ($type=='election') ? 'candidate' : '';
+  $results .= <<<TABLE
   <table>
     <thead>
       <tr class="result">
-        <th class="option candidate">Candidate</th>
+        <th class="option $opt_type_class"><span class="graph-swatch"></span>$opt_type_th</th>
         <th class="votes">Votes</th>
 TABLE;
   if($complete) $results .= '<th class="percent">Percent</th>';
@@ -179,40 +191,65 @@ TABLE;
     </thead>
     <tbody>
 TABLE;
+  $graph = '<ol class="graph">' . "\n";
+  $footer = '<footer>' . "\n";
   foreach ($data->results as $option => $result){
     $winner = ($result['winner']) ? 'winner' : '';
     $complete = ($result['complete']) ? ' complete ' : '';
-    $percent = ($complete) ? number_format($result['votes'] / $total_votes * 100, 1) : 'n/a';
-    $opt_type = ($type=='election') ? 'candidate' : 'boolean';
+    // change rounding
+    $rounded_raw = round($result['votes'] / $total_votes * 100 , 2 , PHP_ROUND_HALF_DOWN);
+    $percent = ($complete) ? number_format($rounded_raw , 2 ) : 'n/a';
+    $opt_type = ($type=='election') ? 'candidate' : '';
     $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
-    $results .= '    <td class="option ' . $opt_type . '">' . $option . "</td>\n";
+    $results .= '    <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
     $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
-    if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "</td>\n"; }
+    $footer .='' . "\n";
+    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ' : ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span> : <span class="votes">' . $result['votes']  . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
+    if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "%" . "</td>" . "\n"; }
     $results .= '  </tr>'. "\n";
   }
-  $results .= "</tbody></table>";
-  print <<<BALLOT
-<!DOCTYPE html>
+  $results .= "</tbody>" . "\n" . "</table>" . "\n";
+  if ($complete){
+    $results .=  $graph . '</ol>' . "\n";
+  }else{
+    $results .= '<ol class="graph"></ol>' . "\n";
+  }
+  $results .= $footer . _elec_html_ballot_item_footer($data) . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
+  $results .= '</article>' . "\n";
+
+print <<<ARTICLE
+$results
+ARTICLE;
+}
+
+/* Makes an updating html page out of a API call for flat html
+(for use on the Studio Laptop output to the switcher on TV) currently called with
+.skl appened to ballot item in API */
+function _elec_html_ballot_item_wrapper($data){
+  echo '
+<html>
 <head>
-  <title>$data->title</title>
-  <link href="$data->link" type="canonical" />
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/html5shiv.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/html5shiv-printshiv.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery.format-1.2.min.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery.ba-hashchange.min.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery.smooth-scroll.min.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/ballot-item-results.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery-noconflict.js"></script>
+  <link type="text/css" rel="stylesheet" media="all" href="https://www.cctv.org/sites/all/themes/zen/cctv/electioncss/reset.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="https://www.cctv.org/sites/all/themes/zen/cctv/electioncss/layout.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="https://www.cctv.org/sites/all/themes/zen/cctv/electioncss/ballot-item-results.css" />
 </head>
-<body class="ballot-item $type">
-  <h1 class="title">$data->title</h1>
-  <dl>
-    <dt>Election Season</dt>
-    <dd><a href="$election_season_href" class="election-season">$election_season_title</a></dd>
-    <dt>Election Event</dt>
-    <dd><a href="$election_event_href" class="election-event">$election_event_title</a></dd>
-    <dt>District</dt>
-    <dd><a href="$district_href" class="election-event">$district_title</a></dd>
-  </dl>
-  <h2>Tags</h2>
-  $tags
-  <h2>Results</h2>
-  $results
+<body>
+<article id="results">
+';
+  $article = _elec_html_ballot_item($data);
+echo '
+</article>
 </body>
-BALLOT;
+</html>
+';
 }
 
 function _elec_html_ballot_item_footer($data){
@@ -273,7 +310,9 @@ TABLE;
   foreach ($data->results as $option => $result){
     $winner = ($result['winner']) ? 'winner' : '';
     $complete = ($result['complete']) ? ' complete ' : '';
-    $percent = ($complete) ? number_format($result['votes'] / $total_votes * 100, 1) : 'n/a';
+    // change rounding
+    $rounded_raw = round($result['votes'] / $total_votes * 100 , 2 , PHP_ROUND_HALF_DOWN);
+    $percent = ($complete) ? number_format($rounded_raw , 2 ) : 'n/a';
     $opt_type = ($type=='election') ? 'candidate' : '';
     $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
     $results .= '    <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
@@ -384,7 +423,7 @@ EVENT;
 /*builds the HTML skeleton and nav interface for the results page -
 we need to be able to call this function with the election event $data.
 This is a very heavy function and so the final call dumps it to a
-uniquely named .php file baed on the election event nid. Inside it is
+uniquely named .php file based on the election event nid. Inside it is
 just the string variable storing all the results and a print command.
 It is then included as a php file (via nid to reconstruct filename) from the file cache
 into the theme (node-elec_election_event.tpl.php), where it evaluates and prints.  -AC*/
@@ -486,7 +525,7 @@ function _elec_html_event_skeleton($data){
 
 function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $event_slug,  &$ballot_items, &$election_nav, $depth = 1){
   if(empty($sub_districts) ) return;
-  $ballot_items .= '<article><h1>Wards</h1>';
+  $ballot_items .= '<article><h1>Sub-Districts</h1>';
   $election_nav .= '<ol>' . "\n";
   //print "(depth=$depth)sub distrcts:<pre>"; print_r($sub_districts); print "</pre>";
   foreach($sub_districts as $key => $container){
@@ -565,9 +604,9 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
 /* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
 function _elec_html_skel_to_file($event_nid,$elec_results,$elec_nav){
   $file = file_directory_path() . '/' . 'election' . '/' . strval($event_nid) . '-elec-skeleton' . '.php';
-  //$elec_results =  "here is some cached HTML skeleton from the election module";
+  /*$elec_results =  "here is some cached HTML skeleton from the election module";*/
   $output = '<?php $results = \'' . $elec_results . '\'; ' . "\n" . '$elec_nav = \'' . $elec_nav . '\'; ' . "\n" . 'print $results; ?>';
-  //print($file);
+  /*print($file);*/
   $filehandle = fopen( $file , "w");
   fwrite($filehandle, $output);
   fclose($filehandle);
