@@ -537,7 +537,7 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' . strtolower(_elec_swap_plurality($key)) .'">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . '<!--2o-->' . "\n";/* district header */
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
-      $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
+      $summed_ballot_items = _elec_strip_district_layer(_elec_get_ballot_item_results_by_district($district_nid));
       //print "calling with district nid $district_nid ($district_slug) </br>";
       //print "summed ballot items:<pre>"; print_r($summed_ballot_items); print "</pre>";
       /*$district_data = _  need burlington sub districts branch? summed */
@@ -875,7 +875,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
     _elec_404("Event $district_slug not found for season $season_slug and event $event_slug");
   }
   
-  $ballot_item_results = _elec_get_ballot_item_results_by_district($district_nid);
+  $ballot_item_results = _elec_strip_district_layer(_elec_get_ballot_item_results_by_district($district_nid));
   $summed_results = array();
   foreach($ballot_item_results as $ballot_item){
     foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
@@ -1012,11 +1012,11 @@ function _elec_get_ballot_item_results_by_district($district_nid){
   if(! $district_nid ) return NULL;
   $district_node = node_load(array('nid'=> $district_nid));
   $data = array();
-  $query = 'SELECT ballot_item_nid, results from {election_results} where district_nid = %d';
+  $query = 'SELECT ballot_item_nid, results, district_nid from {election_results} where district_nid = %d';
   $query_result = db_query($query, $district_nid);
   while($ballot_item_result = db_fetch_object($query_result)){
     if ($ballot_item_result){
-      $data[] = array($ballot_item_result->ballot_item_nid => unserialize($ballot_item_result->results));
+      $data[] = array('district_nid'=>$district_nid, 'results'=> array($ballot_item_result->ballot_item_nid => unserialize($ballot_item_result->results)));
     }
   }
   foreach($district_node->field_elec_sub_districts as $sub_district){
@@ -1026,6 +1026,23 @@ function _elec_get_ballot_item_results_by_district($district_nid){
     }
   }
   return $data;
+}
+
+/* helper function to massage data to format expected,
+  we changed _elec_get_ballot_item_results_by_district to return
+  {district: nid, data : {..thedata} }
+  rather than simply
+  {..thedata}
+  this data structure is 'assumed' in other parts of the code, and this
+  function changes it to the assumed format
+  */
+
+function _elec_strip_district_layer($data){
+  $ret = array();
+  foreach($data as $item){
+    $ret[] = $item['results'];
+  }
+  return $ret;
 }
 
 function _elec_404($message){
@@ -1325,7 +1342,9 @@ function _elec_get_winner_algos(){
 
 //ballot item nid is filled in by reference, basically as a hack, as its needed elsewhere
 function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot_item_nid){
-  $ballot_item_results = _elec_get_ballot_item_results_by_district($district_nid);
+  $results_with_dd = _elec_get_ballot_item_results_by_district($district_nid); //results with district data
+  $ballot_item_results = _elec_strip_district_layer($results_with_dd);
+  print_r($results_with_dd);
   $summed_results = array();
   foreach($ballot_item_results as $ballot_item){
     foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
@@ -1334,6 +1353,8 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
     }
   }
+  print_r($summed_results);
+  
   //Add percentage to data
   foreach($summed_results as $key => $ind_result){
     $total_for_ind = array_sum($ind_result['results']);
@@ -1385,7 +1406,7 @@ function _elec_is_leaf_ballot_item($ballot_item_nid){
 
 //ballot items passed by reference
 function _elec_make_summed_district_data($district_nid, &$ballot_items, &$referendums, &$elections){
-  $summed_ballot_items = _elec_get_ballot_item_results_by_district($district_nid);
+  $summed_ballot_items = _elec_strip_district_layer(_elec_get_ballot_item_results_by_district($district_nid));
   foreach($summed_ballot_items as $ballot_item){
     foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
     $ballot_item_node = node_load(array('nid'=>$ballot_item_key));
