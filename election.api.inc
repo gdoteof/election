@@ -1344,16 +1344,24 @@ function _elec_get_winner_algos(){
 function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot_item_nid){
   $results_with_dd = _elec_get_ballot_item_results_by_district($district_nid); //results with district data
   $ballot_item_results = _elec_strip_district_layer($results_with_dd);
-  print_r($results_with_dd);
   $summed_results = array();
-  foreach($ballot_item_results as $ballot_item){
-    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
+  foreach($results_with_dd as $ballot_item){
+    print "ballot_item is: ";
+    print_r($ballot_item);
+    $district_nid = $ballot_item['district_nid'];
+    unset($ballot_item['district_nid']);
+
+    foreach($ballot_item['results'] as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
+    //---------foreach loop above breaks immediately!------------//  first item is the results for a ballot item at $district_nid
     $summed_results[$ballot_item_key]['text'] =  _elec_get_ballot_item_text($ballot_item_key);
     foreach($item as $choice_key => $choice){
+      print "\t\tin the deeper loop...\n";
      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
     }
+    $summed_results[$ballot_item_key]['detailed_results'][$district_nid] = $ballot_item['results'];
   }
-  print_r($summed_results);
+  print_r( $summed_results); 
+
   
   //Add percentage to data
   foreach($summed_results as $key => $ind_result){
