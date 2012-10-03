@@ -155,6 +155,7 @@ SEASON;
 }
 
 function _elec_html_ballot_item($data){
+  print '<pre>'; print_r($data); print '</pre>';
   $data = (object)$data;
   $election_season_href = $data->election_season['link'];
   $election_season_title = $data->election_season['title'];
@@ -745,7 +746,8 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
 
   if (!$ballot_item_nid){
     $possible_leaf = false;
-    $results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, $ballot_item_nid);
+    $summed_results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, $ballot_item_nid);
+    $results = $summed_results['results'];
     //So we can get the tags
     $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
     if(!$results){
@@ -848,6 +850,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     'results' => $results,
   ); 
   _elec_write_cache($_GET['q'], $data);
+  $data['detailed_results'] = $summed_results['detailed_results'];
   return $data;
 }
 
@@ -1395,7 +1398,7 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
         }
       }
 
-      return $results['results'];
+      return $results;
     }
   }
   return null;
