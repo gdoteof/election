@@ -110,7 +110,7 @@ function _elec_as_html($data,$type){
     case 'event':
       /* a bit clunky, but should give us the skeleton refresh method as part of the API*/  
       if(substr($_GET['q'], -4) == '.skl'){
-        _elec_html_event_skeleton($data);
+        _elec_html_event_skeleton_2($data);
       }else{
         _elec_html_event($data);
       }
@@ -221,13 +221,22 @@ print <<<ARTICLE
 $results
 ARTICLE;
 }
+//preprocess before output?
+function _elec_html_skel_wrapper($skel_guts){
+  /*<article id="results">
+';
+  $article = _elec_html_ballot_item($data);
+echo '
+</article>
+ ;*/
+}
 
 /* Makes an updating html page out of a API call for flat html
 (for use on the Studio Laptop output to the switcher on TV) currently called with
 .skl appened to ballot item in API */
 function _elec_html_ballot_item_wrapper($data){
   echo '
-<html>
+<!DOCTYPE html>
 <head>
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/html5shiv.js"></script>
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/html5shiv-printshiv.js"></script>
@@ -391,6 +400,7 @@ DISTRICT;
 
 function _elec_html_event($data){
   $data = (object)$data;
+  print_r($data);
   $election_season_link = '<a href="' . $data->election_season['link'] . '">'. $data->election_season['title'] . '</a>';
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season
   $election_events = '';
@@ -418,6 +428,37 @@ function _elec_html_event($data){
 </body>
 EVENT;
   exit;
+}
+
+function _elec_html_event_skeleton_2($data){
+  print "<pre>"; print_r($data); print "</pre>";
+  //$data = (object)$data;
+  $season_slug = _elec_last_uri_path($data->election_season['link']);
+  $season_nid = _elec_nid_from_season_slug($season_slug);
+  $event_slug = _elec_last_uri_path(substr($_GET['q'], 0, -4));
+  $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
+  $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season -GG
+  $election_nav = ''; /* start collect html for nav */
+  $ballot_items = ''; /* start collect html for results */
+   foreach($district_type_containers as $key => $container){
+    //loops through "wards", "municipalities" other tags
+    foreach($container as $e_event){
+      //loops through districts
+      $district_slug = _elec_title_to_slug($e_event['title']);
+      $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
+      $ballot_tree = _elec_build_ballot_item_tree_at_district($district_nid);
+      echo "district info: " . $district_nid . " " . $district_slug . " ";
+      print_r($ballot_tree);
+      echo "XXXXXXXXXXXXXXXXXXXXXXXX";
+
+    }
+  }
+    $ballot_items .= "\n";/*end results html*/
+    $election_nav .= "\n";/*end nav html*/
+    $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper"  class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
+  print $elec_results;
+  //_elec_html_skel_to_file($event_nid,$ballot_items,$election_nav);
+  //exit;
 }
 
 /*builds the HTML skeleton and nav interface for the results page -
@@ -1340,11 +1381,153 @@ function _elec_get_winner_algos(){
   return $built_in;
 }
 
+//returns "yes " or "no" only checks at the district level on purpose
+function _elec_dist_has_ballot_items_at_top($district_nid){
+  $result = array();
+  $dist_result = array();
+  $query = 'SELECT `content_field_elec_ballot_items`.`nid`,`content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' . 
+           'FROM `content_field_elec_ballot_items`' .
+           'WHERE `content_field_elec_ballot_items`.`nid` = %d ' .
+           'AND `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` IS NOT NULL';
+  $result = db_query($query, $district_nid);
+  for ($row; $row = db_fetch_array($result); $dist_result[] = $row); 
+  $num_results = count($dist_result);
+  echo "#bi: ";
+  var_dump($num_results);
+  if($num_results > 0){
+    $bi_exist_top = "yes";
+  }else{
+    $bi_exist_top = "no";
+  }
+  return $bi_exist_top;
+}
+
+//returns "yes" or "no"
+function _elec_subdistricts_exist($district_nid){
+  $result = array();  
+  $subdist_result = array();
+  // why not multiple records? works fine in MySQL?!
+  $query = 'SELECT `content_field_elec_sub_districts`.`nid`, `content_field_elec_sub_districts`.`field_elec_sub_districts_nid` ' .
+           'FROM `content_field_elec_sub_districts` ' .
+           'WHERE `content_field_elec_sub_districts`.`nid` = %d ' . 
+           'AND `content_field_elec_sub_districts`.`field_elec_sub_districts_nid` IS NOT NULL ';
+  $result = db_query($query, $district_nid);
+  for ($row; $row = db_fetch_array($result); $subdist_result[] = $row);
+  $num_results = count($subdist_result);
+  echo "#sd: ";
+  var_dump($num_results);
+   if($num_results > 0){
+     $subdist_exist = "yes";
+   }else{
+     $subdist_exist = "no";
+   }
+  return $subdist_exist;
+}
+// check case? move to switch? 
+function _elec_build_ballot_item_tree_at_district($district_nid){
+  $result = array();
+  $dist_slug = _elec_slug_from_nid($district_nid);
+  $subdist_exist = _elec_subdistricts_exist($district_nid);
+  $bi_exist_top = _elec_dist_has_ballot_items_at_top($district_nid);
+  echo "ballot item exists at top level: " . $bi_exist_top . " *";
+  //get the proper query to produce the district ballot-item pairs at the district level
+  if ($bi_exist_top == "no" && $subdist_exist == "yes"){
+  //case no top ballot items and has Subdistricts: (City of Burlington) summed walk required nested HTML output
+  // works
+  $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
+           'FROM `content_field_elec_ballot_items` , `content_type_elec_district`, `content_field_elec_sub_districts` ' .
+           'WHERE `content_type_elec_district`.`nid` = %d ' .
+           'AND `content_field_elec_sub_districts`.`field_elec_sub_districts_nid` = `content_field_elec_ballot_items`.`nid` ';
+  }
+  if ($bi_exist_top == "yes" && $subdist_exist == "yes"){
+  // case has top ballot items and has Subdistricts: (Chittenden County) summed walk required nested HTML output
+  $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
+           'FROM `content_field_elec_ballot_items` , `content_type_elec_district` , `content_field_elec_sub_districts` ' . 
+           'WHERE `content_type_elec_district`.`nid` = %d ' .
+           'AND (' .
+           '`content_field_elec_sub_districts`.`field_elec_sub_districts_nid` = `content_field_elec_ballot_items`.`nid` ' .
+           'OR `content_field_elec_ballot_items`.`nid` = %d ' .
+           ')'.
+           'AND `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` IS NOT NULL ';
+  }
+  if ($bi_exist_top == "yes" && $subdist == "no"){
+  // case has top ballot items and no Subdistricts: (Ward 1, Town of Williston) - default HTML output
+  $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
+           'FROM `content_field_elec_ballot_items` ' .
+           'WHERE `content_field_elec_ballot_items`.`nid` = %d ';
+  }
+  // end node district, contains no results by definition
+  if ($bi_exist_top == "no" && $subdist == "no"){
+  $query = '';
+  echo "Warning: no ballot items and no subdistricts, this is currently an empty un-associated District";
+  }
+  $result = db_query($query, $district_nid);
+  for ($row; $row = db_fetch_array($result); $ballot_dist[] = $row);
+  //print_r($result);
+  print_r($ballot_dist);
+  $ballot_tree = array();
+  //walk the flat list and build tree for ballot items based on ballot item nid
+  foreach($ballot_dist as $row){
+    $bi_key = $row['field_elec_ballot_items_nid'];
+    $dist_nid = $row['nid'];
+    $bt_dist_title = _elec_get_title_from_nid($dist_nid);
+    $bt_bitem_title = _elec_get_title_from_nid($bi_key);
+    if(array_key_exists($bi_key, $ballot_tree) == FALSE ){
+      // create a base record for the ballot item
+      $ballot_tree[$bi_key] = array('nid'=>$bi_key, 'title'=>$bt_bitem_title, 'slug'=>_elec_slug_from_nid($bi_key), 'districts'=>array( array('district_nid'=>$dist_nid, 'district_title'=>$bt_dist_title, 'results'=>_elec_get_ballot_item_result($bi_key, $dist_nid))));
+    }else{
+      // add another entry to the district array of an already existing record
+      $add_district_arr = array('district_nid'=>$dist_nid, 'district_title'=>$bt_dist_title, 'results'=>_elec_get_ballot_item_result($bi_key, $dist_nid));
+      array_push($ballot_tree[$bi_key]['districts'],$add_district_arr);
+    }
+  }
+  //print_r($ballot_tree);
+  return $ballot_tree;
+}
+
+// just returns one branch from the ballot item tree. Data struture is redundant
+// with nid because internal array pointer loses key value when it iterates on it
+// in foreach loop (i think)?
+function _elec_get_ballot_from_ballot_tree($ballot_tree,$ballot_item_slug){
+  foreach($ballot_tree as $bi){
+    if ($bi['slug'] == $ballot_item_slug){
+      $bi_result[$bi['nid']] = $bi;
+    }
+  }
+  //print_r($bi_result);
+  return $bi_result;
+}
+
 //ballot item nid is filled in by reference, basically as a hack, as its needed elsewhere
 function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot_item_nid){
+  $ballot_tree = _elec_build_ballot_item_tree_at_district($district_nid);
+  $bi_result = _elec_get_ballot_from_ballot_tree($ballot_tree, $ballot_item_slug);
+  $ballot_target_nid = key($bi_result);
   $results_with_dd = _elec_get_ballot_item_results_by_district($district_nid); //results with district data
   $ballot_item_results = _elec_strip_district_layer($results_with_dd);
-  print_r($results_with_dd);
+  echo "target ballot item nid is: " . $ballot_target_nid . " ";
+  echo "target district viewed is: " . $district_nid . " ";
+  //print_r($results_with_dd);
+  $dd_arr=array();
+  /*build the district list with ballot_item data just for ballot item called*/
+  foreach($results_with_dd as $district_key){
+    $district_nid = $district_key['district_nid'];
+    $district_title = _elec_get_title_from_nid($district_nid);
+    $ballot_result_nid = key($district_key['results']);
+    $ballot_result_title = _elec_get_title_from_nid($ballot_result_nid);
+    $results = $district_key['results'];
+    if ($ballot_target_nid == $ballot_result_nid){
+      $dd_arr[] = array('district_nid'=>$district_nid, 'district_title'=>$district_title, 'ballot_result_nid'=>$ballot_result_nid, 'ballot_result_title'=>$ballot_result_title, 'results'=>$results);
+    }
+  }
+  // now we have two structures with subdistrict results..
+  echo "------------------\n";
+  print_r($bi_result);
+  echo "------------------\n";
+  print_r($dd_arr); 
+  echo "------------------\n";  
+
+  //begin normal execution route with summed results..
   $summed_results = array();
   foreach($ballot_item_results as $ballot_item){
     foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
@@ -1353,8 +1536,10 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
     }
   }
-  print_r($summed_results);
-  
+  //print_r($summed_results);
+  /*mess with the summed results here */ 
+
+ 
   //Add percentage to data
   foreach($summed_results as $key => $ind_result){
     $total_for_ind = array_sum($ind_result['results']);
