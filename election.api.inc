@@ -431,8 +431,8 @@ EVENT;
 }
 
 function _elec_html_event_skeleton_2($data){
-  print "<pre>"; print_r($data); print "</pre>";
-  //$data = (object)$data;
+  //print "<pre>"; print_r($data); print "</pre>";
+  $data = (object)$data;
   $season_slug = _elec_last_uri_path($data->election_season['link']);
   $season_nid = _elec_nid_from_season_slug($season_slug);
   $event_slug = _elec_last_uri_path(substr($_GET['q'], 0, -4));
@@ -1429,7 +1429,7 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
   $dist_slug = _elec_slug_from_nid($district_nid);
   $subdist_exist = _elec_subdistricts_exist($district_nid);
   $bi_exist_top = _elec_dist_has_ballot_items_at_top($district_nid);
-  echo "ballot item exists at top level: " . $bi_exist_top . " *";
+  //echo "ballot item exists at top level: " . $bi_exist_top . " *";
   //get the proper query to produce the district ballot-item pairs at the district level
   if ($bi_exist_top == "no" && $subdist_exist == "yes"){
   //case no top ballot items and has Subdistricts: (City of Burlington) summed walk required nested HTML output
@@ -1450,21 +1450,22 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
            ')'.
            'AND `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` IS NOT NULL ';
   }
-  if ($bi_exist_top == "yes" && $subdist == "no"){
+  if ($bi_exist_top == "yes" && $subdist_exist == "no"){
   // case has top ballot items and no Subdistricts: (Ward 1, Town of Williston) - default HTML output
+  // works
   $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
            'FROM `content_field_elec_ballot_items` ' .
            'WHERE `content_field_elec_ballot_items`.`nid` = %d ';
   }
   // end node district, contains no results by definition
-  if ($bi_exist_top == "no" && $subdist == "no"){
-  $query = '';
-  echo "Warning: no ballot items and no subdistricts, this is currently an empty un-associated District";
-  }
+  //if ($bi_exist_top == "no" && $subdist_exist == "no"){
+  //$query = '';
+  //echo "Warning: no ballot items and no subdistricts, this is currently an empty un-associated District";
+  //}
   $result = db_query($query, $district_nid);
   for ($row; $row = db_fetch_array($result); $ballot_dist[] = $row);
   //print_r($result);
-  print_r($ballot_dist);
+  //print_r($ballot_dist);
   $ballot_tree = array();
   //walk the flat list and build tree for ballot items based on ballot item nid
   foreach($ballot_dist as $row){
@@ -1485,7 +1486,7 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
   return $ballot_tree;
 }
 
-// just returns one branch from the ballot item tree. Data struture is redundant
+// just returns one branch from the ballot item tree. Data struture is slightly redundant
 // with nid because internal array pointer loses key value when it iterates on it
 // in foreach loop (i think)?
 function _elec_get_ballot_from_ballot_tree($ballot_tree,$ballot_item_slug){
@@ -1520,12 +1521,13 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
       $dd_arr[] = array('district_nid'=>$district_nid, 'district_title'=>$district_title, 'ballot_result_nid'=>$ballot_result_nid, 'ballot_result_title'=>$ballot_result_title, 'results'=>$results);
     }
   }
-  // now we have two structures with subdistrict results..
+  /* now we have two structures with subdistrict results..
   echo "------------------\n";
   print_r($bi_result);
   echo "------------------\n";
   print_r($dd_arr); 
   echo "------------------\n";  
+  */
 
   //begin normal execution route with summed results..
   $summed_results = array();
