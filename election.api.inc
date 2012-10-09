@@ -214,7 +214,7 @@ TABLE;
   }else{
     $results .= '<ol class="graph"></ol>' . "\n";
   }
-  $results .= _elec_detailed_results_render($data->detailed_results);
+  $results .= _elec_detailed_results_render($data->detailed_results, $opt_type_th);
   $results .= $footer . _elec_html_ballot_item_footer($data) . "\n";
   $results .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
   $results .= '</article>' . "\n";
@@ -224,12 +224,15 @@ $results
 ARTICLE;
 }
 
-function _elec_detailed_results_render($detailed_results){
+
+//This takes the detailed_results from _elec_get_ballot_item as generates an
+//html table of the results.
+function _elec_detailed_results_render($detailed_results, $opt_type_th){
   $ths = array();
-  $ths[] = "Options";
-  $choices = array();
+  $ths[] = $opt_type_th;
+  $choices = array(); 
   $vote_grid = array();
-  print '<pre>'; print_r($detailed_results); print '</pre>';
+  //Load up the choices and wards for use in the table.
   foreach($detailed_results as $district_nid => $district_result_container){
     $district_node = node_load(array('nid'=>$district_nid));
     $ths[] = $district_node->title;
@@ -239,16 +242,28 @@ function _elec_detailed_results_render($detailed_results){
     }
   }
 
+i //Build the grid of votes to render the table
   foreach($detailed_results as $district_nid => $district_result_container){
     foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
     foreach($results as $choice => $votes){
       $vote_grid[$choice][] = $votes;
     }
   }
-  print '<pre>'; print_r($vote_grid); print '</pre>';  
-  foreach($vote_grid as $choice => $votes){
 
+  //Render table
+  $table = "<table>\n\t<thead>\n";
+  foreach($ths as $th){ $table .= "<th>$th</th>"; }
+  $table .= "</thead>";
+  foreach($vote_grid as $choice => $votes){
+    $table .= "<tr>";
+    $table .= "  <td>$choice</td>"; 
+    foreach($votes as $vote_num){
+      $table .= "<td>$vote_num</td>";
+    }
+    $table .= "</tr>";
   }
+  $table .= "</table>";
+  return $table;
 }
 
 function _elec_load_detailed_results_choices($results){
