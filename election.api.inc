@@ -120,9 +120,9 @@ function _elec_as_html($data,$type){
       break;
     case 'ballot_item':
       if(substr($_GET['q'], -4) == '.skl'){
-        _elec_html_ballot_item_wrapper($data);
-      }else{
         _elec_html_ballot_item($data);
+      }else{
+        _elec_html_ballot_item_wrapper($data);
       }
       break;
   }
@@ -172,7 +172,7 @@ function _elec_html_ballot_item($data){
   $data_link = base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
 
   $total_votes = 0;
-  $results ='<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">' . "\n";
+  $results ="\n\n" . '<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">' . "\n";
   $results .='  <h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>' . "\n";
 
   foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
@@ -217,9 +217,10 @@ TABLE;
   $results .= $footer . _elec_html_ballot_item_footer($data) . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
   $results .= '</article>' . "\n";
 
-print <<<ARTICLE
-$results
-ARTICLE;
+//print <<<ARTICLE
+//$results
+//ARTICLE;
+  print $results;
 }
 //preprocess before output?
 function _elec_html_skel_wrapper($skel_guts){
@@ -400,7 +401,7 @@ DISTRICT;
 
 function _elec_html_event($data){
   $data = (object)$data;
-  print_r($data);
+  //print_r($data);
   $election_season_link = '<a href="' . $data->election_season['link'] . '">'. $data->election_season['title'] . '</a>';
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season
   $election_events = '';
@@ -430,32 +431,122 @@ EVENT;
   exit;
 }
 
+function _elec_split_combined_slug($combined_district_bi_slug){
+      $out_arr = array();
+      $u_slugs_arr = explode("/", $combined_district_bi_slug);
+      $out_arr['district_slug'] = $u_slugs_arr[0];
+      $out_arr['ballot_item_slug'] = $u_slugs_arr[1];
+      return $out_arr;
+}
+
+/*builds the new HTML skeleton and nav interface for the results page -
+we need to be able to call this function with the election event $data.
+This is a very heavy function and so the final call dumps it to a
+uniquely named .php file based on the election event nid. Inside it is
+just the string variable storing all the results and a print command.
+It is then included as a php file (via nid to reconstruct filename) from the file cache
+into the theme (node-elec_election_event.tpl.php), where it evaluates and prints.  -AC*/
 function _elec_html_event_skeleton_2($data){
   //print "<pre>"; print_r($data); print "</pre>";
+  $master_ballot_tree = array();
   $data = (object)$data;
+  $election_nav = ''; /* start collect html for nav */
+  $ballot_items = ''; /* start collect html for results */
   $season_slug = _elec_last_uri_path($data->election_season['link']);
   $season_nid = _elec_nid_from_season_slug($season_slug);
   $event_slug = _elec_last_uri_path(substr($_GET['q'], 0, -4));
   $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season -GG
-  $election_nav = ''; /* start collect html for nav */
-  $ballot_items = ''; /* start collect html for results */
-   foreach($district_type_containers as $key => $container){
+  $dafault_data_struct = array();
+  //build initial data structure 
+  foreach($district_type_containers as $key => $container){
     //loops through "wards", "municipalities" other tags
     foreach($container as $e_event){
       //loops through districts
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
       $ballot_tree = _elec_build_ballot_item_tree_at_district($district_nid);
-      echo "district info: " . $district_nid . " " . $district_slug . " ";
-      print_r($ballot_tree);
-      echo "XXXXXXXXXXXXXXXXXXXXXXXX";
-
+      //build tree through districts by building list by ballot item and assoc districts
+      $default_data_struct[$district_nid] = array('slug'=>$district_slug, 'title'=>$e_event['title'], 'ballot_items'=>$ballot_tree);
+      //print_r($ballot_tree);
     }
   }
-    $ballot_items .= "\n";/*end results html*/
-    $election_nav .= "\n";/*end nav html*/
-    $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper"  class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
+  /* we need to get ballot items with results that are spread
+  out over parent trees that may have no common parent district */
+  //print '<pre>'; print_r($default_data_struct); print '</pre>';
+  $base_bi_district = array();
+  $parent_bi_district_list = array();
+  foreach($default_data_struct as $district_nid_key){
+    //loops initial district level unique districts
+    $district_slug = $district_nid_key['slug'];
+    $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
+    $bi_exist_top = _elec_dist_has_ballot_items_at_top($district_nid);
+    $subdist_exist = _elec_subdistricts_exist($district_nid);       
+    foreach($district_nid_key['ballot_items'] as $ballot_item){
+      //loops ballot items at district level
+      $ballot_item_slug = $ballot_item['slug'];
+      $ballot_item_nid = $ballot_item['nid'];
+      //collect list of base only ballot items.
+      if($bi_exist_top['bi_top'] == "yes"){
+        foreach($ballot_item['districts'] as $sub_district){
+          if($sub_district['district_nid'] == $district_nid){
+            $sub_district_slug = _elec_title_to_slug($sub_district['district_title']);
+            $base_bi_list[$sub_district_slug . "/" . $ballot_item_slug] = array('combined_slug'=>$sub_district_slug . "/" . $ballot_item_slug, 'district_slug'=>$sub_district_slug, 'ballot_item_slug'=>$ballot_item_slug);
+          }            
+        }
+      }
+      // collect a list of parent only ballot items.
+      if($bi_exist_top['bi_top'] == "no"){
+        foreach($ballot_item['districts'] as $sub_district){
+          if($sub_district['district_slug'] != $district_nid){
+            $sub_district_slug = _elec_title_to_slug($sub_district['district_title']);
+            $parent_bi_district_list[$district_slug . "/" . $ballot_item_slug] = array('combined_slug'=>$district_slug . "/" . $ballot_item_slug, 'district_slug'=>$district_slug, 'ballot_item_slug'=>$ballot_item_slug);
+          }             
+        }
+      }
+
+    } 
+  }
+  //combine base only ballot items and parent only ballot items into master ballot item list
+  foreach($parent_bi_district_list as $parent_slugs){
+    foreach($base_bi_list as $base_slugs){
+      if ($parent_slugs['ballot_item_slug'] == $base_slugs['ballot_item_slug']){
+        if (array_key_exists($parent_slugs['combined_slug'], $master_ballot_tree)  == FALSE){
+          $master_ballot_tree[$parent_slugs['combined_slug']] = array('summed_slug'=>$parent_slugs['combined_slug'], 'base_slugs'=>array( array('base_slug'=>$base_slugs['combined_slug']))); 
+        }else{
+          $add_base_slug = array('base_slug'=>$base_slugs['combined_slug']);
+          array_push($master_ballot_tree[$parent_slugs['combined_slug']]['base_slugs'], $add_base_slug);
+        }
+      }else{
+        $master_ballot_tree[$base_slugs['combined_slug']] = array('summed_slug'=>$base_slugs['combined_slug'], 'base_slugs'=>array( NULL ));  
+      }
+    }
+  }
+  ksort($master_ballot_tree, SORT_REGULAR);
+  print '<pre>'; print_r($master_ballot_tree); print '</pre>';
+  /* below is customized for each type of election event and can be handled as a separate function call, but it must pass the season and event slug variables through so you can get the proper ballot item html*/
+  //build html out from master ballot tree.
+  foreach($master_ballot_tree as $unique_dist_bi_slug){
+    $u_slugs_arr = _elec_split_combined_slug($unique_dist_bi_slug['summed_slug']);
+    /* the if skips duplicate ward listings with identical results at the base level. HTML results are only printed out from the higher level district */ 
+    if( ! ($u_slugs_arr['district_slug'] == "ward-1" || $u_slugs_arr['district_slug'] == "ward-2" || $u_slugs_arr['district_slug'] == "ward-3" || $u_slugs_arr['district_slug'] == "ward-4" || $u_slugs_arr['district_slug'] == "ward-5" || $u_slugs_arr['district_slug'] == "ward-6" || $u_slugs_arr['district_slug'] == "ward-7")){  
+    $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
+    $ballot_items .= _elec_html_ballot_item($ballot_items_data);
+    }
+    if(isset($unique_dist_bi_slug['base_slugs']['0'])){
+      foreach($unique_dist_bi_slug['base_slugs'] as $ballot_contributor){
+        //var_dump($ballot_contributor);
+        $u_slugs_arr_sub = _elec_split_combined_slug($ballot_contributor['base_slug']);
+        //echo $u_slugs_arr_sub['district_slug'] . " " . $u_slugs_arr_sub['ballot_item_slug'];
+        $ballot_items_data_sub = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr_sub['district_slug'],$u_slugs_arr_sub['ballot_item_slug']);
+        $ballot_items .= _elec_html_ballot_item($ballot_items_data_sub);
+     }
+    }
+  }
+ //print '<pre>'; print_r($master_ballot_tree); print '</pre>';
+  $ballot_items .= "\n";/*end results html*/
+  $election_nav .= "\n";/*end nav html*/
+  $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper"  class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
   print $elec_results;
   //_elec_html_skel_to_file($event_nid,$ballot_items,$election_nav);
   //exit;
@@ -1381,10 +1472,11 @@ function _elec_get_winner_algos(){
   return $built_in;
 }
 
-//returns "yes " or "no" only checks at the district level on purpose
+//returns array
 function _elec_dist_has_ballot_items_at_top($district_nid){
   $result = array();
   $dist_result = array();
+  $bi_exist_top = array();
   $query = 'SELECT `content_field_elec_ballot_items`.`nid`,`content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' . 
            'FROM `content_field_elec_ballot_items`' .
            'WHERE `content_field_elec_ballot_items`.`nid` = %d ' .
@@ -1392,21 +1484,25 @@ function _elec_dist_has_ballot_items_at_top($district_nid){
   $result = db_query($query, $district_nid);
   for ($row; $row = db_fetch_array($result); $dist_result[] = $row); 
   $num_results = count($dist_result);
-  echo "#bi: ";
-  var_dump($num_results);
+  //echo "#bi: ";
+  //var_dump($num_results);
   if($num_results > 0){
-    $bi_exist_top = "yes";
+    $bi_exist_top['bi_top'] = "yes";
+    $bi_exist_top['bi_top_count'] = $num_results;
+    $bi_exist_top['result'] = $dist_result;
   }else{
-    $bi_exist_top = "no";
+    $bi_exist_top['bi_top'] = "no";
+    $bi_exist_top['bi_top_count'] = NULL;
+    $bi_exist_top['result'] = NULL;
   }
   return $bi_exist_top;
 }
 
-//returns "yes" or "no"
+//returns array.
 function _elec_subdistricts_exist($district_nid){
   $result = array();  
   $subdist_result = array();
-  // why not multiple records? works fine in MySQL?!
+  $subdist_exist = array();
   $query = 'SELECT `content_field_elec_sub_districts`.`nid`, `content_field_elec_sub_districts`.`field_elec_sub_districts_nid` ' .
            'FROM `content_field_elec_sub_districts` ' .
            'WHERE `content_field_elec_sub_districts`.`nid` = %d ' . 
@@ -1414,12 +1510,16 @@ function _elec_subdistricts_exist($district_nid){
   $result = db_query($query, $district_nid);
   for ($row; $row = db_fetch_array($result); $subdist_result[] = $row);
   $num_results = count($subdist_result);
-  echo "#sd: ";
-  var_dump($num_results);
+  //echo "#sd: ";
+  //var_dump($num_results);
    if($num_results > 0){
-     $subdist_exist = "yes";
+     $subdist_exist['sd_exist'] = "yes";
+     $subdist_exist['sd_count'] = $num_results;
+     $subdist_exist['result'] = $subdist_result;
    }else{
-     $subdist_exist = "no";
+     $subdist_exist['sd_exist'] = "no";
+     $subdist_exist['sd_count'] = NULL;
+     $subdist_exist['result'] = NULL;
    }
   return $subdist_exist;
 }
@@ -1431,7 +1531,7 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
   $bi_exist_top = _elec_dist_has_ballot_items_at_top($district_nid);
   //echo "ballot item exists at top level: " . $bi_exist_top . " *";
   //get the proper query to produce the district ballot-item pairs at the district level
-  if ($bi_exist_top == "no" && $subdist_exist == "yes"){
+  if ($bi_exist_top['bi_top'] == "no" && $subdist_exist['sd_exist'] == "yes"){
   //case no top ballot items and has Subdistricts: (City of Burlington) summed walk required nested HTML output
   // works
   $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
@@ -1439,7 +1539,7 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
            'WHERE `content_type_elec_district`.`nid` = %d ' .
            'AND `content_field_elec_sub_districts`.`field_elec_sub_districts_nid` = `content_field_elec_ballot_items`.`nid` ';
   }
-  if ($bi_exist_top == "yes" && $subdist_exist == "yes"){
+  if ($bi_exist_top['bi_top'] == "yes" && $subdist_exist['sd_exist'] == "yes"){
   // case has top ballot items and has Subdistricts: (Chittenden County) summed walk required nested HTML output
   $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
            'FROM `content_field_elec_ballot_items` , `content_type_elec_district` , `content_field_elec_sub_districts` ' . 
@@ -1450,7 +1550,7 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
            ')'.
            'AND `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` IS NOT NULL ';
   }
-  if ($bi_exist_top == "yes" && $subdist_exist == "no"){
+  if ($bi_exist_top['bi_top'] == "yes" && $subdist_exist['sd_exist'] == "no"){
   // case has top ballot items and no Subdistricts: (Ward 1, Town of Williston) - default HTML output
   // works
   $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
@@ -1460,7 +1560,7 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
   // end node district, contains no results by definition
   //if ($bi_exist_top == "no" && $subdist_exist == "no"){
   //$query = '';
-  //echo "Warning: no ballot items and no subdistricts, this is currently an empty un-associated District";
+  //echo "Warning: District with no ballot items and no subdistricts. ";
   //}
   $result = db_query($query, $district_nid);
   for ($row; $row = db_fetch_array($result); $ballot_dist[] = $row);
@@ -1506,8 +1606,8 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
   $ballot_target_nid = key($bi_result);
   $results_with_dd = _elec_get_ballot_item_results_by_district($district_nid); //results with district data
   $ballot_item_results = _elec_strip_district_layer($results_with_dd);
-  echo "target ballot item nid is: " . $ballot_target_nid . " ";
-  echo "target district viewed is: " . $district_nid . " ";
+  //echo "target ballot item nid is: " . $ballot_target_nid . " ";
+  //echo "target district viewed is: " . $district_nid . " ";
   //print_r($results_with_dd);
   $dd_arr=array();
   /*build the district list with ballot_item data just for ballot item called*/
