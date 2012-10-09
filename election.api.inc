@@ -155,7 +155,6 @@ SEASON;
 }
 
 function _elec_html_ballot_item($data){
-  print '<pre>'; print_r($data); print '</pre>';
   $data = (object)$data;
   $election_season_href = $data->election_season['link'];
   $election_season_title = $data->election_season['title'];
@@ -215,13 +214,50 @@ TABLE;
   }else{
     $results .= '<ol class="graph"></ol>' . "\n";
   }
-  $results .= $footer . _elec_html_ballot_item_footer($data) . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
+  $results .= _elec_detailed_results_render($data->detailed_results);
+  $results .= $footer . _elec_html_ballot_item_footer($data) . "\n";
+  $results .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
   $results .= '</article>' . "\n";
 
 print <<<ARTICLE
 $results
 ARTICLE;
 }
+
+function _elec_detailed_results_render($detailed_results){
+  $ths = array();
+  $ths[] = "Options";
+  $choices = array();
+  $vote_grid = array();
+  print '<pre>'; print_r($detailed_results); print '</pre>';
+  foreach($detailed_results as $district_nid => $district_result_container){
+    $district_node = node_load(array('nid'=>$district_nid));
+    $ths[] = $district_node->title;
+    foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
+    if($choices === array()){
+      $choices = _elec_load_detailed_results_choices($results);
+    }
+  }
+
+  foreach($detailed_results as $district_nid => $district_result_container){
+    foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
+    foreach($results as $choice => $votes){
+      $vote_grid[$choice][] = $votes;
+    }
+  }
+  print '<pre>'; print_r($vote_grid); print '</pre>';  
+  foreach($vote_grid as $choice => $votes){
+
+  }
+}
+
+function _elec_load_detailed_results_choices($results){
+  foreach($results as $choice => $votes){
+    $choices[] = $choice;    
+  }
+  return $choices;
+}
+
 
 /* Makes an updating html page out of a API call for flat html
 (for use on the Studio Laptop output to the switcher on TV) currently called with
