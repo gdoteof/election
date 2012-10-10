@@ -242,7 +242,7 @@ function _elec_detailed_results_render($detailed_results, $opt_type_th){
     }
   }
 
-i //Build the grid of votes to render the table
+  //Build the grid of votes to render the table
   foreach($detailed_results as $district_nid => $district_result_container){
     foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
     foreach($results as $choice => $votes){
