@@ -228,6 +228,7 @@ ARTICLE;
 //This takes the detailed_results from _elec_get_ballot_item as generates an
 //html table of the results.
 function _elec_detailed_results_render($detailed_results, $opt_type_th){
+  if(!$detailed_results){ return null; }
   $ths = array();
   $ths[] = $opt_type_th;
   $choices = array(); 
