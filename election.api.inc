@@ -524,14 +524,24 @@ function _elec_html_event_skeleton_2($data){
   }
   ksort($master_ballot_tree, SORT_REGULAR);
   print '<pre>'; print_r($master_ballot_tree); print '</pre>';
-  /* below is customized for each type of election event and can be handled as a separate function call, but it must pass the season and event slug variables through so you can get the proper ballot item html*/
+
+  /* below is customized for each type of election event and can be handled as a separate function call, 
+     but it must pass the season and event slug variables through so you can get the proper ballot item html*/
+
   //build html out from master ballot tree.
   foreach($master_ballot_tree as $unique_dist_bi_slug){
     $u_slugs_arr = _elec_split_combined_slug($unique_dist_bi_slug['summed_slug']);
-    /* the if skips duplicate ward listings with identical results at the base level. HTML results are only printed out from the higher level district */ 
-    if( ! ($u_slugs_arr['district_slug'] == "ward-1" || $u_slugs_arr['district_slug'] == "ward-2" || $u_slugs_arr['district_slug'] == "ward-3" || $u_slugs_arr['district_slug'] == "ward-4" || $u_slugs_arr['district_slug'] == "ward-5" || $u_slugs_arr['district_slug'] == "ward-6" || $u_slugs_arr['district_slug'] == "ward-7")){  
-    $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
-    $ballot_items .= _elec_html_ballot_item($ballot_items_data);
+    /* this skips duplicate ward listings with identical results at the base level. 
+       HTML results are only printed out from the higher level district */ 
+    if( ! ($u_slugs_arr['district_slug'] == "ward-1" 
+            || $u_slugs_arr['district_slug'] == "ward-2" || $u_slugs_arr['district_slug'] == "ward-3" 
+            || $u_slugs_arr['district_slug'] == "ward-4" || $u_slugs_arr['district_slug'] == "ward-5" 
+            || $u_slugs_arr['district_slug'] == "ward-6" || $u_slugs_arr['district_slug'] == "ward-7"
+          )
+      )
+    {  
+      $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
+      $ballot_items .= _elec_html_ballot_item($ballot_items_data);
     }
     if(isset($unique_dist_bi_slug['base_slugs']['0'])){
       foreach($unique_dist_bi_slug['base_slugs'] as $ballot_contributor){
