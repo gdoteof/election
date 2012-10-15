@@ -834,20 +834,13 @@ function _elec_as_csv($data,$type){
   if($type != 'ballot_item' && $type != 'district'){
     _elec_406();
   }
+  switch($type){
+    case 'district': $output = _elec_district_csv($data);
+      break;
+    case 'ballot_item' : $output = _elec_ballot_item_csv($data);
+      break;
+  }
   if($type == 'district'){
-    $output = array();
-    foreach($data['ballot_item_results'] as $key => $ballot_item){
-      $output[] = array($ballot_item['text']);
-      unset($ballot_item['text']);
-      // bug with "Array" string formatting - remember to fix AC - 
-      $options = array(''); $results = array('');
-      foreach($ballot_item['results'] as $option => $result){
-        $options[] = str_replace('_',' ', $option); 
-        $results[] = $result['votes'];
-      }
-      $output[] = $options;
-      $output[] = $results;
-    }
   }
   header('Content-Disposition: attachment; filename="'. $filename  . '"');
   $outstream = fopen("php://output",'w'); 
@@ -856,6 +849,43 @@ function _elec_as_csv($data,$type){
   }
   fclose($outstream);
   exit;
+}
+
+
+function _elec_district_csv($data){
+  $output = array();
+  foreach($data['ballot_item_results'] as $key => $ballot_item){
+    $output[] = array($ballot_item['text']);
+    unset($ballot_item['text']);
+    // bug with "Array" string formatting - remember to fix AC - 
+    $options = array(''); $results = array('');
+    foreach($ballot_item['results'] as $option => $result){
+      $options[] = str_replace('_',' ', $option); 
+      $results[] = $result['votes'];
+    }
+    $output[] = $options;
+    $output[] = $results;
+  }
+  return $output;
+}
+
+function _elec_ballot_item_csv($data){
+  print_r($data);
+  return $output;
+  $output = array();
+  foreach($data['ballot_item_results'] as $key => $ballot_item){
+    $output[] = array($ballot_item['text']);
+    unset($ballot_item['text']);
+    // bug with "Array" string formatting - remember to fix AC - 
+    $options = array(''); $results = array('');
+    foreach($ballot_item['results'] as $option => $result){
+      $options[] = str_replace('_',' ', $option); 
+      $results[] = $result['votes'];
+    }
+    $output[] = $options;
+    $output[] = $results;
+  }
+  return $output;
 }
 
 function _elec_get_event($season_slug, $event_slug){
