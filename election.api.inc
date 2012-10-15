@@ -238,7 +238,6 @@ echo '
 
 function _elec_detailed_results_render_articles($detailed_results, $opt_type_th){
   $output = '';
-  print '<pre>'; print_r($detailed_results); print '</pre>';
   foreach($detailed_results as $district_nid => $district_result_container){
     $district_node = node_load(array('nid'=>$district_nid));
     $article = '<article>'; 
