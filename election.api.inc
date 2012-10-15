@@ -204,7 +204,9 @@ TABLE;
     $results .= '    <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
     $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
     $footer .='' . "\n";
-    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ' : ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span> : <span class="votes">' . $result['votes']  . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
+    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ' : ' . $result['votes'] . ' votes, ' 
+           . $percent . "%".'" style="width: ' . $percent . "%" . '"> <span class="option">' . $option . '</span> : <span class="votes">' 
+           . $result['votes']  . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
     if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "%" . "</td>" . "\n"; }
     $results .= '  </tr>'. "\n";
   }
@@ -214,7 +216,7 @@ TABLE;
   }else{
     $results .= '<ol class="graph"></ol>' . "\n";
   }
-  $results .= _elec_detailed_results_render($data->detailed_results, $opt_type_th);
+  $results .= _elec_detailed_results_render_articles($data->detailed_results, $opt_type_th);
   $results .= $footer . _elec_html_ballot_item_footer($data) . "\n";
   $results .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
   $results .= '</article>' . "\n";
@@ -224,10 +226,28 @@ $results
 ARTICLE;
 }
 
+function _elec_detailed_results_render_articles($detailed_results, $opt_type_th){
+  $output = '';
+  print '<pre>'; print_r($detailed_results); print '</pre>';
+  foreach($detailed_results as $district_nid => $district_result_container){
+    $district_node = node_load(array('nid'=>$district_nid));
+    $article = '<article>'; 
+    $article .= '<h1>' . $district_node->title . '</h1>';
+    foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
+    $article .= "<table><thead><th>$opt_type_th</th><th>Votes</th></thead>";
+    foreach($results as $opt => $votes){
+      $article .= "<tr><td>$opt</td><td>$votes</td></tr>";
+    }
+    $article .= '</table>';
+    $article .= '</article>';
+    $output .= $article . "\n";
+  }
+  return $output;
+}
 
 //This takes the detailed_results from _elec_get_ballot_item as generates an
 //html table of the results.
-function _elec_detailed_results_render($detailed_results, $opt_type_th){
+function _elec_detailed_results_render_table($detailed_results, $opt_type_th){
   if(!$detailed_results){ return null; }
   $ths = array();
   $ths[] = $opt_type_th;
@@ -266,6 +286,7 @@ function _elec_detailed_results_render($detailed_results, $opt_type_th){
   $table .= "</table>";
   return $table;
 }
+
 
 function _elec_load_detailed_results_choices($results){
   foreach($results as $choice => $votes){
