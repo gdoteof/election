@@ -870,20 +870,31 @@ function _elec_district_csv($data){
 }
 
 function _elec_ballot_item_csv($data){
-  print_r($data);
-  return $output;
   $output = array();
-  foreach($data['ballot_item_results'] as $key => $ballot_item){
-    $output[] = array($ballot_item['text']);
-    unset($ballot_item['text']);
-    // bug with "Array" string formatting - remember to fix AC - 
-    $options = array(''); $results = array('');
-    foreach($ballot_item['results'] as $option => $result){
-      $options[] = str_replace('_',' ', $option); 
-      $results[] = $result['votes'];
+  $output[] = array($data['title']);
+  $output[] = array();
+  $output[] = $header = array('option', 'votes', 'percent', 'complete', 'winner', 'winning_threshold');
+  foreach($data['results'] as $option => $meta){
+    $results = array();
+    $results[] = $option; 
+    foreach($meta as $detail){
+      $results[] = $detail;
     }
-    $output[] = $options;
-    $output[] = $results;
+    $output[] = $results; 
+  }
+  if($data['detailed_results']){
+    $output[] = array();
+    $output[] = array('Detailed results:');
+    foreach($data['detailed_results'] as $district_nid => $d_r){
+      foreach($d_r as $binid => $dresults); // does not loop!
+      $output[] = array();
+      $district_node = node_load($district_nid);    
+      $output[] = array($district_node->title);
+      $output[] = array('option', 'votes');
+      foreach($dresults as $opt => $votes){
+        $output[] = array($opt, $votes);
+      }
+    }
   }
   return $output;
 }
