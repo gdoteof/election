@@ -19,7 +19,7 @@ function _elec_get_format_from_accept_header(){
 
 function _elec_return_as($data, $format, $type){
   switch($format){
-    case 'json': 
+    case 'json':
       header('Content-type: application/json');
       print str_replace("\/", "/", json_encode($data));
       exit;
@@ -59,7 +59,7 @@ function _elec_arg_parse(){
     if( isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ){
       $if_since = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
       if($if_since > $cache->last_update){ //The content has not been modified since the specified time
-        _elec_304(); 
+        _elec_304();
         return; //never called, just for readability.
       }
     }
@@ -73,21 +73,21 @@ function _elec_arg_parse(){
     $type = 'season';
     $season = _elec_remove_csv_extension($season);
     _elec_send_modify_expire_headers();
-    return  _elec_return_as(_elec_get_season($season), $format, $type);
+    return _elec_return_as(_elec_get_season($season), $format, $type);
   }
   $event_slug = array_shift($args);
   if ( empty($args) ){
     $event_slug = _elec_remove_csv_extension($event_slug);
     $type = 'event';
     _elec_send_modify_expire_headers();
-    return  _elec_return_as(_elec_get_event($season, $event_slug), $format, $type);
+    return _elec_return_as(_elec_get_event($season, $event_slug), $format, $type);
   }
   $district_slug = array_shift($args);
   if ( empty($args) ){
     $district_slug = _elec_remove_csv_extension($district_slug);
     $type = 'district';
     _elec_send_modify_expire_headers();
-    return  _elec_return_as(_elec_get_district($season, $event_slug, $district_slug), $format, $type);
+    return _elec_return_as(_elec_get_district($season, $event_slug, $district_slug), $format, $type);
   }
   $ballot_item_slug = array_shift($args);
   if (empty($args)){
@@ -97,7 +97,7 @@ function _elec_arg_parse(){
     return _elec_return_as(_elec_get_ballot_item($season, $event_slug, $district_slug, $ballot_item_slug), $format, $type);
   }
   else{
-//    dpm($args);
+// dpm($args);
   }
   return 'main parse';
 }
@@ -108,7 +108,7 @@ function _elec_as_html($data,$type){
       _elec_html_season($data);
       break;
     case 'event':
-      /* a bit clunky, but should give us the skeleton refresh method as part of the API*/  
+      /* a bit clunky, but should give us the skeleton refresh method as part of the API*/
       if(substr($_GET['q'], -4) == '.skl'){
         _elec_html_event_skeleton_2($data);
       }else{
@@ -173,7 +173,7 @@ function _elec_html_ballot_item($data){
 
   $total_votes = 0;
   $results ="\n\n" . '<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">' . "\n";
-  $results .='  <h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>' . "\n";
+  $results .=' <h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>' . "\n";
 
   foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
   $opt_type_th = ($type=='election') ? 'Candidates' : 'Options';
@@ -200,21 +200,25 @@ TABLE;
     $rounded_raw = round($result['votes'] / $total_votes * 100 , 2 , PHP_ROUND_HALF_DOWN);
     $percent = ($complete) ? number_format($rounded_raw , 2 ) : 'n/a';
     $opt_type = ($type=='election') ? 'candidate' : '';
-    $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
-    $results .= '    <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
-    $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
+    $results .= ' <tr class="result ' . $winner . $complete . '">' . "\n";
+    $results .= ' <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
+    $results .= ' <td class="votes"> '. $result['votes'] . "</td>\n";
     $footer .='' . "\n";
-    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ' : ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span> : <span class="votes">' . $result['votes']  . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
-    if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "%" . "</td>" . "\n"; }
-    $results .= '  </tr>'. "\n";
+    $graph .= '<li class="result ' . $opt_type . '" title="' . $option . ' : ' . $result['votes'] . ' votes, '
+           . $percent . "%".'" style="width: ' . $percent . "%" . '"> <span class="option">' . $option . '</span> : <span class="votes">'
+           . $result['votes'] . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
+    if($result['complete']){ $results .= ' <td class="percent">' . $percent . "%" . "</td>" . "\n"; }
+    $results .= ' </tr>'. "\n";
   }
   $results .= "</tbody>" . "\n" . "</table>" . "\n";
   if ($complete){
-    $results .=  $graph . '</ol>' . "\n";
+    $results .= $graph . '</ol>' . "\n";
   }else{
     $results .= '<ol class="graph"></ol>' . "\n";
   }
-  $results .= $footer . _elec_html_ballot_item_footer($data) . "\n" . '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
+  $results .= _elec_detailed_results_render_articles($data->detailed_results, $opt_type_th);
+  $results .= $footer . _elec_html_ballot_item_footer($data) . "\n";
+  $results .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
   $results .= '</article>' . "\n";
 
 //print <<<ARTICLE
@@ -231,6 +235,75 @@ echo '
 </article>
  ;*/
 }
+
+function _elec_detailed_results_render_articles($detailed_results, $opt_type_th){
+  $output = '';
+  foreach($detailed_results as $district_nid => $district_result_container){
+    $district_node = node_load(array('nid'=>$district_nid));
+    $article = '<article>';
+    $article .= '<h1>' . $district_node->title . '</h1>';
+    foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
+    $article .= "<table><thead><th>$opt_type_th</th><th>Votes</th></thead>";
+    foreach($results as $opt => $votes){
+      $article .= "<tr><td>$opt</td><td>$votes</td></tr>";
+    }
+    $article .= '</table>';
+    $article .= '</article>';
+    $output .= $article . "\n";
+  }
+  return $output;
+}
+
+//This takes the detailed_results from _elec_get_ballot_item as generates an
+//html table of the results.
+function _elec_detailed_results_render_table($detailed_results, $opt_type_th){
+  if(!$detailed_results){ return null; }
+  $ths = array();
+  $ths[] = $opt_type_th;
+  $choices = array();
+  $vote_grid = array();
+  //Load up the choices and wards for use in the table.
+  foreach($detailed_results as $district_nid => $district_result_container){
+    $district_node = node_load(array('nid'=>$district_nid));
+    $ths[] = $district_node->title;
+    foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
+    if($choices === array()){
+      $choices = _elec_load_detailed_results_choices($results);
+    }
+  }
+
+  //Build the grid of votes to render the table
+  foreach($detailed_results as $district_nid => $district_result_container){
+    foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
+    foreach($results as $choice => $votes){
+      $vote_grid[$choice][] = $votes;
+    }
+  }
+
+  //Render table
+  $table = "<table>\n\t<thead>\n";
+  foreach($ths as $th){ $table .= "<th>$th</th>"; }
+  $table .= "</thead>";
+  foreach($vote_grid as $choice => $votes){
+    $table .= "<tr>";
+    $table .= " <td>$choice</td>";
+    foreach($votes as $vote_num){
+      $table .= "<td>$vote_num</td>";
+    }
+    $table .= "</tr>";
+  }
+  $table .= "</table>";
+  return $table;
+}
+
+
+function _elec_load_detailed_results_choices($results){
+  foreach($results as $choice => $votes){
+    $choices[] = $choice;
+  }
+  return $choices;
+}
+
 
 /* Makes an updating html page out of a API call for flat html
 (for use on the Studio Laptop output to the switcher on TV) currently called with
@@ -256,12 +329,12 @@ function _elec_html_ballot_item_wrapper($data){
 <article id="results">
 ';
   print $article;
-print '
+  print '
 </article>
 </body>
 </html>
 ';
-exit;
+  exit;
 }
 
 function _elec_html_ballot_item_footer($data){
@@ -295,8 +368,8 @@ function _elec_html_ballot_item_skel($data, $data_link_bypass = NULL){
   $data_link = ($data_link_bypass) ? $data_link_bypass : base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
 
   $tags = "<ul>\n";
-  foreach ($data->tags as $tag){ $type = strtolower($tag); $tags .= '    <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
-  $tags .="  </ul>\n";
+  foreach ($data->tags as $tag){ $type = strtolower($tag); $tags .= ' <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
+  $tags .=" </ul>\n";
 
   $total_votes = 0;
   $results = '<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">';
@@ -326,17 +399,17 @@ TABLE;
     $rounded_raw = round($result['votes'] / $total_votes * 100 , 2 , PHP_ROUND_HALF_DOWN);
     $percent = ($complete) ? number_format($rounded_raw , 2 ) : 'n/a';
     $opt_type = ($type=='election') ? 'candidate' : '';
-    $results .= '  <tr class="result ' . $winner . $complete . '">' . "\n";
-    $results .= '    <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
-    $results .= '    <td class="votes"> '. $result['votes'] . "</td>\n";
+    $results .= ' <tr class="result ' . $winner . $complete . '">' . "\n";
+    $results .= ' <td class="option ' . $opt_type . '"><span class="graph-swatch"></span>' . $option . "</td>\n";
+    $results .= ' <td class="votes"> '. $result['votes'] . "</td>\n";
     $footer .= '' . "\n";
-    $graph .= '<li class="result ' . $opt_type  . '" title="' . $option . ' : ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span> : <span class="votes">' . $result['votes']  . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
-    if($result['complete']){ $results .= '    <td class="percent">' .  $percent . "</td>\n"; }
-    $results .= '  </tr>'. "\n";
+    $graph .= '<li class="result ' . $opt_type . '" title="' . $option . ' : ' . $result['votes'] . ' votes, ' . $percent . "%".'" style="width: ' . $percent . "%" . '"><span class="option">' . $option . '</span> : <span class="votes">' . $result['votes'] . '</span> votes, <span class="percent">' . $percent . '</span>%</li>' . "\n";
+    if($result['complete']){ $results .= ' <td class="percent">' . $percent . "</td>\n"; }
+    $results .= ' </tr>'. "\n";
   }
   $results .= "</tbody></table>" . "\n";
   if ($complete){
-    $results .=  $graph . '</ol>' . "\n";
+    $results .= $graph . '</ol>' . "\n";
   }else{
     $results .= '<ol class="graph"></ol>' . "\n";
   }
@@ -355,8 +428,8 @@ function _elec_html_district($data){
   $election_event_title = $data->election_event['title'];
   //print '<pre>'; print_r($data); print'<pre>';
   $tags = "<ul>\n";
-  foreach ($data->tags as $tag){ $tags .= '    <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
-  $tags .="  </ul>\n";
+  foreach ($data->tags as $tag){ $tags .= ' <li><abbr title="'.$tag.'" class="tag">'.$tag.'</abbr></li>' ."\n"; }
+  $tags .=" </ul>\n";
 
   $sub_ballot_items = '';
   $sub_ballot_items .= "    <ul>\n";
@@ -368,11 +441,11 @@ function _elec_html_district($data){
   $sub_ballot_items .= "</ul>\n";
   $ballot_items = '';
   foreach ($data->ballot_items as $ballot_item_type => $ballot_item_list){
-  $ballot_items .= "    <h3>" . ucfirst($ballot_item_type) .  "</h3>\n<ul>\n";
+  $ballot_items .= " <h3>" . ucfirst($ballot_item_type) . "</h3>\n<ul>\n";
     foreach($ballot_item_list as $ballot_item){
-      $ballot_items .= '      <li><a href="' . $ballot_item['link'] .  '" class="ballot-item ' . _elec_title_to_slug(_elec_swap_plurality($ballot_item_type)) . '">' . $ballot_item['title'] . '</a></li>' . "\n"; 
+      $ballot_items .= ' <li><a href="' . $ballot_item['link'] . '" class="ballot-item ' . _elec_title_to_slug(_elec_swap_plurality($ballot_item_type)) . '">' . $ballot_item['title'] . '</a></li>' . "\n";
     }
-    $ballot_items .= "    </ul>\n";
+    $ballot_items .= " </ul>\n";
   }
 
   $districts = '';
@@ -380,7 +453,7 @@ function _elec_html_district($data){
   $district_type = ucwords(str_replace('-', ' ',$district_type));
   $districts .= "<h2>" . $district_type . "</h2>\n<ul>\n";
     foreach ($district_list as $district){
-      $districts .= '      <li><a href="' . $district['link'] .  '" class="district ' . str_replace(' ','-',_elec_swap_plurality($district_type)) . '">' . $district['title'] . '</a></li>' . "\n"; 
+      $districts .= ' <li><a href="' . $district['link'] . '" class="district ' . str_replace(' ','-',_elec_swap_plurality($district_type)) . '">' . $district['title'] . '</a></li>' . "\n";
     }
     $districts .= "</ul>\n";
   }
@@ -418,12 +491,12 @@ function _elec_html_event($data){
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season
   $election_events = '';
   foreach($district_type_containers as $key => $container){
-    $election_events .= '<h2>' . ucfirst($key) . '</h2>' . "\n"; 
-    $election_events .= '    <ul>' . "\n";
+    $election_events .= '<h2>' . ucfirst($key) . '</h2>' . "\n";
+    $election_events .= ' <ul>' . "\n";
     foreach($container as $e_event){
-      $election_events .= '      <li><a href="/' . $e_event['link'] . '" class="district '. _elec_swap_plurality($key) . '">' . $e_event['title'] . '</a></li>' . "\n";
+      $election_events .= ' <li><a href="/' . $e_event['link'] . '" class="district '. _elec_swap_plurality($key) . '">' . $e_event['title'] . '</a></li>' . "\n";
     }
-    $election_events .= "    </ul>";
+    $election_events .= " </ul>";
   }
   print <<<EVENT
 <!DOCTYPE html>
@@ -457,7 +530,7 @@ This is a very heavy function and so the final call dumps it to a
 uniquely named .php file based on the election event nid. Inside it is
 just the string variable storing all the results and a print command.
 It is then included as a php file (via nid to reconstruct filename) from the file cache
-into the theme (node-elec_election_event.tpl.php), where it evaluates and prints.  -AC*/
+into the theme (node-elec_election_event.tpl.php), where it evaluates and prints. -AC*/
 function _elec_html_event_skeleton_2($data){
   //print "<pre>"; print_r($data); print "</pre>";
   $master_ballot_tree = array();
@@ -468,7 +541,7 @@ function _elec_html_event_skeleton_2($data){
   $event_nid = _elec_nid_from_event_slug($event_slug, $season_nid);
   $district_type_containers = array_slice((array)$data, 3, NULL, true); //remove title, link, election-season -GG
   $dafault_data_struct = array();
-  //build initial data structure 
+  //build initial data structure
   foreach($district_type_containers as $key => $container){
     //loops through "wards", "municipalities" other tags
     foreach($container as $e_event){
@@ -478,7 +551,7 @@ function _elec_html_event_skeleton_2($data){
       $ballot_tree = _elec_build_ballot_item_tree_at_district($district_nid);
       //build tree through districts by building list by ballot item and assoc districts
       $default_data_struct[$district_nid] = array('slug'=>$district_slug, 'title'=>$e_event['title'], 'ballot_items'=>$ballot_tree);
-      //print_r($ballot_tree);
+      //print'<pre>'; print_r($ballot_tree); print'</pre>';
     }
   }
   /* we need to get ballot items with results that are spread
@@ -491,102 +564,118 @@ function _elec_html_event_skeleton_2($data){
     $district_slug = $district_nid_key['slug'];
     $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
     $bi_exist_top = _elec_dist_has_ballot_items_at_top($district_nid);
-    $subdist_exist = _elec_subdistricts_exist($district_nid);       
+    $subdist_exist = _elec_subdistricts_exist($district_nid);
     foreach($district_nid_key['ballot_items'] as $ballot_item){
       //loops ballot items at district level
       $ballot_item_slug = $ballot_item['slug'];
       $ballot_item_nid = $ballot_item['nid'];
       //collect list of base only ballot items.
-      if($bi_exist_top['bi_top'] == "yes"){
+      if($bi_exist_top['bi_top'] == "yes" && $subdist_exist['sd_exist'] == "no"){
         foreach($ballot_item['districts'] as $sub_district){
           if($sub_district['district_nid'] == $district_nid){
+            //base
             $sub_district_slug = _elec_title_to_slug($sub_district['district_title']);
             $base_bi_list[$sub_district_slug . "/" . $ballot_item_slug] = array('combined_slug'=>$sub_district_slug . "/" . $ballot_item_slug, 'district_slug'=>$sub_district_slug, 'ballot_item_slug'=>$ballot_item_slug);
-          }            
+          }
         }
       }
       // collect a list of parent only ballot items.
-      if($bi_exist_top['bi_top'] == "no"){
+      if($bi_exist_top['bi_top'] == "no" && $subdist_exist['sd_exist'] == "yes"){
         foreach($ballot_item['districts'] as $sub_district){
-          if($sub_district['district_slug'] != $district_nid){
+          if($sub_district['district_nid'] != $district_nid ){
+            //parent
             $sub_district_slug = _elec_title_to_slug($sub_district['district_title']);
-            $parent_bi_district_list[$district_slug . "/" . $ballot_item_slug] = array('combined_slug'=>$district_slug . "/" . $ballot_item_slug, 'district_slug'=>$district_slug, 'ballot_item_slug'=>$ballot_item_slug);
-          }             
+            foreach($subdist_exist['result'] as $dist_bi_nid_arr){
+              /*looking at subdistricts of parent to make sure it is a valid combination*/
+              $breakset = FALSE;
+              $slugtest = _elec_slug_from_nid($dist_bi_nid_arr['field_elec_sub_districts_nid']);
+              if($sub_district_slug == $slugtest){
+                /*if it matches an actual subdistrict of the parent, enter it */   
+                $parent_bi_district_list[$district_slug . "/" . $ballot_item_slug] = array('combined_slug'=>$district_slug . "/" . $ballot_item_slug, 'district_slug'=>$district_slug, 'ballot_item_slug'=>$ballot_item_slug);
+                $breakset = TRUE;
+              }
+              /*if you found it, then break*/
+              if($breakset){ break; }
+            }
+          }
         }
       }
-
-    } 
+      /* add to the parent or base lists if the district is hybrid (base to some, parent to others)*/
+      if($bi_exist_top['bi_top'] == "yes" && $subdist_exist['sd_exist'] == "yes"){
+        foreach($ballot_item['districts'] as $sub_district){
+          if($sub_district['district_nid'] == $district_nid){
+            //base
+            $sub_district_slug = _elec_title_to_slug($sub_district['district_title']);
+            $base_bi_list[$sub_district_slug . "/" . $ballot_item_slug] = array('combined_slug'=>$sub_district_slug . "/" . $ballot_item_slug, 'district_slug'=>$sub_district_slug, 'ballot_item_slug'=>$ballot_item_slug);
+          }
+          if($sub_district['district_nid'] != $district_nid){
+            //parent
+            $sub_district_slug = _elec_title_to_slug($sub_district['district_title']);
+            foreach($subdist_exist['result'] as $dist_bi_nid_arr){
+              /*looking at subdistricts of parent to make sure it is a valid combination*/
+              $breakset2 = FALSE;
+              $slugtest2 = _elec_slug_from_nid($dist_bi_nid_arr['field_elec_sub_districts_nid']);
+              if($sub_district_slug == $slugtest2){
+                /* if it matches an actual subdistrict of the parent, enter it */
+                $parent_bi_district_list[$district_slug . "/" . $ballot_item_slug] = array('combined_slug'=>$district_slug . "/" . $ballot_item_slug, 'district_slug'=>$district_slug, 'ballot_item_slug'=>$ballot_item_slug);
+                $breakset2 = TRUE;
+              }
+              /*if you found it and entered, then break*/
+              if($breakset2){ break;}
+            } 
+          }
+        }
+      }
+    }
   }
-  //combine base only ballot items and parent only ballot items into master ballot item list
+  //print '<pre>'; print_r($base_bi_list); print '</pre>';
+  //print '<pre>'; print_r($parent_bi_district_list); print '</pre>';
+  /*combine base ballot items and parent only ballot items into master ballot item
+  assoc array with valid combined slugs only*/
   foreach($parent_bi_district_list as $parent_slugs){
     foreach($base_bi_list as $base_slugs){
       if ($parent_slugs['ballot_item_slug'] == $base_slugs['ballot_item_slug']){
-        if (array_key_exists($parent_slugs['combined_slug'], $master_ballot_tree)  == FALSE){
-          $master_ballot_tree[$parent_slugs['combined_slug']] = array('summed_slug'=>$parent_slugs['combined_slug'], 'base_slugs'=>array( array('base_slug'=>$base_slugs['combined_slug']))); 
+        if (array_key_exists($parent_slugs['combined_slug'], $master_ballot_tree) == FALSE){
+          $master_ballot_tree[$parent_slugs['combined_slug']] = array('summed_slug'=>$parent_slugs['combined_slug'], 'base_slugs'=>array( array('base_slug'=>$base_slugs['combined_slug'])));
         }else{
           $add_base_slug = array('base_slug'=>$base_slugs['combined_slug']);
           array_push($master_ballot_tree[$parent_slugs['combined_slug']]['base_slugs'], $add_base_slug);
         }
       }else{
-        $master_ballot_tree[$base_slugs['combined_slug']] = array('summed_slug'=>$base_slugs['combined_slug'], 'base_slugs'=>array( NULL ));  
+        $master_ballot_tree[$base_slugs['combined_slug']] = array('summed_slug'=>$base_slugs['combined_slug'], 'base_slugs'=>array( NULL ));
       }
     }
   }
   ksort($master_ballot_tree, SORT_REGULAR);
-  //print '<pre>'; print_r($master_ballot_tree); print '</pre>';
-
-  /* below is customized for each type of election event and can be handled as a separate function call, 
-     but it must pass the season and event slug variables through so you can get the proper ballot item html*/
+  /*print '<pre>'; print_r($master_ballot_tree); print '</pre>';*/
+  
+  
+  // ########## START CHOPPING $master_ballot_tree here ########## 
+  /* below is customized for each type of election event and can be handled as a separate function call,
+     but it must pass the season and event slug variables through so you can get the proper ballot item html
+     here you must choose which districts to render ballot items so as not to lose any data.*/
   $election_nav = ''; /* start collect html for nav */
   $ballot_items = ''; /* start collect html for results */
   //build html out from master ballot tree.
   foreach($master_ballot_tree as $unique_dist_bi_slug){
     $u_slugs_arr = _elec_split_combined_slug($unique_dist_bi_slug['summed_slug']);
-    /* this skips duplicate ward listings with identical results at the base level. 
-       HTML results are only printed out from the higher level district */ 
-    if( ! ($u_slugs_arr['district_slug'] == "ward-1" 
-            || $u_slugs_arr['district_slug'] == "ward-2" || $u_slugs_arr['district_slug'] == "ward-3" 
-            || $u_slugs_arr['district_slug'] == "ward-4" || $u_slugs_arr['district_slug'] == "ward-5" 
-            || $u_slugs_arr['district_slug'] == "ward-6" || $u_slugs_arr['district_slug'] == "ward-7"
-          )
-      )
-    {  
+    /* this just displays parent districts from the master ballot tree */
+    if( isset($unique_dist_bi_slug['base_slugs']['0'])){
       $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
       $election_nav .= '<li><a href=#' . $u_slugs_arr['district_slug'] . '-' . $u_slugs_arr['ballot_item_slug'] . '>' .
-                    ucwords(_elec_slug_to_title($u_slugs_arr['ballot_item_slug'])) . ' in the ' .
-                    ucwords(_elec_slug_to_title($u_slugs_arr['district_slug'])) .
+                    ucwords(_elec_slug_to_title($u_slugs_arr['district_slug'])) . ': ' .
+                    ucwords(_elec_slug_to_title($u_slugs_arr['ballot_item_slug'])) .
                     '</a></li>' . "\n";
-     //$ballot_items .= "<h1>" . ucwords(_elec_slug_to_title($u_slugs_arr['district_slug'])) . "</h1>\n";
       $ballot_items .= _elec_html_ballot_item($ballot_items_data);
-    }
-    if(isset($unique_dist_bi_slug['base_slugs']['0'])){
-      $ballot_items .= "<article><!--start subitems-->\n";
-      $subnav = '<p>View detailed results:</p>' . "\n";
-      foreach($unique_dist_bi_slug['base_slugs'] as $ballot_contributor){
-        //var_dump($ballot_contributor);
-        $u_slugs_arr_sub = _elec_split_combined_slug($ballot_contributor['base_slug']);
-        //echo $u_slugs_arr_sub['district_slug'] . " " . $u_slugs_arr_sub['ballot_item_slug'];
-        
-        $ballot_items_data_sub = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr_sub['district_slug'],$u_slugs_arr_sub['ballot_item_slug']);
-        $subnav .= '<li><a href=#' . $u_slugs_arr_sub['district_slug'] . '-' . $u_slugs_arr_sub['ballot_item_slug'] . '>' .
-                    ucwords(_elec_slug_to_title($u_slugs_arr_sub['district_slug']))  .
-                    '</a></li>' . "\n";
-        
-        //$ballot_items .= "<h1>" . ucwords(_elec_slug_to_title($u_slugs_arr_sub['district_slug'])) . "</h1>\n";
-        $ballot_items .= _elec_html_ballot_item($ballot_items_data_sub);
-      }
-      $ballot_items .=  $subnav;
-      $ballot_items .=  "</article><!--end subitems-->\n";
     }
     
   }
- //print '<pre>'; print_r($master_ballot_tree); print '</pre>';
   $ballot_items .= "\n";/*end results html*/
   $election_nav .= "\n";/*end nav html*/
-  $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper"  class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
+  $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper" class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
   print $elec_results;
-  //_elec_html_skel_to_file($event_nid,$ballot_items,$election_nav);
-  //exit;
+  _elec_html_skel_to_file($event_nid,$ballot_items,$election_nav);
+  exit;
 }
 
 /*builds the HTML skeleton and nav interface for the results page -
@@ -595,7 +684,7 @@ This is a very heavy function and so the final call dumps it to a
 uniquely named .php file based on the election event nid. Inside it is
 just the string variable storing all the results and a print command.
 It is then included as a php file (via nid to reconstruct filename) from the file cache
-into the theme (node-elec_election_event.tpl.php), where it evaluates and prints.  -AC*/
+into the theme (node-elec_election_event.tpl.php), where it evaluates and prints. -AC*/
 
 function _elec_html_event_skeleton($data){
   //print "<pre>"; print_r($data); print "</pre>";
@@ -611,19 +700,19 @@ function _elec_html_event_skeleton($data){
 
   /*$election_nav = '<p>'. $season_slug . '<br/>' . $event_slug . '</p>' . '<pre>' . print_r($data) . '</pre>' . "\n";*/
   $election_nav = ''; //collect html for nav
-  $ballot_items = '';   //collect html for results
+  $ballot_items = ''; //collect html for results
   foreach($district_type_containers as $key => $container){
     //only use municipalities.
-    if($key == "municipalities"){   
+    if($key == "municipalities"){
     foreach($container as $e_event){
       $district_slug = _elec_title_to_slug($e_event['title']);
       $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
       $election_nav .= '<li><a href="#' . $district_slug . '">' . $e_event['title'] . '</a>';/* district nav */
-      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' .  strtolower(_elec_swap_plurality($key)) . '">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . '<!--4o-->' . "\n";/* district header */
+      $ballot_items .= '<article id="' . $district_slug . '" class="district-results ' . strtolower(_elec_swap_plurality($key)) . '">' . "\n" . '<h1><a href="#' . $district_slug . '">' . $e_event['title'] . '</a></h1>' . '<!--4o-->' . "\n";/* district header */
       //<a href="#city-of-burlington">City of Burlington</a>
       //$district_data = _elec_get_ballot_item_results_by_district($district_nid);
       $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
-      /*$district_data = _  need burlington sub districts branch? summed */
+      /*$district_data = _ need burlington sub districts branch? summed */
       
       $district_data = (object)$district_data;
       if(empty($district_data->districts)){
@@ -633,7 +722,7 @@ function _elec_html_event_skeleton($data){
 
 //start of ugliness
       if(! empty($district_data->districts)){
-        //SCARY BADNESS!!!!!!!!!!!!!  This thing maniuplates $ballot_items
+        //SCARY BADNESS!!!!!!!!!!!!! This thing maniuplates $ballot_items
         $referendums = array();
         $elections = array();
         _elec_make_summed_district_data($district_nid, $ballot_items, $referendums, $elections);
@@ -655,12 +744,12 @@ function _elec_html_event_skeleton($data){
       /*
 
       $ballot_items .= ''.print_r($district_data).' ';
-      print '<pre>'; 
+      print '<pre>';
       print_r($container);
-      print_r($district_data->districts); 
+      print_r($district_data->districts);
       print '</pre>';
       */
-      _elec_skel_eat_subdistricts($district_data->districts, $event_nid,  $season_slug, $event_slug, $ballot_items, $election_nav);
+      _elec_skel_eat_subdistricts($district_data->districts, $event_nid, $season_slug, $event_slug, $ballot_items, $election_nav);
       
       //$election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
@@ -674,25 +763,25 @@ function _elec_html_event_skeleton($data){
           //print "ballot item data:<pre>"; print_r($ballot_items_data); print "</pre>";
           $ballot_items .= _elec_html_ballot_item_skel($ballot_items_data);
         }/*ballot item loop*/
-        $ballot_items .= '</article>' . '<!--6c-->' .  "\n"; //here2
+        $ballot_items .= '</article>' . '<!--6c-->' . "\n"; //here2
       }/*ballot item type loop*/
       if(empty($district_data->districts)){
         $ballot_items .= '</article>' . '<!--new-->' . "\n";
       }
     }/*district loop*/
-    $ballot_items .= '</article>' . '<!--5c-->' .  "\n"; /*end municipality loop*/
+    $ballot_items .= '</article>' . '<!--5c-->' . "\n"; /*end municipality loop*/
     }/* endif to do just municipalities*/
  
   }/*district type loop*/
   $ballot_items .= "\n";/*end results html*/
   $election_nav .= "\n";/*end nav html*/
-  $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper"  class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
+  $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper" class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
   print $elec_results;
   _elec_html_skel_to_file($event_nid,$ballot_items,$election_nav);
   exit;
 };
 
-function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $event_slug,  &$ballot_items, &$election_nav, $depth = 1){
+function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $event_slug, &$ballot_items, &$election_nav, $depth = 1){
   if(empty($sub_districts) ) return;
   $ballot_items .= '<article><h1>Sub-Districts</h1>';
   $election_nav .= '<ol>' . "\n";
@@ -709,7 +798,7 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       $summed_ballot_items = _elec_strip_district_layer(_elec_get_ballot_item_results_by_district($district_nid));
       //print "calling with district nid $district_nid ($district_slug) </br>";
       //print "summed ballot items:<pre>"; print_r($summed_ballot_items); print "</pre>";
-      /*$district_data = _  need burlington sub districts branch? summed */
+      /*$district_data = _ need burlington sub districts branch? summed */
       $district_data = (object)$district_data;
       if(empty($district_data->districts)){
         $election_nav .= '</li>' . "\n";/* district nav for when final recursion hit */
@@ -718,7 +807,7 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
 
 //start of ugliness
       if(! empty($district_data->districts)){
-        //SCARY BADNESS!!!!!!!!!!!!!  This thing maniuplates $ballot_items
+        //SCARY BADNESS!!!!!!!!!!!!! This thing maniuplates $ballot_items
         $referendums = array();
         $elections = array();
         _elec_make_summed_district_data($district_nid, $ballot_items, $referendums, $elections);
@@ -742,9 +831,9 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       /*
       $ballot_items .= ''.print_r($district_data).' ';
       print "key is $key; container is ";
-      print '<pre>'; 
+      print '<pre>';
       print_r($container);
-      print_r($district_data->districts); 
+      print_r($district_data->districts);
       print '</pre>';
       */
       _elec_skel_eat_subdistricts($district_data->districts, $event_nid, $season_slug, $event_slug, $ballot_items, $election_nav, $depth+1);
@@ -752,7 +841,7 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
       foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
         /*$election_nav .= '<a href="#' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</a>' . "\n"; ballot-item tag nav */
         /*$ballot_items .= "\n" . '<h1 id="' . $e_event['title'] . ' ' . ucfirst($ballot_item_type) . '">' . ucfirst($ballot_item_type) . '</h1>' . "\n"; district ballot-item type anchor and title */
-        $ballot_items .= '<article>' . "\n" . '<h1>' . ucfirst($ballot_item_type) . '</h1>' . '<!--1o-->' .  "\n";/* district ballot-item type anchor and title */
+        $ballot_items .= '<article>' . "\n" . '<h1>' . ucfirst($ballot_item_type) . '</h1>' . '<!--1o-->' . "\n";/* district ballot-item type anchor and title */
         foreach($ballot_item_list as $ballot_item){
 
           $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
@@ -773,7 +862,7 @@ function _elec_skel_eat_subdistricts($sub_districts, $event_nid, $season_slug, $
 /* result HTML text to a php file, clobbers old file, likely a big potential security risk writing a php file in files/election */
 function _elec_html_skel_to_file($event_nid,$elec_results,$elec_nav){
   $file = file_directory_path() . '/' . 'election' . '/' . strval($event_nid) . '-elec-skeleton' . '.php';
-  /*$elec_results =  "here is some cached HTML skeleton from the election module";*/
+  /*$elec_results = "here is some cached HTML skeleton from the election module";*/
   $output = '<?php $results = \'' . $elec_results . '\'; ' . "\n" . '$elec_nav = \'' . $elec_nav . '\'; ' . "\n" . 'print $results; ?>';
   /*print($file);*/
   $filehandle = fopen( $file , "w");
@@ -788,23 +877,16 @@ function _elec_as_csv($data,$type){
   if($type != 'ballot_item' && $type != 'district'){
     _elec_406();
   }
-  if($type == 'district'){
-    $output = array();
-    foreach($data['ballot_item_results'] as $key => $ballot_item){
-      $output[] = array($ballot_item['text']);
-      unset($ballot_item['text']);
-      // bug with "Array" string formatting - remember to fix AC - 
-      $options = array(''); $results = array('');
-      foreach($ballot_item['results'] as $option => $result){
-        $options[] = str_replace('_',' ', $option); 
-        $results[] = $result['votes'];
-      }
-      $output[] = $options;
-      $output[] = $results;
-    }
+  switch($type){
+    case 'district': $output = _elec_district_csv($data);
+      break;
+    case 'ballot_item' : $output = _elec_ballot_item_csv($data);
+      break;
   }
-  header('Content-Disposition: attachment; filename="'. $filename  . '"');
-  $outstream = fopen("php://output",'w'); 
+  if($type == 'district'){
+  }
+  header('Content-Disposition: attachment; filename="'. $filename . '"');
+  $outstream = fopen("php://output",'w');
   foreach($output as $row){
     fputcsv($outstream, $row, ',', '"');
   }
@@ -812,8 +894,56 @@ function _elec_as_csv($data,$type){
   exit;
 }
 
+
+function _elec_district_csv($data){
+  $output = array();
+  foreach($data['ballot_item_results'] as $key => $ballot_item){
+    $output[] = array($ballot_item['text']);
+    unset($ballot_item['text']);
+    // bug with "Array" string formatting - remember to fix AC -
+    $options = array(''); $results = array('');
+    foreach($ballot_item['results'] as $option => $result){
+      $options[] = str_replace('_',' ', $option);
+      $results[] = $result['votes'];
+    }
+    $output[] = $options;
+    $output[] = $results;
+  }
+  return $output;
+}
+
+function _elec_ballot_item_csv($data){
+  $output = array();
+  $output[] = array($data['title']);
+  $output[] = array();
+  $output[] = $header = array('option', 'votes', 'percent', 'complete', 'winner', 'winning_threshold');
+  foreach($data['results'] as $option => $meta){
+    $results = array();
+    $results[] = $option;
+    foreach($meta as $detail){
+      $results[] = $detail;
+    }
+    $output[] = $results;
+  }
+  if($data['detailed_results']){
+    $output[] = array();
+    $output[] = array('Detailed results:');
+    foreach($data['detailed_results'] as $district_nid => $d_r){
+      foreach($d_r as $binid => $dresults); // does not loop!
+      $output[] = array();
+      $district_node = node_load($district_nid);
+      $output[] = array($district_node->title);
+      $output[] = array('option', 'votes');
+      foreach($dresults as $opt => $votes){
+        $output[] = array($opt, $votes);
+      }
+    }
+  }
+  return $output;
+}
+
 function _elec_get_event($season_slug, $event_slug){
-  $season_node = node_load(array('title'=> _elec_slug_to_title($season_slug), 'type'=>'elec_election_season'), NULL, TRUE); 
+  $season_node = node_load(array('title'=> _elec_slug_to_title($season_slug), 'type'=>'elec_election_season'), NULL, TRUE);
   $season_nid = _elec_nid_from_season_slug($season_slug);
   if (!$season_nid){
     _elec_404("Season not found");
@@ -829,9 +959,9 @@ function _elec_get_event($season_slug, $event_slug){
     'link' => $event_link,
     'election_season' => array(
       'title' => $season_node->title,
-      'link' => base_path() .  'e/' . $season_slug,
+      'link' => base_path() . 'e/' . $season_slug,
     ),
-  );  
+  );
   $districts_data = array();
   foreach($event_node->field_elec_participating_distric as $district){
     $district_node = node_load(array('nid' => $district['nid']));
@@ -844,7 +974,7 @@ function _elec_get_event($season_slug, $event_slug){
     }
     foreach($district_types as $dt){
       $districts_data[$dt][] = array(
-        'title' => $district_node->title,    
+        'title' => $district_node->title,
         'link' => $event_link . '/' . _elec_title_to_slug($district_node->title),
       );
     }
@@ -883,13 +1013,13 @@ function _elec_get_season($season_slug){
     if(!$e_node) continue; //skip deleted nodes
     $e_event = array(
       'title' => $e_node->title,
-      'link'  => $season_link . '/' . _elec_title_to_slug($e_node->title),
+      'link' => $season_link . '/' . _elec_title_to_slug($e_node->title),
     );
     $election_events[] = $e_event;
   }
   $data = array(
-    'title' => $season_node->title, 
-    'link' =>  $season_link,
+    'title' => $season_node->title,
+    'link' => $season_link,
     'election_events' => $election_events,
   );
   _elec_write_cache($_GET['q'], $data);
@@ -914,7 +1044,8 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
 
   if (!$ballot_item_nid){
     $possible_leaf = false;
-    $results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, $ballot_item_nid);
+    $summed_results = _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, $ballot_item_nid);
+    $results = $summed_results['results'];
     //So we can get the tags
     $ballot_item_node = node_load(array('nid'=>$ballot_item_nid));
     if(!$results){
@@ -927,7 +1058,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
     $ballot_item_results = _elec_get_ballot_item_result($ballot_item_nid, $district_nid);
     $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $ballot_item_results);
 
-    $complete =  (_elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid)) ? TRUE : FALSE;
+    $complete = (_elec_get_ballot_item_is_complete($ballot_item_nid, $district_nid)) ? TRUE : FALSE;
     $results = array();
     if(is_array($ballot_item_results)){
       $total_votes = array_sum($ballot_item_results);
@@ -981,7 +1112,7 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
   $tags = array();
   foreach($ballot_item_node->taxonomy as $term){
     if($term->vid == variable_get('elec_ballot_vid', NULL)){
-      $tags[] = $term->name; 
+      $tags[] = $term->name;
     }
   }
   
@@ -1009,20 +1140,21 @@ function _elec_get_ballot_item($season_slug, $event_slug, $district_slug, $ballo
       'link' => base_path() . 'e/' . $season_slug,
     ),
     'district' => array(
-      'title' => _elec_get_title_from_nid($district_nid),  
+      'title' => _elec_get_title_from_nid($district_nid),
       'link' => base_path() . 'e/' . $season_slug . '/' . $event_slug . '/' . $district_slug,
       'tags' => $district_tags,
     ),
     'tags' => $tags,
     'results' => $results,
-  ); 
+  );
   _elec_write_cache($_GET['q'], $data);
+  $data['detailed_results'] = $summed_results['detailed_results'];
   return $data;
 }
 
 //function for uasort to compare election results
 function election_results_compare($a, $b){
-  return $b['votes'] -  $a['votes'];
+  return $b['votes'] - $a['votes'];
 }
 
 function _elec_get_district($season_slug, $event_slug, $district_slug){
@@ -1047,17 +1179,17 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
   $ballot_item_results = _elec_strip_district_layer(_elec_get_ballot_item_results_by_district($district_nid));
   $summed_results = array();
   foreach($ballot_item_results as $ballot_item){
-    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
-    $summed_results[$ballot_item_key]['text'] =  _elec_get_ballot_item_text($ballot_item_key);
+    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly. grabs the first item and key from array
+    $summed_results[$ballot_item_key]['text'] = _elec_get_ballot_item_text($ballot_item_key);
     foreach($item as $choice_key => $choice){
-     $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
+     $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice;
     }
   }
 
   //Add percentage and link to data
   foreach($summed_results as $key => $ind_result){
     $total_for_ind = array_sum($ind_result['results']);
-    $r_w_p = array(); // results with percent   
+    $r_w_p = array(); // results with percent
     foreach($ind_result['results'] as $option => $votes){
       $r_w_p[$option] = array(
         'votes' => $votes,
@@ -1065,7 +1197,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
       );
     }
     $summed_results[$key]['results'] = $r_w_p;
-    $summed_results[$key]['link'] =  '/' . $_GET['q'] . '/' . _elec_slug_from_nid($key);
+    $summed_results[$key]['link'] = '/' . $_GET['q'] . '/' . _elec_slug_from_nid($key);
   }
 
 
@@ -1094,7 +1226,7 @@ function _elec_get_district($season_slug, $event_slug, $district_slug){
       'title' => $ballot_item_row['title'],
       'link' => $ballot_item_row['link'],
     );
-    /*$ballot_item_data[$ballot_item_row['type']]['title'] = $ballot_item_row['title']; 
+    /*$ballot_item_data[$ballot_item_row['type']]['title'] = $ballot_item_row['title'];
     $ballot_item_data[$ballot_item_row['type']]['link'] = $ballot_item_row['link']; */
     $ballot_item_data[$ballot_item_row['type']][] = $row;
   }
@@ -1297,7 +1429,7 @@ function _elec_get_ballot_item_text($nid){
 
 function _elec_find_sub_district($event_nid, $district_slug, $district_nid = NULL){
   if (! $district_nid ){
-    $event_node = node_load(array('nid'=>$event_nid)); 
+    $event_node = node_load(array('nid'=>$event_nid));
     foreach($event_node->field_elec_participating_distric as $sub_district){
       $district_node = node_load(array('nid' => $sub_district['nid']));
       if ($district_node && $district_node->title == _elec_slug_to_title($district_slug)){
@@ -1307,7 +1439,7 @@ function _elec_find_sub_district($event_nid, $district_slug, $district_nid = NUL
         if($sub_node) { return $sub_node; }
       }
     }
-  } 
+  }
   else {
     $district_parent = node_load(array('nid'=>$district_nid));
     foreach($district_parent->field_elec_sub_districts as $sub_district){
@@ -1316,7 +1448,7 @@ function _elec_find_sub_district($event_nid, $district_slug, $district_nid = NUL
       if ($district_node && strtolower($district_node->title) == _elec_slug_to_title($district_slug)){
         return $district_node;
       } elseif($district_node->nid){
-        $sub_node =  _elec_find_sub_district($event_nid, $district_slug, $district_node->nid);
+        $sub_node = _elec_find_sub_district($event_nid, $district_slug, $district_node->nid);
         if($sub_node) { return $sub_node; }
       }
     }
@@ -1326,11 +1458,11 @@ function _elec_find_sub_district($event_nid, $district_slug, $district_nid = NUL
 
 
 function _elec_nid_from_season_slug($slug){
-  return db_result(db_query('SELECT nid FROM {election_slug} WHERE slug="%s" AND type="elec_election_season"', $slug)); 
+  return db_result(db_query('SELECT nid FROM {election_slug} WHERE slug="%s" AND type="elec_election_season"', $slug));
 }
 
 function _elec_slug_from_nid($nid){
-  return db_result(db_query('SELECT slug FROM {election_slug} WHERE nid=%d', $nid)); 
+  return db_result(db_query('SELECT slug FROM {election_slug} WHERE nid=%d', $nid));
 }
 
 function _elec_nid_from_event_slug($slug, $season_nid){
@@ -1351,7 +1483,7 @@ function _elec_nid_from_district_slug($slug, $event_nid){
     return $district_nid;
   }
   else{
-    $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $event_nid)); 
+    $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $event_nid));
     $participating_district_query = 'SELECT field_elec_participating_distric_nid FROM {content_field_elec_participating_distric} WHERE vid=%d AND nid=%d';
     $results = db_query($participating_district_query, $version_id, $event_nid);
     while($participating_district_row = db_fetch_object($results)){
@@ -1374,7 +1506,7 @@ function _elec_find_sub_district_recur($district_slug, $district_nid){
     return $sub_district_nid;
   }
   else{ //try again, lower
-    $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $district_nid)); 
+    $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $district_nid));
     $sub_district_query = 'SELECT field_elec_sub_districts_nid FROM {content_field_elec_sub_districts} WHERE vid=%d AND nid=%d';
     $results = db_query($sub_district_query, $version_id, $district_nid);
     while($sub_district_row = db_fetch_object($results)){
@@ -1387,7 +1519,7 @@ function _elec_find_sub_district_recur($district_slug, $district_nid){
   return FALSE;
 }
 function _elec_get_title_from_nid($nid){
-  $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $nid)); 
+  $version_id = db_result(db_query('SELECT MAX(vid) from {node} where nid=%d', $nid));
   return db_result(db_query('SELECT title from {node} where nid=%d AND vid=%d', $nid, $version_id));
 }
 
@@ -1408,7 +1540,7 @@ function _elec_remove_csv_extension($s){
   }
 }
 
-// Simply strips the leading forward slash form basepath() 
+// Simply strips the leading forward slash form basepath()
 function _elec_bp(){
  return substr(base_path(),1);
 }
@@ -1489,7 +1621,7 @@ function _elec_algorithm_top_n($results, $n){
 
 
 function _elec_get_winner_algos(){
-  $built_in =  array(
+  $built_in = array(
     'gt_n' => array(
       'name' => '> N',
       'id' => 'gt_n',
@@ -1514,12 +1646,12 @@ function _elec_dist_has_ballot_items_at_top($district_nid){
   $result = array();
   $dist_result = array();
   $bi_exist_top = array();
-  $query = 'SELECT `content_field_elec_ballot_items`.`nid`,`content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' . 
+  $query = 'SELECT `content_field_elec_ballot_items`.`nid`,`content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
            'FROM `content_field_elec_ballot_items`' .
            'WHERE `content_field_elec_ballot_items`.`nid` = %d ' .
            'AND `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` IS NOT NULL';
   $result = db_query($query, $district_nid);
-  for ($row; $row = db_fetch_array($result); $dist_result[] = $row); 
+  for ($row; $row = db_fetch_array($result); $dist_result[] = $row);
   $num_results = count($dist_result);
   //echo "#bi: ";
   //var_dump($num_results);
@@ -1537,12 +1669,12 @@ function _elec_dist_has_ballot_items_at_top($district_nid){
 
 //returns array.
 function _elec_subdistricts_exist($district_nid){
-  $result = array();  
+  $result = array();
   $subdist_result = array();
   $subdist_exist = array();
   $query = 'SELECT `content_field_elec_sub_districts`.`nid`, `content_field_elec_sub_districts`.`field_elec_sub_districts_nid` ' .
            'FROM `content_field_elec_sub_districts` ' .
-           'WHERE `content_field_elec_sub_districts`.`nid` = %d ' . 
+           'WHERE `content_field_elec_sub_districts`.`nid` = %d ' .
            'AND `content_field_elec_sub_districts`.`field_elec_sub_districts_nid` IS NOT NULL ';
   $result = db_query($query, $district_nid);
   for ($row; $row = db_fetch_array($result); $subdist_result[] = $row);
@@ -1558,9 +1690,11 @@ function _elec_subdistricts_exist($district_nid){
      $subdist_exist['sd_count'] = NULL;
      $subdist_exist['result'] = NULL;
    }
+  //print "-----";
+  //print "<pre>"; print_r($subdist_exist['result']); print "</pre>";
   return $subdist_exist;
 }
-// check case? move to switch? 
+// check case? move to switch?
 function _elec_build_ballot_item_tree_at_district($district_nid){
   $result = array();
   $dist_slug = _elec_slug_from_nid($district_nid);
@@ -1579,7 +1713,7 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
   if ($bi_exist_top['bi_top'] == "yes" && $subdist_exist['sd_exist'] == "yes"){
   // case has top ballot items and has Subdistricts: (Chittenden County) summed walk required nested HTML output
   $query = 'SELECT `content_field_elec_ballot_items`.`nid`, `content_field_elec_ballot_items`.`field_elec_ballot_items_nid` ' .
-           'FROM `content_field_elec_ballot_items` , `content_type_elec_district` , `content_field_elec_sub_districts` ' . 
+           'FROM `content_field_elec_ballot_items` , `content_type_elec_district` , `content_field_elec_sub_districts` ' .
            'WHERE `content_type_elec_district`.`nid` = %d ' .
            'AND (' .
            '`content_field_elec_sub_districts`.`field_elec_sub_districts_nid` = `content_field_elec_ballot_items`.`nid` ' .
@@ -1612,14 +1746,16 @@ function _elec_build_ballot_item_tree_at_district($district_nid){
     $bt_bitem_title = _elec_get_title_from_nid($bi_key);
     if(array_key_exists($bi_key, $ballot_tree) == FALSE ){
       // create a base record for the ballot item
-      $ballot_tree[$bi_key] = array('nid'=>$bi_key, 'title'=>$bt_bitem_title, 'slug'=>_elec_slug_from_nid($bi_key), 'districts'=>array( array('district_nid'=>$dist_nid, 'district_title'=>$bt_dist_title, 'results'=>_elec_get_ballot_item_result($bi_key, $dist_nid))));
+      $ballot_tree[$bi_key] = array('nid'=>$bi_key, 'title'=>$bt_bitem_title, 'slug'=>_elec_slug_from_nid($bi_key), 'districts'=>array( array('district_nid'=>$dist_nid, 'district_title'=>$bt_dist_title)));
+      //'results'=>_elec_get_ballot_item_result($bi_key, $dist_nid)))
     }else{
       // add another entry to the district array of an already existing record
-      $add_district_arr = array('district_nid'=>$dist_nid, 'district_title'=>$bt_dist_title, 'results'=>_elec_get_ballot_item_result($bi_key, $dist_nid));
+      $add_district_arr = array('district_nid'=>$dist_nid, 'district_title'=>$bt_dist_title);
+      // removeinvalid  'results'=>_elec_get_ballot_item_result($bi_key, $dist_nid));
       array_push($ballot_tree[$bi_key]['districts'],$add_district_arr);
     }
   }
-  //print_r($ballot_tree);
+  //print'<pre>'; print_r($ballot_tree); print'</pre>';
   return $ballot_tree;
 }
 
@@ -1638,9 +1774,6 @@ function _elec_get_ballot_from_ballot_tree($ballot_tree,$ballot_item_slug){
 
 //ballot item nid is filled in by reference, basically as a hack, as its needed elsewhere
 function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot_item_nid){
-  $ballot_tree = _elec_build_ballot_item_tree_at_district($district_nid);
-  $bi_result = _elec_get_ballot_from_ballot_tree($ballot_tree, $ballot_item_slug);
-  $ballot_target_nid = key($bi_result);
   $results_with_dd = _elec_get_ballot_item_results_by_district($district_nid); //results with district data
   $ballot_item_results = _elec_strip_district_layer($results_with_dd);
   //echo "target ballot item nid is: " . $ballot_target_nid . " ";
@@ -1659,30 +1792,28 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
     }
   }
   /* now we have two structures with subdistrict results..
-  echo "------------------\n";
-  print_r($bi_result);
-  echo "------------------\n";
-  print_r($dd_arr); 
-  echo "------------------\n";  
+  print_r($dd_arr);
   */
 
   //begin normal execution route with summed results..
   $summed_results = array();
-  foreach($ballot_item_results as $ballot_item){
-    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
-    $summed_results[$ballot_item_key]['text'] =  _elec_get_ballot_item_text($ballot_item_key);
+  foreach($results_with_dd as $ballot_item){
+    $district_nid = $ballot_item['district_nid'];
+    unset($ballot_item['district_nid']);
+    foreach($ballot_item['results'] as $ballot_item_key => $item) { break; } // this is ugly. grabs the first item and key from array
+    //---------foreach loop above breaks immediately!------------// first item is the results for a ballot item at $district_nid
+    $summed_results[$ballot_item_key]['text'] = _elec_get_ballot_item_text($ballot_item_key);
     foreach($item as $choice_key => $choice){
-     $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
+     $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice;
     }
+    $summed_results[$ballot_item_key]['detailed_results'][$district_nid] = $ballot_item['results'];
   }
-  //print_r($summed_results);
-  /*mess with the summed results here */ 
 
- 
+
   //Add percentage to data
   foreach($summed_results as $key => $ind_result){
     $total_for_ind = array_sum($ind_result['results']);
-    $r_w_p = array(); // results with percent   
+    $r_w_p = array(); // results with percent
     foreach($ind_result['results'] as $option => $votes){
       $r_w_p[$option] = array(
         'votes' => $votes,
@@ -1704,7 +1835,7 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
       $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $results_for_winner_detection);
 
       foreach($results['results'] as $key => $option){
-        $results['results'][$key]['complete'] = $complete; 
+        $results['results'][$key]['complete'] = $complete;
         $results['results'][$key]['winner'] = in_array($key, $winners);
       }
 
@@ -1716,14 +1847,16 @@ function _elec_get_summed_ballot_item($district_nid, $ballot_item_slug, &$ballot
         }
       }
 
-      return $results['results'];
+      return $results;
     }
   }
   return null;
 }
 
+
+
 function _elec_is_leaf_ballot_item($ballot_item_nid){
-  $query = 'SELECT COUNT(*) FROM {content_field_elec_ballot_items} WHERE field_elec_ballot_items_nid = %d'; 
+  $query = 'SELECT COUNT(*) FROM {content_field_elec_ballot_items} WHERE field_elec_ballot_items_nid = %d';
   return ( db_result(db_query($query, $ballot_item_nid)) > 1 ) ? true : false;
 }
 
@@ -1732,13 +1865,13 @@ function _elec_is_leaf_ballot_item($ballot_item_nid){
 function _elec_make_summed_district_data($district_nid, &$ballot_items, &$referendums, &$elections){
   $summed_ballot_items = _elec_strip_district_layer(_elec_get_ballot_item_results_by_district($district_nid));
   foreach($summed_ballot_items as $ballot_item){
-    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly.  grabs the first item and key from array
+    foreach($ballot_item as $ballot_item_key => $item) { break; } // this is ugly. grabs the first item and key from array
     $ballot_item_node = node_load(array('nid'=>$ballot_item_key));
     $summed_results[$ballot_item_key]['link'] = $district_link;
-    $summed_results[$ballot_item_key]['text'] =  _elec_get_ballot_item_text($ballot_item_key);
-    $summed_results[$ballot_item_key]['title'] =  $ballot_item_node->title; 
+    $summed_results[$ballot_item_key]['text'] = _elec_get_ballot_item_text($ballot_item_key);
+    $summed_results[$ballot_item_key]['title'] = $ballot_item_node->title;
     foreach($item as $choice_key => $choice){
-      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice; 
+      $summed_results[$ballot_item_key]['results'][$choice_key]+= $choice;
     }
   }
   //print "summed ballot items for district $district_slug<pre>"; print_r($summed_ballot_items); print "</pre>";
@@ -1746,7 +1879,7 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items, &$refere
   //Add percentage to data
   foreach($summed_results as $key => $ind_result){
     $total_for_ind = array_sum($ind_result['results']);
-    $r_w_p = array(); // results with percent   
+    $r_w_p = array(); // results with percent
     foreach($ind_result['results'] as $option => $votes){
       $r_w_p[$option] = array(
           'votes' => $votes,
@@ -1767,7 +1900,7 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items, &$refere
     $winners = _elec_ballot_item_winners($ballot_item_nid, $district_nid, $results_for_winner_detection);
 
     foreach($results['results'] as $key => $option){
-      $results['results'][$key]['complete'] = $complete; 
+      $results['results'][$key]['complete'] = $complete;
       $results['results'][$key]['winner'] = in_array($key, $winners);
     }
 
@@ -1781,8 +1914,8 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items, &$refere
     //print "<pre>results!!!!!!11"; print_r($results); print '</pre>';
     $district_link = substr($_GET['q'], 0, -4);
     $ballot_item_node = node_load(array('nid'=>$nid));
-    //print "<pre>"; print_r($ballot_item_node->taxonomy);  print "</pre>";
-    $vocab = variable_get('elec_ballot_vid', NULL); 
+    //print "<pre>"; print_r($ballot_item_node->taxonomy); print "</pre>";
+    $vocab = variable_get('elec_ballot_vid', NULL);
     $district_node = node_load(array('nid'=>$district_nid));
     $data_link = base_path() . $district_link . '/' . _elec_title_to_slug($district_node->title) . '/' . _elec_title_to_slug($ballot_item_node->title);
     foreach($ballot_item_node->taxonomy as $term){
@@ -1796,7 +1929,7 @@ function _elec_make_summed_district_data($district_nid, &$ballot_items, &$refere
           $referendums[] = array(
               'results' => $results,
               'data_link' => $data_link,
-              );   
+              );
         }
       }
     }
