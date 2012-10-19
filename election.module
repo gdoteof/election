@@ -62,18 +62,29 @@ function election_perm(){
 
 function _elec_edit_results($node){
   $output = drupal_get_form('election_result_form', $node);
-  return $output . 'hi';
+  return $output;
 }
 
 function election_result_form($form_state, $node){
   $form = array();
   // Loop through each ballot item in the district
+  if($node->field_elec_ballot_items[0]['nid'] == null){
+    //sanity check
+    db_query('DELETE FROM {election_results} WHERE district_nid=%d', $node->nid);
+    return array(
+      'message' => array(
+        '#type' => 'markup',
+        '#value' => 'No ballot items',
+      ),
+    );
+  }
   foreach($node->field_elec_ballot_items as $ballot_item_nid){
     $ballot_node = node_load( array('nid'=>$ballot_item_nid['nid']));
 
     $query = 'SELECT results from {election_results} where district_nid=%d AND ballot_item_nid=%d';
     $results = unserialize(db_result(db_query($query, $node->nid, $ballot_node->nid)));
 
+    $complete = db_result(db_query('SELECT complete from {election_results} where district_nid=%d AND ballot_item_nid=%d', $node->nid, $ballot_node->nid));
     $ballot_item_form = array();
     $ballot_item_form['title'] = array(
       '#type' => 'item',
@@ -101,7 +112,13 @@ function election_result_form($form_state, $node){
     );
     $form['ballot_item_' . $ballot_node->nid] = $ballot_item_form;
     $form['ballot_item_' . $ballot_node->nid]['#tree'] = TRUE;
+    $form['ballot_item_' . $ballot_node->nid]['complete'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Complete'),
+      '#default_value' => $complete,
+    );
   } //end foreach field_elec_ballot_items
+
 
   $form['district_nid'] = array('#type'=>'value', '#value'=>$node->nid);
   $form['submit'] = array(
@@ -112,6 +129,8 @@ function election_result_form($form_state, $node){
 }
 
 function election_result_form_submit($form, &$form_state){
+  //sanity check.  we need to delete everything before submit to catch removed items
+  db_query('DELETE FROM {election_results} WHERE district_nid=%d', $form_state['values']['district_nid']);
   foreach($form_state['values'] as $key => $ballot_item){
     if(! is_array($ballot_item) ) continue; //stuff in here we don't want
 
@@ -121,9 +140,8 @@ function election_result_form_submit($form, &$form_state){
     $updated = $ballot_item['updated'];
     unset($ballot_item['updated']);
 
-    //if this value is already in the DB we need to update, rather than insert
-    //we do this by passing the primary key to drupal_write_record
-    $u_i = ($updated) ? array('district_nid', 'ballot_item_nid') : NULL;
+    $complete = $ballot_item['complete'];
+    unset($ballot_item['complete']);
 
     //The rest are results
     $results = $ballot_item;
@@ -132,9 +150,11 @@ function election_result_form_submit($form, &$form_state){
       'district_nid' => $form_state['values']['district_nid'],
       'ballot_item_nid' => $ballot_item_nid,
       'results' => $results,
+      'complete' => $complete,
     );
     $success = drupal_write_record('election_results', $data, $u_i);
   }
+  drupal_set_message("Results updated.");
 }
 
 function _elec_ballot_item_access($node){
@@ -145,7 +165,6 @@ function _elec_ballot_item_access($node){
 }
 
 function _elec_set_taxo_vars(){
-  print "they should be sex...";
   $ballot_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="Ballot Item Type"'));
   variable_set('elec_ballot_vid', $ballot_type_vid);
   $district_type_vid = db_result(db_query('SELECT vid FROM {vocabulary} WHERE name="District Type"'));
@@ -161,6 +180,18 @@ function election_nodeapi(&$node, $op, $a3=NULL, $a4=NULL){
   if($op=='insert' || $op == 'update'){
     $slug = _elec_title_to_slug($node->title);
     db_query('INSERT INTO {election_slug} (nid, slug, type) VALUES (%d,"%s", "%s") ON DUPLICATE KEY UPDATE slug="%s", type="%s"', $node->nid, $slug, $node->type, $slug, $node->type);
+
+    if ($node->type == 'elec_ballot_item'){
+      db_query('INSERT INTO {election_algorithm} (ballot_item_nid, algorithm,n) VALUES (%d, "%s", %d) on DUPLICATE KEY UPDATE algorithm="%s", n=%d', $node->nid, $node->elec_algo_type, $node->elec_algo_n, $node->elec_algo_type, $node->elec_algo_n);
+    }
+  }
+  elseif($op=='delete'){
+    switch($node->type){
+      case 'elec_ballot_item': _elec_remove_results_for_ballot_item($node->nid);
+                               break;
+      case 'elec_district':    _elec_remove_results_for_district($node->nid);
+                               break;
+    }
   }
 }
 
@@ -173,13 +204,65 @@ function _elec_title_to_slug($title){
   $slug = strtolower(str_replace(' ', '-', $slug));
   return $slug;
 }
-/*
 
-INSERT INTO election_slug nid, slug VALUES (0,"should-the-police-be-able-to-beat-protesters") 
-ON DUPLICATE KEY UPDATE slug="should-the-police-be-able-to-beat-protesters" 
+function _elec_remove_results_for_district($district_nid){
+  db_query('DELETE FROM {election_results} WHERE district_nid=%d', $district_nid);  
+}
+
+function _elec_remove_results_for_ballot_item($ballot_item_nid){
+  db_query('DELETE FROM {election_results} WHERE ballot_item_nid=%d', $ballot_item_nid);  
+}
+
+function election_form_elec_ballot_item_node_form_alter(&$form, &$form_state){
+  $algo = _elec_get_algo($form['nid']['#value']);
+  $form['elec_algorithm'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'How to determine winner(s)',
+    '#collapseable' => false,
+  );
+  $form['elec_algorithm']['elec_algo_type'] = array(
+    '#type' => 'select',
+    '#title' => 'Algorithm',
+    '#options' => _elec_algorithm_options(),
+    '#default_value' => ($algo['algorithm']) ? $algo['algorithm'] : 'gt_n',
+  );
+  $form['elec_algorithm']['elec_algo_n'] = array(
+    '#type' => 'textfield',
+    '#size' => 3,
+    '#title' => 'N',
+    '#default_value' => ($algo['n']) ? $algo['n'] : '50',
+  );
+}
 
 
-INSERT INTO table (a,b,c) VALUES (1,2,3)
-ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), c=3;
+function _elec_algorithm_options(){
+  return array(
+    'gt_n' => '> N',
+    'gte_n' => '>= N',
+    'top_n' => 'Top N',
+  );
+}
 
+//Returns a two part array with the algorithm and 'n'
+function _elec_get_algo($nid){
+  $algo = db_fetch_array(db_query('SELECT algorithm, n from {election_algorithm} where ballot_item_nid=%d', $nid));
+  return ($algo) ? $algo : array('algorithm' => NULL, 'n' => NULL);
+}
+//gets last slug form a URI - no input checking yet
+function _elec_last_uri_path($uri){
+  $chars = strlen($uri) - 1;
+  $lastchr = substr($uri,$chars);
+  if($lastchr == "/"){
+    $uri = rtrim($uri,"/");
+  }
+  $uri_array = explode("/", $uri);
+  $final_part = count($uri_array) - 1;
+  $slug_end = $uri_array[$final_part];
+  return $slug_end;
+}
+
+/*maybe  hook cron for refresh of .txt here temporarily to access at node template level tpl.php*/
+/*function election_cron(){
+	what to do....
+};
 */
