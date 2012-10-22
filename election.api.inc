@@ -243,7 +243,7 @@ function _elec_detailed_results_render_articles($detailed_results, $opt_type_th)
     $article = '<article>';
     $article .= '<h1>' . $district_node->title . '</h1>';
     foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
-    $article .= "<table><thead><th>$opt_type_th</th><th>Votes</th></thead>";
+    $article .= "<table><thead><th>$opt_type_th</th><th>Votes</th></tr></thead>";
     foreach($results as $opt => $votes){
       $article .= "<tr><td>$opt</td><td>$votes</td></tr>";
     }
@@ -654,7 +654,7 @@ function _elec_html_event_skeleton_2($data){
   /* below is customized for each type of election event and can be handled as a separate function call,
      but it must pass the season and event slug variables through so you can get the proper ballot item html
      here you must choose which districts to render ballot items so as not to lose any data.*/
-  $election_nav = ''; /* start collect html for nav */
+  $election_nav = '<ol>'; /* start collect html for nav */
   $ballot_items = ''; /* start collect html for results */
   //build html out from master ballot tree.
   foreach($master_ballot_tree as $unique_dist_bi_slug){
@@ -671,7 +671,7 @@ function _elec_html_event_skeleton_2($data){
     
   }
   $ballot_items .= "\n";/*end results html*/
-  $election_nav .= "\n";/*end nav html*/
+  $election_nav .= '</ol>' . "\n";/*end nav html*/
   $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper" class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
   print $elec_results;
   _elec_html_skel_to_file($event_nid,$ballot_items,$election_nav);
