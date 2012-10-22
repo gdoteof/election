@@ -216,7 +216,7 @@ TABLE;
   }else{
     $results .= '<ol class="graph"></ol>' . "\n";
   }
-  $results .= _elec_detailed_results_render_articles($data->detailed_results, $opt_type_th);
+  $results .= _elec_detailed_results_render_articles($data->detailed_results, $opt_type_th, $season_slug, $event_slug, $ballot_item_slug);
   $results .= $footer . _elec_html_ballot_item_footer($data) . "\n";
   $results .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
   $results .= '</article>' . "\n";
@@ -236,14 +236,16 @@ echo '
  ;*/
 }
 
-function _elec_detailed_results_render_articles($detailed_results, $opt_type_th){
+function _elec_detailed_results_render_articles($detailed_results, $opt_type_th, $season_slug, $event_slug, $ballot_item_slug){
   $output = '';
   foreach($detailed_results as $district_nid => $district_result_container){
     $district_node = node_load(array('nid'=>$district_nid));
-    $article = '<article>';
+    $district_slug = _elec_slug_from_nid($district_nid);
+    $data_link = base_path() . 'e/' . $season_slug . "/" . $event_slug . "/" . $district_slug . "/" . $ballot_item_slug;
+    $article = '<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results" data-link="' . $data_link . '">' . "\n";
     $article .= '<h1>' . $district_node->title . '</h1>';
     foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
-    $article .= "<table><thead><th>$opt_type_th</th><th>Votes</th></tr></thead>";
+    $article .= "<table><thead><tr><th>$opt_type_th</th><th>Votes</th></tr></thead>";
     foreach($results as $opt => $votes){
       $article .= "<tr><td>$opt</td><td>$votes</td></tr>";
     }
@@ -654,7 +656,7 @@ function _elec_html_event_skeleton_2($data){
   /* below is customized for each type of election event and can be handled as a separate function call,
      but it must pass the season and event slug variables through so you can get the proper ballot item html
      here you must choose which districts to render ballot items so as not to lose any data.*/
-  $election_nav = '<ol>'; /* start collect html for nav */
+  $election_nav = '<ol>' . "\n"; /* start collect html for nav */
   $ballot_items = ''; /* start collect html for results */
   //build html out from master ballot tree.
   foreach($master_ballot_tree as $unique_dist_bi_slug){
