@@ -46,6 +46,7 @@ $(document).ready(function() {
             var id = $(this).val();
             if ("#" != id) {
                 $($(id)).show();
+                updateBallotItemArticles();
             }
         });
         if ($(select).find("option").length > 1) {
