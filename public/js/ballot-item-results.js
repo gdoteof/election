@@ -34,6 +34,25 @@ $(document).ready(function() {
         });
     }
 
+    $("article.partial-results").each(function() {
+        var select = $("<select/>").append($('<option/>').text("Select a District…").val("#"));
+        $(this).find("article.ballot-item-results").each(function() {
+            var option = $("<option/>").text($(this).find("h1").first().text()).val("#" + $(this).attr("id"));
+            select.append(option);
+            $(this).hide();
+        });
+        $(select).change(function() {
+            $(this).parent("article").find("article.ballot-item-results").hide();
+            var id = $(this).val();
+            if ("#" != id) {
+                $($(id)).show();
+            }
+        });
+        if ($(select).find("option").length > 1) {
+            $(this).find("h1").first().after(select);
+        }
+    });
+
     $(".view-election-event article.district-results").children("article").hide();
     updateBallotItemArticles();
     var scrolling = 0;
