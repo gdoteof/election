@@ -158,7 +158,7 @@ $(document).ready(function() {
                         //TODO: Format votes
                         resultElement.find(".votes").text(data.results[result].votes);
                         graphResultElement.find(".votes").text(data.results[result].votes);
-                        resultElement.find(".percent").text(data.results[result].percent);
+                        resultElement.find(".percent").text(data.results[result].percent + "%");
                         graphResultElement.find(".percent").text(data.results[result].percent);
                         graphResultElement.width(data.results[result].percent + "%");
                         graphResultElement.attr(
