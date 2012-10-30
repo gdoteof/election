@@ -242,7 +242,7 @@ small a {
     position: relative;
     overflow: hidden;
     padding: 0.1em 1.0em 1.0em;
-    background-color: #BBB;
+    background-color: #CCC;
     font-size: 1.0em;
     -moz-box-shadow: 0 2px 2px #AAA;
     -webkit-box-shadow: 0 2px 2px #AAA;
@@ -251,24 +251,23 @@ small a {
 }
 #sidebar header {
     padding-bottom: 2.0em;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#AAA), to(#BBB));
-    background-image: -webkit-linear-gradient(top, #AAA, #BBB);
-    background-image: -moz-linear-gradient(top, #AAA, #BBB);
-    background-image: -ms-linear-gradient(top, #AAA, #BBB);
-    background-image: -o-linear-gradient(top, #AAA, #BBB);
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#BBB), to(#CCC));
+    background-image: -webkit-linear-gradient(top, #BBB, #CCC);
+    background-image: -moz-linear-gradient(top, #BBB, #CCC);
+    background-image: -ms-linear-gradient(top, #BBB, #CCC);
+    background-image: -o-linear-gradient(top, #BBB, #CCC);
 }
 #sidebar nav {
     margin-left: -0.8em;
     margin-right: -0.8em;
     padding-left: 1.8em;
     padding-right: 1.8em;
-    background-color: #444;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#444));
-    background-image: -webkit-linear-gradient(top, #555, #444);
-    background-image: -moz-linear-gradient(top, #555, #444);
-    background-image: -ms-linear-gradient(top, #555, #444);
-    background-image: -o-linear-gradient(top, #555, #444);
-    border-bottom: 1px solid #999;
+    background-color: #863C86;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255, 255, 255, 0.1)), to(rgba(255, 255, 255, 0.0)));
+    background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.0));
+    background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.0));
+    background-image: -ms-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.0));
+    background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.0));
     text-align: left;
 }
 #sidebar nav#nav-results {
@@ -277,12 +276,12 @@ small a {
 }
 #sidebar nav#nav-tools {
     padding-bottom: 1.8em;
-    background-color: #666;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#777), to(#666));
-    background-image: -webkit-linear-gradient(top, #777, #666);
-    background-image: -moz-linear-gradient(top, #777, #666);
-    background-image: -ms-linear-gradient(top, #777, #666);
-    background-image: -o-linear-gradient(top, #777, #666);
+    background-color: #9E639E;
+    background: #863C86 -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255, 255, 255, 0.3)), to(rgba(255, 255, 255, 0.2)));
+    background: #863C86 -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+    background: #863C86 -moz-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+    background: #863C86 -ms-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+    background: #863C86 -o-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
     z-index: 7;
 }
 #nav-results,
@@ -313,11 +312,11 @@ small a {
 #sidebar nav p,
 #sidebar nav li,
 #sidebar nav a {
-    color: #DDD;
+    color: #EEE;
 }
 #sidebar nav a:hover,
 #sidebar nav a:focus {
-    color: #BBB;
+    color: #CCC;
 }
 #nav-results select {
     margin-top: 0.2em;
