@@ -42,10 +42,17 @@ $(document).ready(function() {
             $(this).hide();
         });
         $(select).change(function() {
-            $(this).parent("article").find("article.ballot-item-results").hide();
             var id = $(this).val();
-            if ("#" != id) {
-                $($(id)).show();
+            if ($(this).parent("article").find("article.ballot-item-results").is(":visible")) {
+                if ("#" != id) {
+                    $(this).parent("article").find("article.ballot-item-results").hide();
+                    $($(id)).show().find("h1").first().css({backgroundColor: "rgba(251, 244, 107, 0.6)"}).delay(1000).animate({backgroundColor: "transparent"}, 1000);
+                    updateBallotItemArticles();
+                } else {
+                    $(this).parent("article").find("article.ballot-item-results").slideUp();
+                }
+            } else {
+                $($(id)).slideDown();
                 updateBallotItemArticles();
             }
         });
