@@ -186,6 +186,7 @@ small a {
 }
 #introduction h1 {
     font-size: 4.6em;
+    line-height: 1.1;
 }
 #live-broadcast {
     margin-bottom: 2.0em;
