@@ -222,8 +222,8 @@
     background-color: #11D0AA;
 }
 .ballot-item-results .partial-results {
-    margin-top: 2.0em;
-    padding-top: 1.0em;
+    margin-top: 1.5em;
+    padding-top: 1.5em;
     padding-bottom: 3.0em;
     background-color: #F5F5F5;
     background: transparent -webkit-gradient(radial, center top, 0, center top, 100, from(rgba(0, 0, 0, 0.1)), to(rgba(0, 0, 0, 0.0)));
