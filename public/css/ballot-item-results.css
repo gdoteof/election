@@ -75,14 +75,23 @@
 .view-election-event .ballot-item-results {
     background-color: #EEE;
 }
-@media all and (max-width: 640px) {
+@media all and (max-width: 768px) {
     .ballot-item-results,
     .info {
-        font-size: 2.0em;
+        font-size: 1.3em;
+    }
+    .ballot-item-results .ballot-item-results {
+        font-size: 1.0em;
     }
     .info h1,
     .info p {
         white-space: nowrap;
+    }
+}
+@media all and (max-width: 640px) {
+    .ballot-item-results,
+    .info {
+        font-size: 2.0em;
     }
 }
 .ballot-item-results li,
