@@ -132,6 +132,7 @@
 .ballot-item-results .graph {
     max-width: 400px;
     overflow: hidden;
+    margin-top: 2.0em;
     background-color: transparent;
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(transparent), to(#000));
     background-image: -webkit-linear-gradient(top, transparent, #000);
@@ -220,13 +221,42 @@
 .ballot-item-results .graph .result:nth-child(12n+12) {
     background-color: #11D0AA;
 }
+.ballot-item-results .partial-results {
+    margin-top: 2.0em;
+    padding-top: 1.0em;
+    padding-bottom: 3.0em;
+    background-color: #F5F5F5;
+    background: transparent -webkit-gradient(radial, center top, 0, center top, 100, from(rgba(0, 0, 0, 0.1)), to(rgba(0, 0, 0, 0.0)));
+    background: transparent -webkit-radial-gradient(center top, farthest-side, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.0));
+    background: transparent -moz-radial-gradient(center top, farthest-side, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.0));
+    background: transparent -ms-radial-gradient(center top, farthest-side, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.0));
+    border-top: 1px dashed #CCC;
+    font-size: 0.9em;
+}
+.ballot-item-results .partial-results > h1,
+.ballot-item-results .partial-results > p {
+    color: #666;
+}
+.ballot-item-results .partial-results > h1 {
+    font-size: 1.2em;
+    text-transform: uppercase;
+}
+.ballot-item-results .partial-results > p {
+    margin-top: 0;
+}
+.ballot-item-results .partial-results select {
+    font-size: 1.6em;
+}
+.view-election-event .partial-results .ballot-item-results {
+    background-color: transparent;
+}
 .ballot-item-results footer {
-    margin-top: 1.2em;
+    margin-top: 1.5em;
 }
 .ballot-item-results footer p {
-    margin-top: 0.2em;
-    font-size: 1.2em;
-    color: #666;
+    margin-top: 0;
+    font-size: 1.1em;
+    color: #999;
 }
 .info {
     position: absolute;
