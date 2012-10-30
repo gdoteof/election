@@ -277,6 +277,7 @@
     -moz-box-shadow: 0 1.0em 1.0em rgba(0, 0, 0, 0.2);
     -webkit-box-shadow: 0 1.0em 1.0em rgba(0, 0, 0, 0.2);
     box-shadow: 0 1.0em 1.0em rgba(0, 0, 0, 0.2);
+    z-index: 8;
 }
 .info h1,
 .info p {
