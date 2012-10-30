@@ -46,6 +46,7 @@ $(document).ready(function() {
             var id = $(this).val();
             if ("#" != id) {
                 $($(id)).show();
+                updateBallotItemArticles();
             }
         });
         if ($(select).find("option").length > 1) {
@@ -132,17 +133,17 @@ $(document).ready(function() {
             cache: cache,
             success: function(data, textStatus, jqXHR) {
                 if (304 != jqXHR.status) {
-                    var templateRow = element.find("thead tr.result").clone();
+                    var templateRow = element.find("thead tr.result").first().clone();
                     templateRow.find("th").replaceWith(function() {
                         return "<td class=\"" + $(this).attr("class") + "\">" + $(this).html() + "</td>";
                     });
                     //TODO: First item isn't a good template
-                    var templateListItem = element.find("ol.graph li.result:first").clone();
+                    var templateListItem = element.find("ol.graph li.result:first").first().clone();
                     templateListItem.removeClass("winner").removeClass("complete");
                     templateListItem.removeAttr("title");
                     templateListItem.removeAttr("style");
-                    var tableBody = element.find("tbody").empty();
-                    var orderedList = element.find("ol.graph").empty();
+                    var tableBody = element.find("tbody").first().empty();
+                    var orderedList = element.find("ol.graph").first().empty();
                     //TODO: "complete" should be at overall results level
                     var complete = null;
                     var totalVotes = 0;
@@ -157,7 +158,7 @@ $(document).ready(function() {
                         //TODO: Format votes
                         resultElement.find(".votes").text(data.results[result].votes);
                         graphResultElement.find(".votes").text(data.results[result].votes);
-                        resultElement.find(".percent").text(data.results[result].percent);
+                        resultElement.find(".percent").text(data.results[result].percent + "%");
                         graphResultElement.find(".percent").text(data.results[result].percent);
                         graphResultElement.width(data.results[result].percent + "%");
                         graphResultElement.attr(
@@ -182,24 +183,24 @@ $(document).ready(function() {
                         bindResultMouseoverAndMouseout(graphResultElement);
                     }
                     if (totalVotes > 0) {
-                        element.find("ol.graph").show();
+                        element.find("ol.graph").first().show();
                     } else {
-                        element.find("ol.graph").hide();
+                        element.find("ol.graph").first().hide();
                     }
-                    element.find("footer .incomplete").remove();
-                    element.find("footer .complete").remove();
+                    element.find("footer .incomplete").first().remove();
+                    element.find("footer .complete").first().remove();
                     //TODO: This check should not be necessary
-                    if (0 == element.find("footer .partial").length) {
+                    if (0 == element.find("footer .partial").first().length) {
                         if (complete) {
-                            element.find("footer").prepend(MESSAGES.complete);
+                            element.find("footer").first().prepend(MESSAGES.complete);
                         } else if (false === complete) {
-                            element.find("footer").prepend(MESSAGES.incomplete);
+                            element.find("footer").first().prepend(MESSAGES.incomplete);
                         }
                     }
                 }
                 var date = new Date(jqXHR.getResponseHeader("Date"));
                 //TODO: Handle timezone difference between server and client
-                element.find(".updated").text($.format.date(date, "MMM d, yyyy h:mm:ss a"));
+                element.find(".updated").first().text($.format.date(date, "MMM d, yyyy h:mm:ss a"));
                 var expires = new Date(jqXHR.getResponseHeader("Expires"));
                 var expiration = expires.valueOf() - date.valueOf();
                 if (expiration <= 0) {
