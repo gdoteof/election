@@ -88,7 +88,11 @@ $(document).ready(function() {
     });
 
     $("article.district-results h1 a").click(function() {
-        $($(this).attr("href")).trigger("scrollTo");
+        if ($($(this).attr("href")).children("article").is(":hidden")) {
+            $($(this).attr("href")).trigger("scrollTo");
+        } else {
+            $($(this).attr("href")).children("article").slideUp();
+        }
         return false;
     });
 
