@@ -154,6 +154,7 @@ $(document).ready(function() {
                     //TODO: "complete" should be at overall results level
                     var complete = null;
                     var totalVotes = 0;
+                    var percentSum = 0;
                     for (result in data.results) {
                         totalVotes += parseInt(data.results[result].votes);
                         var resultElement = templateRow.clone();
@@ -167,7 +168,12 @@ $(document).ready(function() {
                         graphResultElement.find(".votes").text(data.results[result].votes);
                         resultElement.find(".percent").text(data.results[result].percent + "%");
                         graphResultElement.find(".percent").text(data.results[result].percent);
-                        graphResultElement.width(data.results[result].percent + "%");
+                        if (100 < (percentSum + data.results[result].percent)) {
+                            graphResultElement.width((100 - percentSum) + "%");
+                        } else {
+                            graphResultElement.width(data.results[result].percent + "%");
+                        }
+                        percentSum += data.results[result].percent;
                         graphResultElement.attr(
                             "title",
                             result + ": " + data.results[result].votes + " votes, " + data.results[result].percent + "%"
