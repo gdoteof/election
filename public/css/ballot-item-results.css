@@ -45,7 +45,6 @@
 .view-ballot-item-results h1 {
     display: none;
     margin-top: 0.1em;
-    line-height: 1.2;
 }
 .view-ballot-item-results #results > h1,
 .view-ballot-item-results .district-results > article > h1 {
