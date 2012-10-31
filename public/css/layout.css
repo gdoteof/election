@@ -8,11 +8,11 @@ body {
 body,
 #elections.view-ballot-item-results {
     background-color: white;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EEE), to(white));
-    background-image: -webkit-linear-gradient(top, #EEE, white);
-    background-image: -moz-linear-gradient(top, #EEE, white);
-    background-image: -ms-linear-gradient(top, #EEE, white);
-    background-image: -o-linear-gradient(top, #EEE, white);
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F5F5F5), to(white));
+    background-image: -webkit-linear-gradient(top, #F5F5F5, white);
+    background-image: -moz-linear-gradient(top, #F5F5F5, white);
+    background-image: -ms-linear-gradient(top, #F5F5F5, white);
+    background-image: -o-linear-gradient(top, #F5F5F5, white);
 }
 noscript,
 .embed {
