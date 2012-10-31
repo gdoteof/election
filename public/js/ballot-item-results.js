@@ -314,8 +314,14 @@ $(document).ready(function() {
     if ($(0 != "#elections.view-ballot-item-results").length) {
         var resultsElement = $("#elections.view-ballot-item-results #results");
         function resizeViewBallotItemResults() {
+            resultsElement.css("fontSize", "");
             var windowHeight = $(window).height();
             var resultsHeight = resultsElement.innerHeight();
+            for (var i = 0; windowHeight < resultsHeight && i < 100; i++) {
+                resultsElement.css("fontSize", (parseInt(resultsElement.css("fontSize")) / 10) - 0.05 + "em");
+                $(".info").css("fontSize", (parseInt(resultsElement.css("fontSize")) / 10) - 0.05 + "em");
+                var resultsHeight = resultsElement.innerHeight();
+            }
             $("#elections.view-ballot-item-results").height(windowHeight);
             resultsElement.css("marginTop", ((windowHeight - resultsHeight) / 2 * 0.85) + "px");
         }

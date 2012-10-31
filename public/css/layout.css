@@ -192,7 +192,8 @@ small a {
     margin-bottom: 2.0em;
 }
 .view-ballot-item-results #results {
-    width: 1024px;
+    max-width: 1024px;
+    display: inline-block;
     overflow: hidden;
     margin-left: auto;
     margin-right: auto;

@@ -67,10 +67,17 @@
 .view-ballot-item-results .ballot-item-results h1 {
     font-size: 3.4em;
 }
+.view-ballot-item-results .ballot-item-results .partial-results {
+    display: none;
+}
 .ballot-item-results {
     margin-top: 0.1em;
     padding: 1.5em;
     text-align: center;
+}
+.view-ballot-item-results .ballot-item-results {
+    padding-top: 4.0em;
+    padding-bottom: 5.0em;
 }
 .view-election-event .ballot-item-results {
     background-color: #EEE;
@@ -153,7 +160,7 @@
     border-radius: 0.5em;
 }
 .view-ballot-item-results .ballot-item-results .graph {
-    max-width: 700px;
+    max-width: 100%;
 }
 @media all and (max-width: 640px) {
     .ballot-item-results .graph {
