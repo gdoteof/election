@@ -317,7 +317,7 @@ $(document).ready(function() {
             var windowHeight = $(window).height();
             var resultsHeight = resultsElement.innerHeight();
             $("#elections.view-ballot-item-results").height(windowHeight);
-            resultsElement.css("marginTop", ((windowHeight - resultsHeight) / 2 * 0.85) + "px")
+            resultsElement.css("marginTop", ((windowHeight - resultsHeight) / 2 * 0.85) + "px");
         }
         resizeViewBallotItemResults();
         $(window).resize(function() {
