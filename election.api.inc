@@ -168,13 +168,16 @@ function _elec_html_ballot_item($data){
   $ballot_item_title = ($data->text) ? ($data->text) : $data->title;
   $last_update = strftime('%b %e, %Y %r',mktime());
   $ballot_item_slug = _elec_title_to_slug($ballot_item_title);
-  //$data_link = ($data_link_bypass) ? $data_link_bypass : base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
   $data_link = base_path() . 'e/' . $season_slug .'/'. $event_slug . '/' . $district_slug . '/' . $ballot_item_slug;
 
   $total_votes = 0;
-  $results ="\n\n" . '<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">' . "\n";
-  $results .=' <h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>' . "\n";
-
+  //$results = "\n\n" . '<article>' . "\n";
+  //$results .= '  <h1>' . $ballot_item_title  . '</h1>' . "\n";
+  //$results .= '    <article>' . "\n";
+  //$results .= '      <h1>Totals</h1>' . "\n"; 
+  $results .='<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results ' . strtolower($tag) . '" data-link="' .$data_link . '">' . "\n";
+  // $results .=' <h1 id="' . $district_slug . '-' . $ballot_item_slug . '-h1' . '">' . $ballot_item_title . '</h1>' . "\n";
+  $results .=' <h1>' . $ballot_item_title . '</h1>' . "\n";
   foreach ($data->results as $result){ $total_votes += $result['votes']; $complete = $result['complete']; }
   $opt_type_th = ($type=='election') ? 'Candidates' : 'Options';
   $opt_type_class = ($type=='election') ? 'candidate' : '';
@@ -216,42 +219,48 @@ TABLE;
   }else{
     $results .= '<ol class="graph"></ol>' . "\n";
   }
-  $results .= _elec_detailed_results_render_articles($data->detailed_results, $opt_type_th, $season_slug, $event_slug, $ballot_item_slug);
   $results .= $footer . _elec_html_ballot_item_footer($data) . "\n";
   $results .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
-  $results .= '</article>' . "\n";
 
-//print <<<ARTICLE
-//$results
-//ARTICLE;
+  $results .= '<article class="partial-results">' . "\n";
+  $results .= '<h1>Contributing Results</h1>' . "\n"; //can we remove
+  $results .= _elec_detailed_results_render_articles($data->detailed_results, $opt_type_th, $season_slug, $event_slug, $district_slug, $ballot_item_slug);
+  $results .= '</article>' . "\n";// contributing results
+  //$results .= $footer . _elec_html_ballot_item_footer($data) . "\n";
+  //$results .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
+  $results .= '</article>' . "\n";// summed results
+  //$results .= '</article>' . "\n";// results
+  //$results .= '</article>' . "\n";// district results
+
   return $results;
 }
-//preprocess before output?
-function _elec_html_skel_wrapper($skel_guts){
-  /*<article id="results">
-';
-  $article = _elec_html_ballot_item($data);
-echo '
-</article>
- ;*/
-}
 
-function _elec_detailed_results_render_articles($detailed_results, $opt_type_th, $season_slug, $event_slug, $ballot_item_slug){
+function _elec_detailed_results_render_articles($detailed_results, $opt_type_th, $season_slug, $event_slug, $parent_district_slug, $ballot_item_slug){
   $output = '';
-  foreach($detailed_results as $district_nid => $district_result_container){
-    $district_node = node_load(array('nid'=>$district_nid));
-    $district_slug = _elec_slug_from_nid($district_nid);
-    $data_link = base_path() . 'e/' . $season_slug . "/" . $event_slug . "/" . $district_slug . "/" . $ballot_item_slug;
-    $article = '<article id="' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results" data-link="' . $data_link . '">' . "\n";
-    $article .= '<h1>' . $district_node->title . '</h1>';
-    foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
-    $article .= "<table><thead><tr><th>$opt_type_th</th><th>Votes</th></tr></thead>";
-    foreach($results as $opt => $votes){
-      $article .= "<tr><td>$opt</td><td>$votes</td></tr>";
+  $last_update = strftime('%b %e, %Y %r',mktime());
+  if(count($detailed_results, 0) > 1){
+    foreach($detailed_results as $district_nid => $district_result_container){
+      $district_node = node_load(array('nid'=>$district_nid));
+      $district_slug = _elec_slug_from_nid($district_nid);
+      $data_link = base_path() . 'e/' . $season_slug . "/" . $event_slug . "/" . $district_slug . "/" . $ballot_item_slug; 
+      $article = '<article id="' . $parent_district_slug . '-' . $district_slug . '-' . $ballot_item_slug . '" class="ballot-item-results" data-link="' . $data_link . '">' . "\n";
+      $article .= '<h1>' . $district_node->title . '</h1>';
+      foreach($district_result_container as $ballot_item_nid => $results); // THIS DOES NOT LOOP
+        $article .= '<table><thead><tr class="result"><th class="option">' . $opt_type_th . '</th><th class="votes">Votes</th></tr></thead>' . "\n";
+      foreach($results as $opt => $votes){
+        $article .= '<tr class="result"><td class="option">' . $opt . '</td><td class="votes">' . $votes . '</td></tr>' . "\n";
+      }
+      $article .= '</table>' . "\n";
+      $article .= '<footer>' . _elec_html_ballot_item_footer($detailed_results);
+      $article .= '<p>Updated <span class="updated">' . $last_update . '</span></p>' . "\n" . '</footer>' . "\n";
+      $article .= '</article>' . "\n";
+      $output .= $article . "\n";
     }
-    $article .= '</table>';
-    $article .= '</article>';
-    $output .= $article . "\n";
+  }else{
+    foreach($detailed_results as $district_nid => $district_result_container){
+      $district_node = node_load(array('nid'=>$district_nid));
+      $output .= "<p>*Only the $district_node->title votes on this item.*</p>" . "\n"; 
+    }
   }
   return $output;
 }
@@ -320,6 +329,7 @@ function _elec_html_ballot_item_wrapper($data){
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery-1.7.1.min.js"></script>
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery.format-1.2.min.js"></script>
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery.ba-hashchange.min.js"></script>
+  <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery.color.js></script>
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery.smooth-scroll.min.js"></script>
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/ballot-item-results.js"></script>
   <script type="text/javascript" src="https://www.cctv.org/sites/all/themes/zen/cctv/js/jquery-noconflict.js"></script>
@@ -328,11 +338,13 @@ function _elec_html_ballot_item_wrapper($data){
   <link type="text/css" rel="stylesheet" media="all" href="https://www.cctv.org/sites/all/themes/zen/cctv/electioncss/ballot-item-results.css" />
 </head>
 <body>
+<div id="elections" class="view-ballot-item-results">
 <article id="results">
 ';
   print $article;
   print '
 </article>
+<div>
 </body>
 </html>
 ';
@@ -559,7 +571,7 @@ function _elec_html_event_skeleton_2($data){
   /* we need to get ballot items with results that are spread
   out over parent trees that may have no common parent district */
   //print '<pre>'; print_r($default_data_struct); print '</pre>';
-  $base_bi_district = array();
+  $base_bi_list = array();
   $parent_bi_district_list = array();
   foreach($default_data_struct as $district_nid_key){
     //loops initial district level unique districts
@@ -630,7 +642,9 @@ function _elec_html_event_skeleton_2($data){
       }
     }
   }
+  
   //print '<pre>'; print_r($base_bi_list); print '</pre>';
+  //print "XXXXX";
   //print '<pre>'; print_r($parent_bi_district_list); print '</pre>';
   /*combine base ballot items and parent only ballot items into master ballot item
   assoc array with valid combined slugs only*/
@@ -649,29 +663,127 @@ function _elec_html_event_skeleton_2($data){
     }
   }
   ksort($master_ballot_tree, SORT_REGULAR);
-  /*print '<pre>'; print_r($master_ballot_tree); print '</pre>';*/
-  
-  
-  // ########## START CHOPPING $master_ballot_tree here ########## 
+  //print 'XXXX';
+  //print '<pre>'; print_r($master_ballot_tree); print '</pre>';
+    // ########## START CHOPPING $master_ballot_tree here ########## 
   /* below is customized for each type of election event and can be handled as a separate function call,
      but it must pass the season and event slug variables through so you can get the proper ballot item html
      here you must choose which districts to render ballot items so as not to lose any data.*/
-  $election_nav = '<ol>' . "\n"; /* start collect html for nav */
-  $ballot_items = ''; /* start collect html for results */
-  //build html out from master ballot tree.
   foreach($master_ballot_tree as $unique_dist_bi_slug){
     $u_slugs_arr = _elec_split_combined_slug($unique_dist_bi_slug['summed_slug']);
-    /* this just displays parent districts from the master ballot tree */
-    if( isset($unique_dist_bi_slug['base_slugs']['0'])){
-      $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
-      $election_nav .= '<li><a href=#' . $u_slugs_arr['district_slug'] . '-' . $u_slugs_arr['ballot_item_slug'] . '>' .
+    if($u_slugs_arr['district_slug'] != "chittenden-county"){
+      $new_combined_slug = "chittenden-county/" . $u_slugs_arr['ballot_item_slug'] . "";
+      $new_master_ballot_tree[$new_combined_slug] = array('summed_slug'=>$new_combined_slug, 'base_slugs'=>$unique_dist_bi_slug['base_slugs']);
+    }else{
+      $new_master_ballot_tree[$unique_dist_bi_slug['summed_slug']] = array('summed_slug'=>$unique_dist_bi_slug['summed_slug'], 'base_slugs'=>$unique_dist_bi_slug['base_slugs']);
+    }
+  }
+  ksort($new_master_ballot_tree, SORT_REGULAR);
+  //print 'XXXX';
+  //print '<pre>'; print_r($new_master_ballot_tree); print '</pre>';
+  
+  $election_nav = '<ol>'. "\n";
+  $ballot_items = '';
+  //Get State House
+  //uses $new_master_ballot_tree !!!
+  $house_ballot_items = '';
+  $house_ballot_items .= '<article id="state-house" class="district-results">' . "\n";
+  $house_ballot_items .= '<h1><a href="#state-house">VT State House</a></h1>' . "\n";
+  $election_nav .= '<li><a href="#state-house">VT State House</a></li>' . "\n";
+  foreach($new_master_ballot_tree as $unique_dist_bi_slug){
+      $u_slugs_arr = _elec_split_combined_slug($unique_dist_bi_slug['summed_slug']);
+      if($u_slugs_arr['district_slug'] == "chittenden-county" and  substr($u_slugs_arr['ballot_item_slug'],0,11) == "state-house"){
+        $house_ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
+        $house_ballot_items .= _elec_html_ballot_item($house_ballot_items_data);  
+      }
+  }
+  $house_ballot_items .= '</article>' . "\n";
+  //Get State Senate  
+  $senate_ballot_items = '';
+  $senate_ballot_items .= '<article id="state-senate" class="district-results">' . "\n";
+  $senate_ballot_items .= '<h1><a href="#state-senate">VT State Senate</a></h1>' . "\n";
+  $election_nav .= '<li><a href="#state-senate">VT State Senate</a></li>' . "\n";
+  foreach($master_ballot_tree as $unique_dist_bi_slug){
+      $u_slugs_arr = _elec_split_combined_slug($unique_dist_bi_slug['summed_slug']);
+      if($u_slugs_arr['district_slug'] == "chittenden-county" and ($u_slugs_arr['ballot_item_slug'] == "state-senate" || $u_slugs_arr['ballot_item_slug'] == "high-bailiff---chittenden-county")){
+        $senate_ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
+        $senate_ballot_items .= _elec_html_ballot_item($senate_ballot_items_data);
+      }
+  }
+  $senate_ballot_items .= '</article>' . "\n";   
+  //Get Local Items
+  $local_ballot_items = '';
+  //$local_ballot_items .= '<article id="local" class="district-results">' . "\n";
+  //$local_ballot_items .= '<h1><a href="#local">Local Ballots and Races</a></h1>' . "\n";
+  //$election_nav .= '<li><a href="#local">Local Ballots and Races</a></li>' . "\n";
+  //$election_nav .= '<ol>' . "\n";
+  foreach($district_type_containers as $key => $container){
+    //loops through "wards", "municipalities" other tags
+    foreach($container as $e_event){
+      //loops through districts
+      $district_slug = _elec_title_to_slug($e_event['title']);
+      $district_nid = _elec_nid_from_district_slug($district_slug, $event_nid);
+     
+      if(substr($district_slug,0,6) == "ward-1" || $district_slug == "city-of-south-burlington" || $district_slug == "town-of-essex"){
+      //pretend ward-1 is burlington
+      if(substr($district_slug,0,6) == "ward-1"){
+        $district_slug = "city-of-burlington";
+        }
+      $election_nav .= '<li><a href="#' . $district_slug . '">' . ucwords(_elec_slug_to_title($district_slug)) . '</a>' . '</li>' . "\n";
+      $local_ballot_items .= '<article id="' . $district_slug . '" class="district-results ' . strtolower(_elec_swap_plurality($key)) . '">' . "\n";
+      $local_ballot_items .= '<h1><a href="#' . $district_slug . '">' . ucwords(_elec_slug_to_title($district_slug)) . '</a></h1>' . "\n";
+      //move ward-1 back
+      if(substr($district_slug,0,18) == "city-of-burlington"){
+        $district_slug = "ward-1";
+      }
+      $district_data = _elec_get_district($season_slug, $event_slug, $district_slug);
+      $district_data = (object)$district_data;
+        //print '<pre>'; print_r($district_data); print '</pre>';
+        foreach ($district_data->ballot_items as $ballot_item_type => $ballot_item_list){
+          $local_ballot_items .= '<article>' . "\n" . '<h1>' . ucfirst($ballot_item_type) . '</h1>' . "\n";
+          foreach($ballot_item_list as $ballot_item){
+            $ballot_item_slug = _elec_title_to_slug($ballot_item['title']);
+            if($ballot_item_slug != "state-senate" and substr($ballot_item_slug,0,11) != "state-house" and substr($ballot_item_slug,0,12) != "high-bailiff"){
+              $local_ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,"chittenden-county",$ballot_item_slug);
+              $local_ballot_items .= _elec_html_ballot_item($local_ballot_items_data);
+              
+            }
+          }
+          $local_ballot_items .= '</article>' . "\n"; //closing ballot item type
+        }
+      //}
+     }
+     if(substr($district_slug,0,6) == "ward-1" || $district_slug == "city-of-south-burlington" || $district_slug == "town-of-essex"){
+      $local_ballot_items .= '</article>' . "\n"; //closing district
+     }
+    }
+  }
+  $local_ballot_items .= '</article>' . "\n"; //closing local ballot items
+  //$election_nav .= '</ol>' . "\n"; //closing local nav
+  $ballot_items .= $house_ballot_items . "\n\n";
+  $ballot_items .= $senate_ballot_items . "\n\n";
+  $ballot_items .= $local_ballot_items . "\n\n";  
+  
+  
+  // ########## SAMPLE START CHOPPING $master_ballot_tree here ########## 
+  /* below is customized for each type of election event and can be handled as a separate function call,
+     but it must pass the season and event slug variables through so you can get the proper ballot item html
+     here you must choose which districts to render ballot items so as not to lose any data.
+    $election_nav = '<ol>' . "\n"; // start collect html for nav 
+    $ballot_items = ''; // start collect html for results
+    build html out from master ballot tree.
+    foreach($master_ballot_tree as $unique_dist_bi_slug){
+      $u_slugs_arr = _elec_split_combined_slug($unique_dist_bi_slug['summed_slug']);
+      //this just displays parent districts from the master ballot tree
+      if( isset($unique_dist_bi_slug['base_slugs']['0'])){
+        $ballot_items_data = _elec_get_ballot_item($season_slug,$event_slug,$u_slugs_arr['district_slug'],$u_slugs_arr['ballot_item_slug']);
+        $election_nav .= '<li><a href="#' . $u_slugs_arr['district_slug'] . '-' . $u_slugs_arr['ballot_item_slug'] . '">' .
                     ucwords(_elec_slug_to_title($u_slugs_arr['district_slug'])) . ': ' .
                     ucwords(_elec_slug_to_title($u_slugs_arr['ballot_item_slug'])) .
                     '</a></li>' . "\n";
       $ballot_items .= _elec_html_ballot_item($ballot_items_data);
     }
-    
-  }
+  }*/
   $ballot_items .= "\n";/*end results html*/
   $election_nav .= '</ol>' . "\n";/*end nav html*/
   $elec_results = '<div id ="nav_wrapper" class="election-event-nav">' . "\n" . $election_nav . "\n" . '</div>' . "\n" . '<div id="results_wrapper" class="election-event-results">' . "\n" . $ballot_items . "\n" . '</div>';
