@@ -268,11 +268,14 @@
 .ballot-item-results footer {
     margin-top: 1.2em;
 }
+.ballot-item-results footer p,
+.ballot-item-results footer p a {
+    color: #AAA;
+}
 .ballot-item-results footer p {
     margin-top: 0;
     font-size: 1.1em;
     line-height: 1.1;
-    color: #AAA;
 }
 .info {
     position: absolute;
